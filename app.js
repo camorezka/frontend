@@ -1,7 +1,7 @@
 "use strict";
 
 // ══════════════════════════════════════════════════════════
-// КОНФИГ — замени на свой URL Render сервиса
+// КОНФИГ
 // ══════════════════════════════════════════════════════════
 var API_URL = "https://backend-9iys.onrender.com";
 
@@ -19,7 +19,90 @@ var INIT_DATA = (tg && tg.initData) ? tg.initData : "";
 var currentBetId       = null;
 var payCheckAttempts   = 0;
 var payCheckTimer      = null;
-var PAY_MAX_ATTEMPTS   = 24; // 24 × 5 сек = 120 сек
+var PAY_MAX_ATTEMPTS   = 24;
+
+// ══════════════════════════════════════════════════════════
+// АВТОВОСПРОИЗВЕДЕНИЕ ВИДЕО НА МОБИЛЬНЫХ
+// iOS/Android требуют взаимодействия пользователя или
+// особого подхода. Используем несколько методов.
+// ══════════════════════════════════════════════════════════
+
+function forcePlayAllVideos() {
+  var videos = document.querySelectorAll("video");
+  videos.forEach(function(v) {
+    v.muted = true;
+    v.volume = 0;
+    v.setAttribute("muted", "");
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "");
+    if (v.paused) {
+      var playPromise = v.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(function() {
+          // Если не получилось — пробуем после первого касания
+        });
+      }
+    }
+  });
+}
+
+// Запускаем видео при любом касании пользователя (один раз)
+var videoUnlocked = false;
+function unlockVideosOnTouch() {
+  if (videoUnlocked) return;
+  videoUnlocked = true;
+  forcePlayAllVideos();
+}
+
+document.addEventListener("touchstart", unlockVideosOnTouch, { once: true, passive: true });
+document.addEventListener("click",      unlockVideosOnTouch, { once: true, passive: true });
+
+// Intersection Observer: воспроизводим видео когда оно видно
+function setupVideoObserver() {
+  if (!window.IntersectionObserver) {
+    forcePlayAllVideos();
+    return;
+  }
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var v = entry.target;
+        v.muted = true;
+        if (v.paused) {
+          v.play().catch(function() {});
+        }
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll("video").forEach(function(v) {
+    observer.observe(v);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// НАВИГАЦИЯ — ВКЛАДКИ
+// ══════════════════════════════════════════════════════════
+
+var currentTab = "home";
+
+window.switchTab = function(tab) {
+  currentTab = tab;
+
+  // Вкладки панели
+  document.querySelectorAll(".tab-pane").forEach(function(p) {
+    p.classList.remove("active");
+  });
+  var pane = document.getElementById("tab-" + tab);
+  if (pane) pane.classList.add("active");
+
+  // Кнопки навигации
+  document.querySelectorAll(".nav-tab").forEach(function(b) {
+    b.classList.remove("active");
+  });
+  var navBtn = document.getElementById("nav-" + tab);
+  if (navBtn) navBtn.classList.add("active");
+};
 
 // ── Утилиты ───────────────────────────────────────────────
 function showScreen(id) {
@@ -29,6 +112,11 @@ function showScreen(id) {
   });
   var el = document.getElementById(id);
   if (el) { el.style.display = "flex"; el.classList.add("active"); }
+
+  // При возврате на главный экран — запускаем видео
+  if (id === "screen-main") {
+    setTimeout(forcePlayAllVideos, 100);
+  }
 }
 
 function showError(title, sub, onRetry) {
@@ -56,6 +144,7 @@ function haptic(type) {
     try { tg.HapticFeedback.impactOccurred(type || "medium"); } catch(e) {}
   }
 }
+
 // ══════════════════════════════════════════════════════════
 // КАПЧА
 // ══════════════════════════════════════════════════════════
@@ -67,7 +156,6 @@ function showCaptcha(onPass) {
   var b = Math.floor(Math.random() * 9) + 1;
   var correct = a + b;
 
-  // Генерируем 3 неправильных варианта
   var wrong = [];
   while (wrong.length < 3) {
     var w = correct + (Math.floor(Math.random() * 7) - 3);
@@ -102,7 +190,6 @@ function showCaptcha(onPass) {
             btn.classList.remove("wrong");
             if (eEl) eEl.textContent = "";
           }, 800);
-          // Генерируем новую капчу через секунду
           setTimeout(function() { showCaptcha(onPass); }, 900);
         }
       };
@@ -110,8 +197,6 @@ function showCaptcha(onPass) {
   }
   showScreen("screen-captcha");
 }
-
-
 
 function setPayStatus(msg, cls) {
   var el = document.getElementById("pay-status");
@@ -121,7 +206,7 @@ function setPayStatus(msg, cls) {
 }
 
 function confetti() {
-  var colors = ["#F5C518","#FF5E5B","#00D2FF","#A8FF78","#B388FF","#FFD84D"];
+  var colors = ["#F5C518","#FF5E5B","#ffffff","#A8FF78","#B388FF","#FFD84D"];
   var container = document.getElementById("confetti-container");
   for (var i = 0; i < 50; i++) {
     (function(idx) {
@@ -172,15 +257,6 @@ function api(path, data) {
 }
 
 // ══════════════════════════════════════════════════════════
-// ОБНОВЛЕНИЕ АЛГОРИТМ-БЛОКА
-// Показываем сколько ставок до выигрыша.
-// Для первого цикла (winning_spin=3) показываем фиксированную схему.
-// Для последующих — скрываем winning_spin (это рандом, пользователь не знает).
-// ══════════════════════════════════════════════════════════
-
-
-
-// ══════════════════════════════════════════════════════════
 // ИНВЕНТАРЬ
 // ══════════════════════════════════════════════════════════
 
@@ -218,13 +294,25 @@ function loadInventory() {
         }).join("");
       }
     })
-    .catch(function(e) {
-      // Инвентарь необязательный, молча игнорируем
-    });
+    .catch(function() {});
 }
 
 // ══════════════════════════════════════════════════════════
-// СТАРТ ПРИЛОЖЕНИЯ
+// НАСТРОЙКИ — тоггл
+// ══════════════════════════════════════════════════════════
+
+function bindSettings() {
+  var toggle = document.getElementById("toggle-notif");
+  if (toggle) {
+    toggle.onclick = function() {
+      toggle.classList.toggle("on");
+      haptic("light");
+    };
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// СТАРТ
 // ══════════════════════════════════════════════════════════
 
 function startApp() {
@@ -248,15 +336,27 @@ function startApp() {
   }).then(function() {
     return api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA));
   }).then(function(stats) {
-    // Обновляем UI
     var uEl = document.getElementById("top-username");
     if (uEl) uEl.textContent = "@" + TG_NAME;
+
+    var suEl = document.getElementById("settings-username");
+    if (suEl) suEl.textContent = "@" + TG_NAME;
+
     var total = (stats.total_cycles || 0) * 10 + (stats.cycle_spin || 0);
     var sEl = document.getElementById("top-stats");
     if (sEl) sEl.textContent = total + " ставок";
+
+    var ssEl = document.getElementById("settings-stats");
+    if (ssEl) ssEl.textContent = total + " ставок";
+
     loadInventory();
     showScreen("screen-main");
     bindButtons();
+    bindSettings();
+
+    // Запускаем видео после показа экрана
+    setTimeout(forcePlayAllVideos, 200);
+    setTimeout(setupVideoObserver, 300);
   }).catch(function(e) {
     showError("Ошибка подключения", e.message || "Попробуй позже.", function() {
       location.reload();
@@ -269,19 +369,6 @@ function startApp() {
 // ══════════════════════════════════════════════════════════
 
 function bindButtons() {
-  // Glass panel expand on tap
-  var panel = document.getElementById("glass-panel");
-  if (panel) {
-    panel.addEventListener("click", function(e) {
-      // Expand only if clicking the panel itself (not buttons inside)
-      if (e.target === panel || e.target.classList.contains("panel-stats-row") ||
-          e.target.classList.contains("stat-pill") || e.target.classList.contains("stat-label") ||
-          e.target.classList.contains("stat-val") || e.target === panel.querySelector(".algo-compact")) {
-        panel.classList.toggle("expanded");
-      }
-    });
-  }
-
   var spinBtn = document.getElementById("spin-btn");
   if (spinBtn) {
     spinBtn.onclick = function() { onSpinClick(); };
@@ -303,7 +390,6 @@ function bindButtons() {
 
 // ══════════════════════════════════════════════════════════
 // ШАГ 1: пользователь нажал "Крутить рулетку"
-// → создаём ставку → показываем инструкцию с кольцами
 // ══════════════════════════════════════════════════════════
 
 function onSpinClick() {
@@ -315,7 +401,6 @@ function onSpinClick() {
     .then(function(res) {
       currentBetId = res.bet_id;
 
-      // Обновляем инструкцию
       var acEl  = document.getElementById("ring-account");
       var alEl  = document.getElementById("ring-account-link");
       var bidEl = document.getElementById("pay-bet-id");
@@ -326,7 +411,6 @@ function onSpinClick() {
       setPayStatus("", "");
       payCheckAttempts = 0;
 
-      // Если ставка уже была в статусе paid — пропускаем экран оплаты
       if (res.bet_status === "paid") {
         showSpinAnimation();
         return;
@@ -334,8 +418,6 @@ function onSpinClick() {
 
       showScreen("screen-pay");
       if (btn) btn.disabled = false;
-
-      // Автопроверка каждые 5 сек
       startAutoPayCheck();
     })
     .catch(function(e) {
@@ -345,7 +427,7 @@ function onSpinClick() {
 }
 
 // ══════════════════════════════════════════════════════════
-// ШАГ 2: проверяем получение колец (polling)
+// ШАГ 2: polling оплаты
 // ══════════════════════════════════════════════════════════
 
 function startAutoPayCheck() {
@@ -380,14 +462,12 @@ function checkPaymentSilent() {
       stopPayCheck();
       haptic("heavy");
       setPayStatus("✅ Кольца получены! Запускаем рулетку...", "ok");
-      // Автоматически запускаем рулетку без нажатия кнопки
       setTimeout(function() { showSpinAnimation(); }, 600);
     } else {
       var found = res.rings_found || 0;
       setPayStatus("Ждём кольца... (" + found + "/2 получено)", "wait");
     }
-  }).catch(function(e) {
-    // Ошибка проверки — не останавливаем polling
+  }).catch(function() {
     setPayStatus("Проверяем...", "wait");
   });
 }
@@ -428,17 +508,13 @@ function onCheckPayment() {
 }
 
 // ══════════════════════════════════════════════════════════
-// ШАГ 3: анимация рулетки + запрос /spin
+// ШАГ 3: анимация + /spin
 // ══════════════════════════════════════════════════════════
 
 function showSpinAnimation() {
   haptic("heavy");
   showScreen("screen-spinning");
-
-  // Анимация 1.5 сек, потом запрашиваем результат
-  setTimeout(function() {
-    doSpin();
-  }, 1500);
+  setTimeout(function() { doSpin(); }, 1500);
 }
 
 function doSpin() {
@@ -455,16 +531,18 @@ function doSpin() {
     currentBetId = null;
     showResult(res);
     loadInventory();
-    // Обновляем статистику
     return api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA));
   }).then(function(stats) {
     if (!stats) return;
     var total2 = (stats.total_cycles || 0) * 10 + (stats.cycle_spin || 0);
     var sEl2 = document.getElementById("top-stats");
     if (sEl2) sEl2.textContent = total2 + " ставок";
+    var ssEl2 = document.getElementById("settings-stats");
+    if (ssEl2) ssEl2.textContent = total2 + " ставок";
+  }).catch(function(e) {
     showError(
       "Ошибка спина",
-      e.message || "Обратись в поддержку.",
+      (e && e.message) || "Обратись в поддержку.",
       function() { showScreen("screen-main"); }
     );
   });
@@ -530,6 +608,9 @@ function showResult(res) {
 // ══════════════════════════════════════════════════════════
 
 window.addEventListener("load", function() {
+  // Сразу пробуем запустить видео
+  forcePlayAllVideos();
+
   showCaptcha(function() {
     startApp();
   });
