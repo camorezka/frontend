@@ -3,7 +3,7 @@
 // ══════════════════════════════════════════════════════════
 // КОНФИГ — замени на свой URL Render сервиса
 // ══════════════════════════════════════════════════════════
-var API_URL = "https://YOUR-APP.onrender.com"; // ← вставь URL бэкенда
+var API_URL = "https://твой-backend.onrender.com";
 
 // ── Telegram ──────────────────────────────────────────────
 var tg       = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
