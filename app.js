@@ -178,48 +178,7 @@ function api(path, data) {
 // Для последующих — скрываем winning_spin (это рандом, пользователь не знает).
 // ══════════════════════════════════════════════════════════
 
-function renderAlgoBlock(cycleSpin, winningSpinKnown, totalCycles) {
-  var stepsEl  = document.getElementById("algo-steps");
-  var noteEl   = document.getElementById("algo-note");
-  if (!stepsEl) return;
 
-  var isFirstCycle = (totalCycles === 0);
-
-  if (isFirstCycle) {
-    // Первый цикл: winning_spin = 3, показываем явно
-    stepsEl.innerHTML = [
-      makeStep(1, "lose", "Проигрыш", "2 💍", cycleSpin),
-      makeStep(2, "lose", "Проигрыш", "2 💍", cycleSpin),
-      makeStep(3, "win",  "🎁 NFT выигрыш!", "300–400⭐", cycleSpin),
-    ].join("");
-    noteEl.innerHTML =
-      'Первый выигрыш гарантированно на <b>3-й ставке</b> · NFT хранится 21 день до выдачи';
-  } else {
-    // Последующие циклы: winning_spin рандомный (3, 4 или 5), не раскрываем
-    var steps = [];
-    for (var i = 1; i <= 5; i++) {
-      if (i <= 2) {
-        steps.push(makeStep(i, "lose", "Проигрыш", "2 💍", cycleSpin));
-      } else {
-        steps.push(makeStep(i, "win", "🎁 Возможный выигрыш", "NFT", cycleSpin));
-        // Показываем до 5 (максимум winning_spin), остальное скрываем
-        // — но не раскрываем точный winning_spin
-        if (i === 5) break;
-      }
-    }
-    stepsEl.innerHTML = steps.join("");
-    noteEl.innerHTML  = 'Выигрышная ставка — рандом (3, 4 или 5) · NFT хранится 21 день';
-  }
-}
-
-function makeStep(num, type, label, tag, activeSpin) {
-  var extraClass = (num === activeSpin + 1) ? " active-spin" : "";
-  return '<div class="algo-step ' + type + extraClass + '">' +
-    '<span class="algo-num">' + num + '</span>' +
-    '<span>' + label + '</span>' +
-    '<span class="algo-tag' + (type === "win" ? " win-tag" : "") + '">' + tag + '</span>' +
-    '</div>';
-}
 
 // ══════════════════════════════════════════════════════════
 // ИНВЕНТАРЬ
@@ -295,22 +254,6 @@ function startApp() {
     var total = (stats.total_cycles || 0) * 10 + (stats.cycle_spin || 0);
     var sEl = document.getElementById("top-stats");
     if (sEl) sEl.textContent = total + " ставок";
-    var cycleEl = document.getElementById("panel-cycle");
-    var betsEl  = document.getElementById("panel-bets");
-    if (cycleEl) cycleEl.textContent = (stats.total_cycles || 0) + 1;
-    if (betsEl)  betsEl.textContent  = total;
-
-    renderAlgoBlock(
-      stats.cycle_spin    || 0,
-      stats.winning_spin  || 3,
-      stats.total_cycles  || 0
-    );
-
-    var hintEl = document.getElementById("next-win-hint");
-    if (hintEl && stats.next_win_in) {
-      hintEl.textContent = "До выигрыша: " + stats.next_win_in + " ставки";
-    }
-
     loadInventory();
     showScreen("screen-main");
     bindButtons();
@@ -516,19 +459,9 @@ function doSpin() {
     return api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA));
   }).then(function(stats) {
     if (!stats) return;
-    renderAlgoBlock(stats.cycle_spin || 0, stats.winning_spin || 3, stats.total_cycles || 0);
-    var hintEl = document.getElementById("next-win-hint");
-    if (hintEl && stats.next_win_in) {
-      hintEl.textContent = "До выигрыша: " + stats.next_win_in + " ставки";
-    }
     var total2 = (stats.total_cycles || 0) * 10 + (stats.cycle_spin || 0);
     var sEl2 = document.getElementById("top-stats");
     if (sEl2) sEl2.textContent = total2 + " ставок";
-    var cycleEl2 = document.getElementById("panel-cycle");
-    var betsEl2  = document.getElementById("panel-bets");
-    if (cycleEl2) cycleEl2.textContent = (stats.total_cycles || 0) + 1;
-    if (betsEl2)  betsEl2.textContent  = total2;
-  }).catch(function(e) {
     showError(
       "Ошибка спина",
       e.message || "Обратись в поддержку.",
