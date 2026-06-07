@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Lucky Spin</title>
+<title>LEONARDO GAME</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -29,60 +29,35 @@
 
   <!-- ЗАГОЛОВОК -->
   <div class="main-title-block">
-    <div class="main-title">Lucky Spin</div>
-    <div class="main-sub">Выиграй NFT за 2 кольца</div>
+    <div class="main-title">LEONARDO GAME</div>
+    <div class="main-sub">Выигрывай крутые подарки вместе с нами</div>
   </div>
 
-  <!-- БЕСКОНЕЧНАЯ ЛЕНТА ГИФОК -->
+  <!-- БЕСКОНЕЧНАЯ ЛЕНТА ВИДЕО (справа налево) -->
   <div class="gifts-track-wrap">
     <div class="gifts-track" id="gifts-track">
-      <!-- row 1 -->
-      <div class="gift-item"><img src="photos/ring.gif" alt="ring"/></div>
-      <div class="gift-item"><img src="photos/bear.gif" alt="bear"/></div>
-      <div class="gift-item"><img src="photos/icecream.gif" alt="icecream"/></div>
-      <div class="gift-item"><img src="photos/lighting.gif" alt="lightning"/></div>
-      <div class="gift-item"><img src="photos/ring2.gif" alt="ring2"/></div>
-      <div class="gift-item"><img src="photos/rocket.gif" alt="rocket"/></div>
-      <div class="gift-item"><img src="photos/socks.gif" alt="socks"/></div>
-      <div class="gift-item"><img src="photos/sushi.gif" alt="sushi"/></div>
+      <video src="photos/ring.mp4"      autoplay loop muted playsinline></video>
+      <video src="photos/bear.mp4"      autoplay loop muted playsinline></video>
+      <video src="photos/icecream.mp4"  autoplay loop muted playsinline></video>
+      <video src="photos/lighting.mp4"  autoplay loop muted playsinline></video>
+      <video src="photos/ring2.mp4"     autoplay loop muted playsinline></video>
+      <video src="photos/rocket.mp4"    autoplay loop muted playsinline></video>
+      <video src="photos/socks.mp4"     autoplay loop muted playsinline></video>
+      <video src="photos/sushi.mp4"     autoplay loop muted playsinline></video>
       <!-- дубли для бесшовного loop -->
-      <div class="gift-item"><img src="photos/ring.gif" alt="ring"/></div>
-      <div class="gift-item"><img src="photos/bear.gif" alt="bear"/></div>
-      <div class="gift-item"><img src="photos/icecream.gif" alt="icecream"/></div>
-      <div class="gift-item"><img src="photos/lighting.gif" alt="lightning"/></div>
-      <div class="gift-item"><img src="photos/ring2.gif" alt="ring2"/></div>
-      <div class="gift-item"><img src="photos/rocket.gif" alt="rocket"/></div>
-      <div class="gift-item"><img src="photos/socks.gif" alt="socks"/></div>
-      <div class="gift-item"><img src="photos/sushi.gif" alt="sushi"/></div>
+      <video src="photos/ring.mp4"      autoplay loop muted playsinline></video>
+      <video src="photos/bear.mp4"      autoplay loop muted playsinline></video>
+      <video src="photos/icecream.mp4"  autoplay loop muted playsinline></video>
+      <video src="photos/lighting.mp4"  autoplay loop muted playsinline></video>
+      <video src="photos/ring2.mp4"     autoplay loop muted playsinline></video>
+      <video src="photos/rocket.mp4"    autoplay loop muted playsinline></video>
+      <video src="photos/socks.mp4"     autoplay loop muted playsinline></video>
+      <video src="photos/sushi.mp4"     autoplay loop muted playsinline></video>
     </div>
   </div>
 
   <!-- СТЕКЛЯННАЯ ПАНЕЛЬ СНИЗУ -->
   <div class="glass-panel" id="glass-panel">
-
-    <!-- ИНФО О СТАВКАХ -->
-    <div class="panel-stats-row">
-      <div class="stat-pill">
-        <span class="stat-label">Цикл</span>
-        <span class="stat-val" id="panel-cycle">1</span>
-      </div>
-      <div class="stat-pill">
-        <span class="stat-label">Ставок</span>
-        <span class="stat-val" id="panel-bets">0</span>
-      </div>
-      <div class="stat-pill win-pill">
-        <span class="stat-label">До выигрыша</span>
-        <span class="stat-val" id="next-win-hint">—</span>
-      </div>
-    </div>
-
-    <!-- АЛГОРИТМ -->
-    <div class="algo-compact" id="algo-steps">
-      <div class="algo-step lose"><span class="algo-num">1</span><span>Проигрыш</span><span class="algo-tag">2 💍</span></div>
-      <div class="algo-step lose"><span class="algo-num">2</span><span>Проигрыш</span><span class="algo-tag">2 💍</span></div>
-      <div class="algo-step win"><span class="algo-num">3</span><span>🎁 NFT!</span><span class="algo-tag win-tag">300–400⭐</span></div>
-    </div>
-    <div class="algo-note" id="algo-note">Первый выигрыш гарантирован на <b>3-й ставке</b></div>
 
     <!-- КНОПКА -->
     <button class="spin-btn" id="spin-btn">💍 Крутить рулетку</button>
