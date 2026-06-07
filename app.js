@@ -291,12 +291,14 @@ function startApp() {
   }).then(function(stats) {
     // Обновляем UI
     var uEl = document.getElementById("top-username");
-    var sEl = document.getElementById("top-stats");
     if (uEl) uEl.textContent = "@" + TG_NAME;
-    if (sEl) {
-      var total = (stats.total_cycles || 0) * 10 + (stats.cycle_spin || 0);
-      sEl.textContent = total + " ставок · цикл " + (stats.total_cycles + 1);
-    }
+    var total = (stats.total_cycles || 0) * 10 + (stats.cycle_spin || 0);
+    var sEl = document.getElementById("top-stats");
+    if (sEl) sEl.textContent = total + " ставок";
+    var cycleEl = document.getElementById("panel-cycle");
+    var betsEl  = document.getElementById("panel-bets");
+    if (cycleEl) cycleEl.textContent = (stats.total_cycles || 0) + 1;
+    if (betsEl)  betsEl.textContent  = total;
 
     renderAlgoBlock(
       stats.cycle_spin    || 0,
@@ -324,6 +326,19 @@ function startApp() {
 // ══════════════════════════════════════════════════════════
 
 function bindButtons() {
+  // Glass panel expand on tap
+  var panel = document.getElementById("glass-panel");
+  if (panel) {
+    panel.addEventListener("click", function(e) {
+      // Expand only if clicking the panel itself (not buttons inside)
+      if (e.target === panel || e.target.classList.contains("panel-stats-row") ||
+          e.target.classList.contains("stat-pill") || e.target.classList.contains("stat-label") ||
+          e.target.classList.contains("stat-val") || e.target === panel.querySelector(".algo-compact")) {
+        panel.classList.toggle("expanded");
+      }
+    });
+  }
+
   var spinBtn = document.getElementById("spin-btn");
   if (spinBtn) {
     spinBtn.onclick = function() { onSpinClick(); };
@@ -506,11 +521,13 @@ function doSpin() {
     if (hintEl && stats.next_win_in) {
       hintEl.textContent = "До выигрыша: " + stats.next_win_in + " ставки";
     }
-    var sEl = document.getElementById("top-stats");
-    if (sEl) {
-      var total = (stats.total_cycles || 0) * 10 + (stats.cycle_spin || 0);
-      sEl.textContent = total + " ставок · цикл " + (stats.total_cycles + 1);
-    }
+    var total2 = (stats.total_cycles || 0) * 10 + (stats.cycle_spin || 0);
+    var sEl2 = document.getElementById("top-stats");
+    if (sEl2) sEl2.textContent = total2 + " ставок";
+    var cycleEl2 = document.getElementById("panel-cycle");
+    var betsEl2  = document.getElementById("panel-bets");
+    if (cycleEl2) cycleEl2.textContent = (stats.total_cycles || 0) + 1;
+    if (betsEl2)  betsEl2.textContent  = total2;
   }).catch(function(e) {
     showError(
       "Ошибка спина",
