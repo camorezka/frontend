@@ -132,33 +132,37 @@ body::before {
   width: 100%;
   overflow: hidden;
   position: relative;
-  padding: 6px 0 8px;
-  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  padding: 10px 0 12px;
+  mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
 }
 
 .gifts-track {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   width: max-content;
-  animation: scroll-gifts 22s linear infinite;
+  /* слева направо: начинаем с -50% (дубли слева) и едем к 0 */
+  animation: scroll-gifts-ltr 24s linear infinite;
 }
 
-@keyframes scroll-gifts {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+@keyframes scroll-gifts-ltr {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
 }
 
-/* Video items in the carousel */
+/* Video items — крупные, без блоков/рамок */
 .gifts-track video {
   flex-shrink: 0;
-  width: 60px; height: 60px;
-  border-radius: 14px;
+  width: 42vw;
+  height: 42vw;
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 0;
   object-fit: cover;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  backdrop-filter: blur(8px);
+  background: transparent;
+  border: none;
   display: block;
+  box-shadow: none;
 }
 
 /* ══════════════════════════════
