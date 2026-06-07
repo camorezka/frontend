@@ -153,10 +153,10 @@ body::before {
 /* Video items — крупные, без блоков/рамок */
 .gifts-track video {
   flex-shrink: 0;
-  width: 42vw;
-  height: 42vw;
-  max-width: 200px;
-  max-height: 200px;
+  width: 102vw;
+  height: 102vw;
+  max-width: 400px;
+  max-height: 400px;
   border-radius: 0;
   object-fit: cover;
   background: transparent;
