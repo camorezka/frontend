@@ -33,42 +33,98 @@
     <div class="main-sub">Выигрывай крутые подарки вместе с нами</div>
   </div>
 
-  <!-- БЕСКОНЕЧНАЯ ЛЕНТА ВИДЕО (справа налево) -->
+  <!-- БЕСКОНЕЧНАЯ ЛЕНТА ВИДЕО (меньшего размера) -->
   <div class="gifts-track-wrap">
     <div class="gifts-track" id="gifts-track">
-      <video src="photos/ring.mp4"      autoplay loop muted playsinline></video>
-      <video src="photos/bear.mp4"      autoplay loop muted playsinline></video>
-      <video src="photos/icecream.mp4"  autoplay loop muted playsinline></video>
-      <video src="photos/lighting.mp4"  autoplay loop muted playsinline></video>
-      <video src="photos/ring2.mp4"     autoplay loop muted playsinline></video>
-      <video src="photos/rocket.mp4"    autoplay loop muted playsinline></video>
-      <video src="photos/socks.mp4"     autoplay loop muted playsinline></video>
-      <video src="photos/sushi.mp4"     autoplay loop muted playsinline></video>
+      <video src="photos/ring.mp4"      autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/bear.mp4"      autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/icecream.mp4"  autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/lighting.mp4"  autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/ring2.mp4"     autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/rocket.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/socks.mp4"     autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/sushi.mp4"     autoplay loop muted playsinline webkit-playsinline></video>
       <!-- дубли для бесшовного loop -->
-      <video src="photos/ring.mp4"      autoplay loop muted playsinline></video>
-      <video src="photos/bear.mp4"      autoplay loop muted playsinline></video>
-      <video src="photos/icecream.mp4"  autoplay loop muted playsinline></video>
-      <video src="photos/lighting.mp4"  autoplay loop muted playsinline></video>
-      <video src="photos/ring2.mp4"     autoplay loop muted playsinline></video>
-      <video src="photos/rocket.mp4"    autoplay loop muted playsinline></video>
-      <video src="photos/socks.mp4"     autoplay loop muted playsinline></video>
-      <video src="photos/sushi.mp4"     autoplay loop muted playsinline></video>
+      <video src="photos/ring.mp4"      autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/bear.mp4"      autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/icecream.mp4"  autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/lighting.mp4"  autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/ring2.mp4"     autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/rocket.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/socks.mp4"     autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/sushi.mp4"     autoplay loop muted playsinline webkit-playsinline></video>
     </div>
   </div>
 
-  <!-- СТЕКЛЯННАЯ ПАНЕЛЬ СНИЗУ -->
+  <!-- КНОПКА КРУТИТЬ (отдельно, над панелью) -->
+  <div class="spin-btn-wrap">
+    <button class="spin-btn" id="spin-btn">💍 Крутить рулетку</button>
+  </div>
+
+  <!-- СТЕКЛЯННАЯ ПАНЕЛЬ — контент для вкладок -->
   <div class="glass-panel" id="glass-panel">
 
-    <!-- КНОПКА -->
-    <button class="spin-btn" id="spin-btn">💍 Крутить рулетку</button>
+    <!-- ГЛАВНОЕ -->
+    <div class="tab-pane active" id="tab-home">
+      <div class="inv-block" id="inv-block" style="display:none">
+        <div class="inv-title">🎁 Мой инвентарь</div>
+        <div class="inv-list" id="inv-list"></div>
+      </div>
+    </div>
 
-    <!-- ИНВЕНТАРЬ -->
-    <div class="inv-block" id="inv-block" style="display:none">
-      <div class="inv-title">🎁 Мой инвентарь</div>
-      <div class="inv-list" id="inv-list"></div>
+    <!-- КРУТИТЬ (статистика / алгоритм) -->
+    <div class="tab-pane" id="tab-spin">
+      <div class="algo-compact" id="algo-block"></div>
+    </div>
+
+    <!-- НАСТРОЙКИ -->
+    <div class="tab-pane" id="tab-settings">
+      <div class="settings-section">
+        <div class="settings-title">Уведомления</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Push-уведомления</div>
+            <div class="settings-sub">Получать уведомления о результатах</div>
+          </div>
+          <div class="toggle" id="toggle-notif"></div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">Аккаунт</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label" id="settings-username">@user</div>
+            <div class="settings-sub" id="settings-stats">0 ставок</div>
+          </div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">О приложении</div>
+        <div class="settings-row">
+          <div class="settings-label">Версия</div>
+          <div class="settings-sub">1.0.0</div>
+        </div>
+      </div>
     </div>
 
   </div>
+
+  <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" id="nav-home" onclick="switchTab('home')">
+      <span class="nav-icon">🏠</span>
+      <span>Главное</span>
+    </button>
+    <button class="nav-tab" id="nav-spin" onclick="switchTab('spin')">
+      <span class="nav-icon">🎰</span>
+      <span>Крутить</span>
+    </button>
+    <button class="nav-tab" id="nav-settings" onclick="switchTab('settings')">
+      <span class="nav-icon">⚙️</span>
+      <span>Настройки</span>
+    </button>
+  </nav>
+
 </div>
 
 <!-- ИНСТРУКЦИЯ: отправить кольца -->
