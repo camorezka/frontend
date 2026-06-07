@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Lucky Spin</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ЗАГРУЗКА -->
+<div class="screen active" id="screen-loading">
+  <div class="load-orb"></div>
+  <div class="load-title">Lucky Spin</div>
+  <div class="load-sub" id="load-status">Подключение...</div>
+</div>
+
+<!-- ГЛАВНЫЙ ЭКРАН -->
+<div class="screen" id="screen-main">
+  <div class="top-bar">
+    <div class="top-user" id="top-username">@user</div>
+    <div class="top-stats" id="top-stats">0 ставок</div>
+  </div>
+
+  <div class="hero">
+    <div class="slot-machine">
+      <div class="slot-symbol" id="slot-sym">💍</div>
+      <div class="slot-shine"></div>
+    </div>
+    <div class="hero-title">Lucky Spin</div>
+    <div class="hero-sub">2 кольца за ставку</div>
+  </div>
+
+  <!-- АЛГОРИТМ (первый цикл — 3-я ставка, далее рандом) -->
+  <div class="algo-block">
+    <div class="algo-title">📋 Алгоритм — всё прозрачно</div>
+    <div class="algo-steps" id="algo-steps">
+      <div class="algo-step lose"><span class="algo-num">1</span><span>Проигрыш</span><span class="algo-tag">2 💍</span></div>
+      <div class="algo-step lose"><span class="algo-num">2</span><span>Проигрыш</span><span class="algo-tag">2 💍</span></div>
+      <div class="algo-step win"><span class="algo-num">3</span><span>🎁 NFT выигрыш!</span><span class="algo-tag win-tag">300–400⭐</span></div>
+    </div>
+    <div class="algo-note" id="algo-note">
+      Первый выигрыш гарантированно на <b>3-й ставке</b> · NFT хранится 21 день до выдачи
+    </div>
+  </div>
+
+  <div class="spin-area">
+    <div class="next-win-hint" id="next-win-hint"></div>
+    <button class="spin-btn" id="spin-btn">💍 Крутить рулетку</button>
+  </div>
+
+  <div class="inv-block" id="inv-block" style="display:none">
+    <div class="inv-title">🎁 Мой инвентарь</div>
+    <div class="inv-list" id="inv-list"></div>
+  </div>
+</div>
+
+<!-- ИНСТРУКЦИЯ: отправить кольца -->
+<div class="screen" id="screen-pay">
+  <div class="pay-wrap">
+    <div class="pay-icon">💍</div>
+    <div class="pay-title">Отправьте 2 кольца</div>
+    <div class="pay-instruction" id="pay-instruction">
+      Отправьте 2 кольца на аккаунт <b id="ring-account">@kinub</b>
+    </div>
+    <div class="pay-steps">
+      <div class="pay-step">1. Откройте профиль <b id="ring-account-link">@kinub</b> в Telegram</div>
+      <div class="pay-step">2. Нажмите «Подарить» и выберите подарок «Кольцо»</div>
+      <div class="pay-step">3. Отправьте 2 кольца (по одному или сразу 2)</div>
+      <div class="pay-step">4. Нажмите кнопку ниже для проверки</div>
+    </div>
+    <div class="pay-bet-id">ID ставки: <b id="pay-bet-id">—</b></div>
+    <div class="pay-status" id="pay-status"></div>
+    <button class="pay-confirm-btn" id="pay-confirm-btn">✅ Я отправил — проверить</button>
+    <button class="pay-back-btn" id="pay-back-btn">← Назад</button>
+  </div>
+</div>
+
+<!-- ПРОКРУТКА -->
+<div class="screen" id="screen-spinning">
+  <div class="spinning-wrap">
+    <div class="spinning-reel">
+      <div class="spin-sym" id="spin-sym-1">💍</div>
+    </div>
+    <div class="spinning-label">Крутим...</div>
+  </div>
+</div>
+
+<!-- РЕЗУЛЬТАТ -->
+<div class="screen" id="screen-result">
+  <div class="result-wrap" id="result-wrap"></div>
+</div>
+
+<!-- ОШИБКА -->
+<div class="screen" id="screen-error">
+  <div class="error-wrap">
+    <div class="error-icon">⚠️</div>
+    <div class="error-title" id="error-title">Ошибка</div>
+    <div class="error-sub" id="error-sub">Что-то пошло не так</div>
+    <button class="error-btn" id="error-btn">Попробовать снова</button>
+  </div>
+</div>
+
+<!-- ТОСТ -->
+<div class="toast" id="toast"></div>
+
+<!-- КОНФЕТТИ контейнер -->
+<div id="confetti-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

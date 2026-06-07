@@ -1,0 +1,227 @@
+/* Lucky Spin v5 */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0d0d1a;
+  --card:     #16192b;
+  --border:   #2a2d4a;
+  --gold:     #F5C518;
+  --gold2:    #FFD84D;
+  --purple:   #B388FF;
+  --green:    #4CAF50;
+  --red:      #FF5252;
+  --text:     #e8eaf6;
+  --sub:      #9fa8da;
+  --radius:   16px;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+/* SCREENS */
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 16px 16px 32px;
+  overflow-y: auto;
+}
+.screen.active { display: flex; }
+
+/* LOADING */
+.load-orb {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, var(--gold2), var(--gold), #c8860a);
+  box-shadow: 0 0 40px var(--gold);
+  animation: pulse 1.4s ease-in-out infinite;
+  margin-top: 30vh;
+}
+@keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.12);opacity:.8} }
+.load-title { font-family:'Unbounded',sans-serif; font-size:22px; font-weight:900; color:var(--gold); margin-top:18px; }
+.load-sub { color:var(--sub); font-size:13px; margin-top:8px; }
+
+/* TOP BAR */
+.top-bar { display:flex; justify-content:space-between; width:100%; padding:4px 4px 12px; }
+.top-user { color:var(--gold); font-weight:600; font-size:14px; }
+.top-stats { color:var(--sub); font-size:13px; }
+
+/* HERO */
+.hero { display:flex; flex-direction:column; align-items:center; margin:8px 0 16px; }
+.slot-machine {
+  position:relative; width:100px; height:100px;
+  border-radius:24px;
+  background: linear-gradient(135deg, #1e2140, #2a2d4a);
+  border: 2px solid var(--gold);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 0 28px rgba(245,197,24,.25);
+}
+.slot-symbol { font-size:48px; }
+.slot-shine {
+  position:absolute; top:6px; left:10px;
+  width:30px; height:12px; border-radius:50%;
+  background:rgba(255,255,255,.15);
+  transform:rotate(-20deg);
+}
+.hero-title { font-family:'Unbounded',sans-serif; font-size:20px; font-weight:900; color:var(--gold); margin-top:12px; }
+.hero-sub { color:var(--sub); font-size:13px; margin-top:4px; }
+
+/* ALGO BLOCK */
+.algo-block {
+  width:100%; background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:14px; margin-bottom:16px;
+}
+.algo-title { font-size:13px; font-weight:600; color:var(--sub); margin-bottom:10px; }
+.algo-steps { display:flex; flex-direction:column; gap:6px; }
+.algo-step {
+  display:flex; align-items:center; gap:10px;
+  background:#1a1d30; border-radius:10px; padding:8px 12px;
+  font-size:13px;
+}
+.algo-step.lose { border-left:3px solid var(--red); }
+.algo-step.win  { border-left:3px solid var(--green); }
+.algo-step.active-spin { border-left-color:var(--gold); background:#1e2040; }
+.algo-num { font-weight:700; min-width:20px; }
+.algo-step span:nth-child(2) { flex:1; }
+.algo-tag { font-size:11px; color:var(--sub); white-space:nowrap; }
+.algo-tag.win-tag { color:var(--green); }
+.algo-note { font-size:11px; color:var(--sub); margin-top:8px; line-height:1.5; }
+
+/* SPIN AREA */
+.spin-area { width:100%; display:flex; flex-direction:column; align-items:center; gap:10px; }
+.next-win-hint { color:var(--gold); font-size:13px; font-weight:600; min-height:18px; }
+.spin-btn {
+  width:100%; padding:16px;
+  background: linear-gradient(135deg, var(--gold), #e6a800);
+  border:none; border-radius:14px;
+  font-family:'Unbounded',sans-serif; font-size:15px; font-weight:700;
+  color:#000; cursor:pointer;
+  box-shadow: 0 4px 20px rgba(245,197,24,.35);
+  transition: transform .15s, opacity .15s;
+}
+.spin-btn:active { transform:scale(.97); opacity:.88; }
+.spin-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+/* INVENTORY */
+.inv-block { width:100%; margin-top:20px; }
+.inv-title { font-size:14px; font-weight:600; color:var(--gold); margin-bottom:10px; }
+.inv-list { display:flex; flex-direction:column; gap:8px; }
+.inv-item {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:12px;
+}
+.inv-item-name { font-weight:600; font-size:14px; margin-bottom:4px; }
+.inv-item-stars { color:var(--gold); font-size:12px; }
+.inv-item-status { font-size:11px; margin-top:4px; }
+.inv-item-status.waiting  { color:var(--sub); }
+.inv-item-status.delivered{ color:var(--green); }
+.inv-item-status.transfer_error { color:var(--red); }
+
+/* PAY SCREEN */
+.pay-wrap {
+  width:100%; display:flex; flex-direction:column; align-items:center;
+  gap:14px; padding:20px 0;
+}
+.pay-icon { font-size:52px; }
+.pay-title { font-family:'Unbounded',sans-serif; font-size:18px; font-weight:700; color:var(--gold); }
+.pay-instruction {
+  background:var(--card); border:1px solid var(--gold);
+  border-radius:12px; padding:14px 16px;
+  font-size:15px; text-align:center; line-height:1.6; width:100%;
+  color:var(--text);
+}
+.pay-steps {
+  width:100%; background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:14px 16px; display:flex; flex-direction:column; gap:8px;
+}
+.pay-step { font-size:13px; color:var(--sub); line-height:1.5; }
+.pay-step b { color:var(--text); }
+.pay-bet-id { font-size:11px; color:var(--sub); }
+.pay-status { min-height:18px; font-size:13px; font-weight:600; }
+.pay-status.ok  { color:var(--green); }
+.pay-status.err { color:var(--red); }
+.pay-status.wait{ color:var(--gold); }
+.pay-confirm-btn {
+  width:100%; padding:14px;
+  background:linear-gradient(135deg, var(--gold), #e6a800);
+  border:none; border-radius:12px;
+  font-weight:700; font-size:14px; color:#000; cursor:pointer;
+}
+.pay-confirm-btn:disabled { opacity:.5; cursor:not-allowed; }
+.pay-back-btn {
+  background:none; border:1px solid var(--border);
+  border-radius:12px; padding:10px 24px;
+  color:var(--sub); font-size:13px; cursor:pointer;
+}
+
+/* SPINNING SCREEN */
+.spinning-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; gap:20px; }
+.spinning-reel {
+  width:120px; height:120px; border-radius:24px;
+  background:var(--card); border:2px solid var(--gold);
+  display:flex; align-items:center; justify-content:center;
+  animation: spin-reel .4s linear infinite;
+}
+@keyframes spin-reel { 0%{transform:rotateY(0)} 100%{transform:rotateY(360deg)} }
+.spin-sym { font-size:52px; }
+.spinning-label { color:var(--gold); font-family:'Unbounded',sans-serif; font-size:16px; font-weight:700; }
+
+/* RESULT SCREEN */
+.result-wrap {
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; min-height:70vh; gap:16px; text-align:center; padding:20px;
+}
+.result-icon { font-size:64px; }
+.result-title { font-family:'Unbounded',sans-serif; font-size:22px; font-weight:900; }
+.result-title.win  { color:var(--gold); }
+.result-title.lose { color:var(--sub); }
+.result-sub { font-size:14px; color:var(--sub); line-height:1.6; }
+.result-nft {
+  background:var(--card); border:1px solid var(--gold);
+  border-radius:14px; padding:16px 20px; width:100%; margin:4px 0;
+}
+.result-nft-name { font-weight:700; font-size:16px; color:var(--gold); margin-bottom:4px; }
+.result-nft-info { font-size:13px; color:var(--sub); }
+.result-btn {
+  width:100%; padding:14px;
+  background:linear-gradient(135deg, var(--gold), #e6a800);
+  border:none; border-radius:12px;
+  font-weight:700; font-size:14px; color:#000; cursor:pointer;
+  margin-top:8px;
+}
+
+/* ERROR SCREEN */
+.error-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; gap:14px; text-align:center; }
+.error-icon { font-size:52px; }
+.error-title { font-family:'Unbounded',sans-serif; font-size:18px; font-weight:700; color:var(--red); }
+.error-sub { font-size:13px; color:var(--sub); }
+.error-btn {
+  padding:12px 28px; background:var(--card); border:1px solid var(--border);
+  border-radius:12px; color:var(--text); font-size:14px; cursor:pointer;
+}
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(60px);
+  background:#2a2d4a; border:1px solid var(--border); border-radius:10px;
+  padding:10px 18px; font-size:13px; color:var(--text); white-space:nowrap;
+  transition: transform .3s, opacity .3s; opacity:0; z-index:999;
+}
+.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+/* CONFETTI */
+.confetti-p {
+  position:fixed; top:-20px; pointer-events:none; z-index:1000;
+  border-radius:3px; animation: conf-fall linear forwards;
+}
+@keyframes conf-fall {
+  0%   { transform:translateY(0) translateX(0) rotate(0deg); opacity:1; }
+  100% { transform:translateY(110vh) translateX(var(--cx,40px)) rotate(var(--cr,360deg)); opacity:0; }
+}
