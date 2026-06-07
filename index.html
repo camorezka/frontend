@@ -20,41 +20,79 @@
 
 <!-- ГЛАВНЫЙ ЭКРАН -->
 <div class="screen" id="screen-main">
+
+  <!-- TOP BAR -->
   <div class="top-bar">
     <div class="top-user" id="top-username">@user</div>
     <div class="top-stats" id="top-stats">0 ставок</div>
   </div>
 
-  <div class="hero">
-    <div class="slot-machine">
-      <div class="slot-symbol" id="slot-sym">💍</div>
-      <div class="slot-shine"></div>
-    </div>
-    <div class="hero-title">Lucky Spin</div>
-    <div class="hero-sub">2 кольца за ставку</div>
+  <!-- ЗАГОЛОВОК -->
+  <div class="main-title-block">
+    <div class="main-title">Lucky Spin</div>
+    <div class="main-sub">Выиграй NFT за 2 кольца</div>
   </div>
 
-  <!-- АЛГОРИТМ (первый цикл — 3-я ставка, далее рандом) -->
-  <div class="algo-block">
-    <div class="algo-title">📋 Алгоритм — всё прозрачно</div>
-    <div class="algo-steps" id="algo-steps">
+  <!-- БЕСКОНЕЧНАЯ ЛЕНТА ГИФОК -->
+  <div class="gifts-track-wrap">
+    <div class="gifts-track" id="gifts-track">
+      <!-- row 1 -->
+      <div class="gift-item"><img src="photos/ring.gif" alt="ring"/></div>
+      <div class="gift-item"><img src="photos/bear.gif" alt="bear"/></div>
+      <div class="gift-item"><img src="photos/icecream.gif" alt="icecream"/></div>
+      <div class="gift-item"><img src="photos/lighting.gif" alt="lightning"/></div>
+      <div class="gift-item"><img src="photos/ring2.gif" alt="ring2"/></div>
+      <div class="gift-item"><img src="photos/rocket.gif" alt="rocket"/></div>
+      <div class="gift-item"><img src="photos/socks.gif" alt="socks"/></div>
+      <div class="gift-item"><img src="photos/sushi.gif" alt="sushi"/></div>
+      <!-- дубли для бесшовного loop -->
+      <div class="gift-item"><img src="photos/ring.gif" alt="ring"/></div>
+      <div class="gift-item"><img src="photos/bear.gif" alt="bear"/></div>
+      <div class="gift-item"><img src="photos/icecream.gif" alt="icecream"/></div>
+      <div class="gift-item"><img src="photos/lighting.gif" alt="lightning"/></div>
+      <div class="gift-item"><img src="photos/ring2.gif" alt="ring2"/></div>
+      <div class="gift-item"><img src="photos/rocket.gif" alt="rocket"/></div>
+      <div class="gift-item"><img src="photos/socks.gif" alt="socks"/></div>
+      <div class="gift-item"><img src="photos/sushi.gif" alt="sushi"/></div>
+    </div>
+  </div>
+
+  <!-- СТЕКЛЯННАЯ ПАНЕЛЬ СНИЗУ -->
+  <div class="glass-panel" id="glass-panel">
+
+    <!-- ИНФО О СТАВКАХ -->
+    <div class="panel-stats-row">
+      <div class="stat-pill">
+        <span class="stat-label">Цикл</span>
+        <span class="stat-val" id="panel-cycle">1</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-label">Ставок</span>
+        <span class="stat-val" id="panel-bets">0</span>
+      </div>
+      <div class="stat-pill win-pill">
+        <span class="stat-label">До выигрыша</span>
+        <span class="stat-val" id="next-win-hint">—</span>
+      </div>
+    </div>
+
+    <!-- АЛГОРИТМ -->
+    <div class="algo-compact" id="algo-steps">
       <div class="algo-step lose"><span class="algo-num">1</span><span>Проигрыш</span><span class="algo-tag">2 💍</span></div>
       <div class="algo-step lose"><span class="algo-num">2</span><span>Проигрыш</span><span class="algo-tag">2 💍</span></div>
-      <div class="algo-step win"><span class="algo-num">3</span><span>🎁 NFT выигрыш!</span><span class="algo-tag win-tag">300–400⭐</span></div>
+      <div class="algo-step win"><span class="algo-num">3</span><span>🎁 NFT!</span><span class="algo-tag win-tag">300–400⭐</span></div>
     </div>
-    <div class="algo-note" id="algo-note">
-      Первый выигрыш гарантированно на <b>3-й ставке</b> · NFT хранится 21 день до выдачи
-    </div>
-  </div>
+    <div class="algo-note" id="algo-note">Первый выигрыш гарантирован на <b>3-й ставке</b></div>
 
-  <div class="spin-area">
-    <div class="next-win-hint" id="next-win-hint"></div>
+    <!-- КНОПКА -->
     <button class="spin-btn" id="spin-btn">💍 Крутить рулетку</button>
-  </div>
 
-  <div class="inv-block" id="inv-block" style="display:none">
-    <div class="inv-title">🎁 Мой инвентарь</div>
-    <div class="inv-list" id="inv-list"></div>
+    <!-- ИНВЕНТАРЬ -->
+    <div class="inv-block" id="inv-block" style="display:none">
+      <div class="inv-title">🎁 Мой инвентарь</div>
+      <div class="inv-list" id="inv-list"></div>
+    </div>
+
   </div>
 </div>
 
@@ -63,14 +101,14 @@
   <div class="pay-wrap">
     <div class="pay-icon">💍</div>
     <div class="pay-title">Отправьте 2 кольца</div>
-    <div class="pay-instruction" id="pay-instruction">
+    <div class="pay-instruction">
       Отправьте 2 кольца на аккаунт <b id="ring-account">@kinub</b>
     </div>
     <div class="pay-steps">
       <div class="pay-step">1. Откройте профиль <b id="ring-account-link">@kinub</b> в Telegram</div>
-      <div class="pay-step">2. Нажмите «Подарить» и выберите подарок «Кольцо»</div>
+      <div class="pay-step">2. Нажмите «Подарить» → выберите «Кольцо»</div>
       <div class="pay-step">3. Отправьте 2 кольца (по одному или сразу 2)</div>
-      <div class="pay-step">4. Нажмите кнопку ниже для проверки</div>
+      <div class="pay-step">4. Ждите — рулетка запустится автоматически ✨</div>
     </div>
     <div class="pay-bet-id">ID ставки: <b id="pay-bet-id">—</b></div>
     <div class="pay-status" id="pay-status"></div>
@@ -104,13 +142,6 @@
   </div>
 </div>
 
-<!-- ТОСТ -->
-<div class="toast" id="toast"></div>
-
-<!-- КОНФЕТТИ контейнер -->
-<div id="confetti-container"></div>
-
-
 <!-- КАПЧА -->
 <div class="screen" id="screen-captcha">
   <div class="captcha-wrap">
@@ -122,6 +153,10 @@
     <div class="captcha-error" id="captcha-error"></div>
   </div>
 </div>
+
+<!-- ТОСТ -->
+<div class="toast" id="toast"></div>
+<div id="confetti-container"></div>
 
 <script src="app.js"></script>
 </body>
