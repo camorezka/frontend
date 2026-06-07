@@ -56,6 +56,62 @@ function haptic(type) {
     try { tg.HapticFeedback.impactOccurred(type || "medium"); } catch(e) {}
   }
 }
+// ══════════════════════════════════════════════════════════
+// КАПЧА
+// ══════════════════════════════════════════════════════════
+
+var captchaPassed = false;
+
+function showCaptcha(onPass) {
+  var a = Math.floor(Math.random() * 9) + 1;
+  var b = Math.floor(Math.random() * 9) + 1;
+  var correct = a + b;
+
+  // Генерируем 3 неправильных варианта
+  var wrong = [];
+  while (wrong.length < 3) {
+    var w = correct + (Math.floor(Math.random() * 7) - 3);
+    if (w !== correct && w > 0 && wrong.indexOf(w) === -1) wrong.push(w);
+  }
+
+  var options = [correct].concat(wrong).sort(function() { return Math.random() - 0.5; });
+
+  var qEl = document.getElementById("captcha-question");
+  var oEl = document.getElementById("captcha-options");
+  var eEl = document.getElementById("captcha-error");
+  if (qEl) qEl.textContent = a + " + " + b + " = ?";
+  if (eEl) eEl.textContent = "";
+  if (oEl) {
+    oEl.innerHTML = options.map(function(v) {
+      return '<button class="captcha-btn" data-val="' + v + '">' + v + '</button>';
+    }).join("");
+
+    oEl.querySelectorAll(".captcha-btn").forEach(function(btn) {
+      btn.onclick = function() {
+        var val = parseInt(btn.getAttribute("data-val"));
+        if (val === correct) {
+          btn.classList.add("correct");
+          haptic("heavy");
+          captchaPassed = true;
+          setTimeout(function() { onPass(); }, 400);
+        } else {
+          btn.classList.add("wrong");
+          haptic("medium");
+          if (eEl) eEl.textContent = "Неверно! Попробуй ещё раз.";
+          setTimeout(function() {
+            btn.classList.remove("wrong");
+            if (eEl) eEl.textContent = "";
+          }, 800);
+          // Генерируем новую капчу через секунду
+          setTimeout(function() { showCaptcha(onPass); }, 900);
+        }
+      };
+    });
+  }
+  showScreen("screen-captcha");
+}
+
+
 
 function setPayStatus(msg, cls) {
   var el = document.getElementById("pay-status");
@@ -364,13 +420,13 @@ function checkPaymentSilent() {
   }).then(function(res) {
     if (res.confirmed) {
       stopPayCheck();
-      setPayStatus("✅ Кольца получены!", "ok");
-      setTimeout(function() { showSpinAnimation(); }, 800);
+      haptic("heavy");
+      setPayStatus("✅ Кольца получены! Запускаем рулетку...", "ok");
+      // Автоматически запускаем рулетку без нажатия кнопки
+      setTimeout(function() { showSpinAnimation(); }, 600);
     } else {
-      setPayStatus(
-        "Ждём кольца... (" + res.rings_found + "/2 получено)",
-        "wait"
-      );
+      var found = res.rings_found || 0;
+      setPayStatus("Ждём кольца... (" + found + "/2 получено)", "wait");
     }
   }).catch(function(e) {
     // Ошибка проверки — не останавливаем polling
@@ -524,5 +580,7 @@ function showResult(res) {
 // ══════════════════════════════════════════════════════════
 
 window.addEventListener("load", function() {
-  startApp();
+  showCaptcha(function() {
+    startApp();
+  });
 });
