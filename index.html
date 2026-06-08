@@ -3,88 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>LEONARDO GAME — Главное</title>
+<title>LEONARDO GAME</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
-<link rel="prefetch" href="spin.html"/>
-<link rel="prefetch" href="profile.html"/>
-<script>
-// Инициализация Telegram
-var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-if (tg) { tg.ready(); tg.expand(); }
-</script>
-<style>
-  .home-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px 24px;
-    gap: 16px;
-  }
-  .home-logo {
-    font-family: 'Unbounded', sans-serif;
-    font-size: clamp(22px, 6vw, 28px);
-    font-weight: 900;
-    color: #fff;
-    letter-spacing: 0.5px;
-    text-align: center;
-  }
-  .home-logo-sub {
-    font-size: 13px;
-    color: var(--sub);
-    text-align: center;
-    margin-top: 8px;
-  }
-  .home-soon {
-    margin-top: 32px;
-    padding: 18px 28px;
-    background:
-      linear-gradient(
-        135deg,
-        rgba(255,255,255,0.12) 0%,
-        rgba(255,255,255,0.04) 50%,
-        rgba(255,255,255,0.08) 100%
-      );
-    border: 1px solid rgba(255,255,255,0.20);
-    border-top-color: rgba(255,255,255,0.35);
-    border-radius: 18px;
-    backdrop-filter: blur(30px) saturate(180%);
-    -webkit-backdrop-filter: blur(30px) saturate(180%);
-    box-shadow:
-      0 8px 32px rgba(0,0,0,0.4),
-      inset 0 1px 0 rgba(255,255,255,0.22);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .home-soon::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 40%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
-    pointer-events: none;
-    border-radius: 18px 18px 0 0;
-  }
-  .home-soon-label {
-    font-family: 'Unbounded', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--sub);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 6px;
-  }
-  .home-soon-text {
-    font-size: 14px;
-    color: rgba(255,255,255,0.7);
-    line-height: 1.6;
-  }
-</style>
 </head>
 <body>
 
@@ -95,38 +18,58 @@ if (tg) { tg.ready(); tg.expand(); }
   <div class="load-sub" id="load-status">Подключение...</div>
 </div>
 
-<!-- ОШИБКА -->
-<div class="screen" id="screen-error">
-  <div class="error-wrap">
-    <div class="error-icon">⚠️</div>
-    <div class="error-title" id="error-title">Ошибка</div>
-    <div class="error-sub" id="error-sub">Что-то пошло не так</div>
-    <button class="error-btn" id="error-btn">Попробовать снова</button>
+<!-- ГЛАВНЫЙ ЭКРАН (КРУТИТЬ) -->
+<div class="screen" id="screen-main">
+
+  <!-- ЗАГОЛОВОК — сдвинут ниже -->
+  <div class="main-title-block">
+    <div class="main-title">LEONARDO GAME</div>
+    <div class="main-sub">Выигрывай крутые подарки вместе с нами</div>
   </div>
-</div>
 
-<!-- ГЛАВНАЯ СТРАНИЦА -->
-<div class="screen" id="screen-home" style="justify-content:space-between;">
-
-  <!-- КОНТЕНТ -->
-  <div class="home-content">
-    <div>
-      <div class="home-logo">LEONARDO GAME</div>
-      <div class="home-logo-sub">Выигрывай крутые подарки вместе с нами</div>
+  <!-- ЛЕНТА ВИДЕО — занимает весь доступный центр -->
+  <div class="gifts-track-wrap">
+    <div class="gifts-track" id="gifts-track">
+      <video src="photos/ring.mp4"     autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/bear.mp4"     autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/icecream.mp4" autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/lighting.mp4" autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/ring2.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/rocket.mp4"   autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/socks.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/sushi.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <!-- дубли для бесшовного loop -->
+      <video src="photos/ring.mp4"     autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/bear.mp4"     autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/icecream.mp4" autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/lighting.mp4" autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/ring2.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/rocket.mp4"   autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/socks.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/sushi.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
     </div>
-    <div class="home-soon">
-      <div class="home-soon-label">Скоро</div>
-      <div class="home-soon-text">Здесь появятся новости,<br>акции и специальные события</div>
+  </div>
+
+  <!-- КНОПКА + ПОДПИСЬ -->
+  <div class="spin-btn-wrap">
+    <button class="spin-btn" id="spin-btn">Крутить рулетку</button>
+    <div class="spin-hint">Прокрути рулетку чтобы сорвать куш!</div>
+  </div>
+
+  <!-- СТЕКЛЯННАЯ ПАНЕЛЬ — algo block -->
+  <div class="glass-panel" id="glass-panel" style="display:none">
+    <div class="tab-pane active" id="tab-spin">
+      <div class="algo-compact" id="algo-block"></div>
     </div>
   </div>
 
   <!-- НИЖНЯЯ НАВИГАЦИЯ — СТЕКЛЯННАЯ -->
   <nav class="bottom-nav">
-    <a href="index.html" class="nav-tab active" id="nav-home">
+    <a href="home.html" class="nav-tab" id="nav-home">
       <span class="nav-icon">🏠</span>
       <span>Главное</span>
     </a>
-    <a href="spin.html" class="nav-tab" id="nav-spin">
+    <a href="index.html" class="nav-tab active" id="nav-spin">
       <span class="nav-icon">🎰</span>
       <span>Крутить</span>
     </a>
@@ -136,6 +79,52 @@ if (tg) { tg.ready(); tg.expand(); }
     </a>
   </nav>
 
+</div>
+
+<!-- ИНСТРУКЦИЯ: отправить кольца -->
+<div class="screen" id="screen-pay">
+  <div class="pay-wrap">
+    <div class="pay-icon">💍</div>
+    <div class="pay-title">Отправьте 2 кольца</div>
+    <div class="pay-instruction">
+      Отправьте 2 кольца на аккаунт <b id="ring-account">@kinub</b>
+    </div>
+    <div class="pay-steps">
+      <div class="pay-step">1. Откройте профиль <b id="ring-account-link">@kinub</b> в Telegram</div>
+      <div class="pay-step">2. Нажмите «Подарить» → выберите «Кольцо»</div>
+      <div class="pay-step">3. Отправьте 2 кольца (по одному или сразу 2)</div>
+      <div class="pay-step">4. Ждите — рулетка запустится автоматически ✨</div>
+    </div>
+    <div class="pay-bet-id">ID ставки: <b id="pay-bet-id">—</b></div>
+    <div class="pay-status" id="pay-status"></div>
+    <button class="pay-confirm-btn" id="pay-confirm-btn">✅ Я отправил — проверить</button>
+    <button class="pay-back-btn" id="pay-back-btn">← Назад</button>
+  </div>
+</div>
+
+<!-- ПРОКРУТКА -->
+<div class="screen" id="screen-spinning">
+  <div class="spinning-wrap">
+    <div class="spinning-reel">
+      <div class="spin-sym" id="spin-sym-1">💍</div>
+    </div>
+    <div class="spinning-label">Крутим...</div>
+  </div>
+</div>
+
+<!-- РЕЗУЛЬТАТ -->
+<div class="screen" id="screen-result">
+  <div class="result-wrap" id="result-wrap"></div>
+</div>
+
+<!-- ОШИБКА -->
+<div class="screen" id="screen-error">
+  <div class="error-wrap">
+    <div class="error-icon">⚠️</div>
+    <div class="error-title" id="error-title">Ошибка</div>
+    <div class="error-sub" id="error-sub">Что-то пошло не так</div>
+    <button class="error-btn" id="error-btn">Попробовать снова</button>
+  </div>
 </div>
 
 <!-- КАПЧА — модальная стеклянная панель -->
@@ -150,109 +139,10 @@ if (tg) { tg.ready(); tg.expand(); }
   </div>
 </div>
 
+<!-- ТОСТ -->
 <div class="toast" id="toast"></div>
+<div id="confetti-container"></div>
 
-<script>
-// ── Капча ──────────────────────────────────────────────────
-function haptic(type) {
-  if (tg && tg.HapticFeedback) {
-    try { tg.HapticFeedback.impactOccurred(type || "medium"); } catch(e) {}
-  }
-}
-
-function showScreen(id) {
-  document.querySelectorAll(".screen").forEach(function(s) {
-    s.classList.remove("active");
-    s.style.display = "none";
-  });
-  var el = document.getElementById(id);
-  if (el) { el.style.display = "flex"; el.classList.add("active"); }
-}
-
-function showCaptcha(onPass) {
-  var a = Math.floor(Math.random() * 9) + 1;
-  var b = Math.floor(Math.random() * 9) + 1;
-  var correct = a + b;
-  var wrong = [];
-  while (wrong.length < 3) {
-    var w = correct + (Math.floor(Math.random() * 7) - 3);
-    if (w !== correct && w > 0 && wrong.indexOf(w) === -1) wrong.push(w);
-  }
-  var options = [correct].concat(wrong).sort(function() { return Math.random() - 0.5; });
-  var qEl = document.getElementById("captcha-question");
-  var oEl = document.getElementById("captcha-options");
-  var eEl = document.getElementById("captcha-error");
-  if (qEl) qEl.textContent = a + " + " + b + " = ?";
-  if (eEl) eEl.textContent = "";
-  if (oEl) {
-    oEl.innerHTML = options.map(function(v) {
-      return '<button class="captcha-btn" data-val="' + v + '">' + v + '</button>';
-    }).join("");
-    var handled = false;
-    oEl.querySelectorAll(".captcha-btn").forEach(function(btn) {
-      function tryAnswer() {
-        if (handled) return;
-        handled = true;
-        var val = parseInt(btn.getAttribute("data-val"));
-        if (val === correct) {
-          btn.classList.add("correct");
-          haptic("heavy");
-          sessionStorage.setItem("captchaPassed", "1");
-          setTimeout(function() {
-            var modal = document.getElementById("captcha-modal");
-            if (modal) modal.classList.remove("active");
-            onPass();
-          }, 120);
-        } else {
-          btn.classList.add("wrong");
-          haptic("medium");
-          if (eEl) eEl.textContent = "Неверно! Попробуй ещё раз.";
-          setTimeout(function() { showCaptcha(onPass); }, 500);
-        }
-      }
-      btn.addEventListener("touchstart", function(e) { e.preventDefault(); tryAnswer(); }, { passive: false });
-      btn.onclick = tryAnswer;
-    });
-  }
-  var modal = document.getElementById("captcha-modal");
-  if (modal) modal.classList.add("active");
-}
-
-function showHomeScreen() {
-  // Регистрируемся на бэкенде тихо
-  var tgUser = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : {};
-  var TG_ID    = tgUser.id         || 0;
-  var TG_NAME  = tgUser.username   || tgUser.first_name || "user";
-  var TG_FIRST = tgUser.first_name || "";
-  var INIT_DATA = (tg && tg.initData) ? tg.initData : "";
-  var API_URL  = "https://backend-9iys.onrender.com";
-
-  var loadEl = document.getElementById("load-status");
-  if (loadEl) loadEl.textContent = "Загрузка...";
-
-  function goHome() { showScreen("screen-home"); }
-
-  if (!TG_ID) { goHome(); return; }
-
-  fetch(API_URL + "/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tg_id: TG_ID, username: TG_NAME, first_name: TG_FIRST, init_data: INIT_DATA })
-  }).then(function() { goHome(); }).catch(function() { goHome(); });
-}
-
-window.addEventListener("load", function() {
-  // Каждое открытие = новая сессия = капча
-  // sessionStorage сбрасывается при закрытии приложения
-  var passed = sessionStorage.getItem("captchaPassed") === "1";
-  if (passed) {
-    showHomeScreen();
-  } else {
-    showCaptcha(function() {
-      showHomeScreen();
-    });
-  }
-});
-</script>
+<script src="app.js"></script>
 </body>
 </html>
