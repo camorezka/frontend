@@ -8,6 +8,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
+<script>
+// Инициализация Telegram
+var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+if (tg) { tg.ready(); tg.expand(); }
+</script>
 <style>
   .home-content {
     flex: 1;
@@ -81,7 +86,25 @@
 </head>
 <body>
 
-<div class="screen active" id="screen-home" style="display:flex; justify-content:space-between;">
+<!-- ЗАГРУЗКА -->
+<div class="screen active" id="screen-loading">
+  <div class="load-orb"></div>
+  <div class="load-title">LEONARDO GAME</div>
+  <div class="load-sub" id="load-status">Подключение...</div>
+</div>
+
+<!-- ОШИБКА -->
+<div class="screen" id="screen-error">
+  <div class="error-wrap">
+    <div class="error-icon">⚠️</div>
+    <div class="error-title" id="error-title">Ошибка</div>
+    <div class="error-sub" id="error-sub">Что-то пошло не так</div>
+    <button class="error-btn" id="error-btn">Попробовать снова</button>
+  </div>
+</div>
+
+<!-- ГЛАВНАЯ СТРАНИЦА -->
+<div class="screen" id="screen-home" style="justify-content:space-between;">
 
   <!-- КОНТЕНТ -->
   <div class="home-content">
@@ -113,5 +136,121 @@
 
 </div>
 
+<!-- КАПЧА — модальная стеклянная панель -->
+<div id="captcha-modal" class="captcha-modal">
+  <div class="captcha-glass-panel">
+    <div class="captcha-icon">🔐</div>
+    <div class="captcha-title">Проверка</div>
+    <div class="captcha-sub">Подтверди что ты не бот</div>
+    <div class="captcha-question" id="captcha-question">?</div>
+    <div class="captcha-options" id="captcha-options"></div>
+    <div class="captcha-error" id="captcha-error"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Капча ──────────────────────────────────────────────────
+function haptic(type) {
+  if (tg && tg.HapticFeedback) {
+    try { tg.HapticFeedback.impactOccurred(type || "medium"); } catch(e) {}
+  }
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(function(s) {
+    s.classList.remove("active");
+    s.style.display = "none";
+  });
+  var el = document.getElementById(id);
+  if (el) { el.style.display = "flex"; el.classList.add("active"); }
+}
+
+function showCaptcha(onPass) {
+  var a = Math.floor(Math.random() * 9) + 1;
+  var b = Math.floor(Math.random() * 9) + 1;
+  var correct = a + b;
+  var wrong = [];
+  while (wrong.length < 3) {
+    var w = correct + (Math.floor(Math.random() * 7) - 3);
+    if (w !== correct && w > 0 && wrong.indexOf(w) === -1) wrong.push(w);
+  }
+  var options = [correct].concat(wrong).sort(function() { return Math.random() - 0.5; });
+  var qEl = document.getElementById("captcha-question");
+  var oEl = document.getElementById("captcha-options");
+  var eEl = document.getElementById("captcha-error");
+  if (qEl) qEl.textContent = a + " + " + b + " = ?";
+  if (eEl) eEl.textContent = "";
+  if (oEl) {
+    oEl.innerHTML = options.map(function(v) {
+      return '<button class="captcha-btn" data-val="' + v + '">' + v + '</button>';
+    }).join("");
+    var handled = false;
+    oEl.querySelectorAll(".captcha-btn").forEach(function(btn) {
+      function tryAnswer() {
+        if (handled) return;
+        handled = true;
+        var val = parseInt(btn.getAttribute("data-val"));
+        if (val === correct) {
+          btn.classList.add("correct");
+          haptic("heavy");
+          sessionStorage.setItem("captchaPassed", "1");
+          setTimeout(function() {
+            var modal = document.getElementById("captcha-modal");
+            if (modal) modal.classList.remove("active");
+            onPass();
+          }, 120);
+        } else {
+          btn.classList.add("wrong");
+          haptic("medium");
+          if (eEl) eEl.textContent = "Неверно! Попробуй ещё раз.";
+          setTimeout(function() { showCaptcha(onPass); }, 500);
+        }
+      }
+      btn.addEventListener("touchstart", function(e) { e.preventDefault(); tryAnswer(); }, { passive: false });
+      btn.onclick = tryAnswer;
+    });
+  }
+  var modal = document.getElementById("captcha-modal");
+  if (modal) modal.classList.add("active");
+}
+
+function showHomeScreen() {
+  // Регистрируемся на бэкенде тихо
+  var tgUser = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : {};
+  var TG_ID    = tgUser.id         || 0;
+  var TG_NAME  = tgUser.username   || tgUser.first_name || "user";
+  var TG_FIRST = tgUser.first_name || "";
+  var INIT_DATA = (tg && tg.initData) ? tg.initData : "";
+  var API_URL  = "https://backend-9iys.onrender.com";
+
+  var loadEl = document.getElementById("load-status");
+  if (loadEl) loadEl.textContent = "Загрузка...";
+
+  function goHome() { showScreen("screen-home"); }
+
+  if (!TG_ID) { goHome(); return; }
+
+  fetch(API_URL + "/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ tg_id: TG_ID, username: TG_NAME, first_name: TG_FIRST, init_data: INIT_DATA })
+  }).then(function() { goHome(); }).catch(function() { goHome(); });
+}
+
+window.addEventListener("load", function() {
+  // Каждое открытие = новая сессия = капча
+  // sessionStorage сбрасывается при закрытии приложения
+  var passed = sessionStorage.getItem("captchaPassed") === "1";
+  if (passed) {
+    showHomeScreen();
+  } else {
+    showCaptcha(function() {
+      showHomeScreen();
+    });
+  }
+});
+</script>
 </body>
 </html>
