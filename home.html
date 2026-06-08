@@ -81,27 +81,7 @@
 </head>
 <body>
 
-<!-- КАПЧА -->
-<div id="captcha-modal" class="captcha-modal">
-  <div class="captcha-glass-panel">
-    <div class="captcha-icon">🔐</div>
-    <div class="captcha-title">Проверка</div>
-    <div class="captcha-sub">Подтверди что ты не бот</div>
-    <div class="captcha-question" id="captcha-question">?</div>
-    <div class="captcha-options" id="captcha-options"></div>
-    <div class="captcha-error" id="captcha-error"></div>
-  </div>
-</div>
-
-<!-- ЗАГРУЗКА -->
-<div class="screen active" id="screen-loading">
-  <div class="load-orb"></div>
-  <div class="load-title">LEONARDO GAME</div>
-  <div class="load-sub" id="load-status">Подключение...</div>
-</div>
-
-<!-- ГЛАВНЫЙ ЭКРАН -->
-<div class="screen" id="screen-home" style="display:flex; justify-content:space-between;">
+<div class="screen active" id="screen-home" style="display:flex; justify-content:space-between;">
 
   <!-- КОНТЕНТ -->
   <div class="home-content">
@@ -115,7 +95,7 @@
     </div>
   </div>
 
-  <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+  <!-- НИЖНЯЯ НАВИГАЦИЯ — СТЕКЛЯННАЯ -->
   <nav class="bottom-nav">
     <a href="home.html" class="nav-tab active" id="nav-home">
       <span class="nav-icon">🏠</span>
@@ -133,142 +113,5 @@
 
 </div>
 
-<div class="toast" id="toast"></div>
-
-<script>
-"use strict";
-
-var API_URL = "https://backend-9iys.onrender.com";
-
-var tg       = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-if (tg) { tg.ready(); tg.expand(); }
-
-var tgUser   = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : {};
-var TG_ID    = tgUser.id         || 0;
-var TG_NAME  = tgUser.username   || tgUser.first_name || "user";
-var TG_FIRST = tgUser.first_name || "";
-var INIT_DATA = (tg && tg.initData) ? tg.initData : "";
-
-// ── Утилиты ──
-function showScreen(id) {
-  document.querySelectorAll(".screen").forEach(function(s) {
-    s.classList.remove("active");
-    s.style.display = "none";
-  });
-  var el = document.getElementById(id);
-  if (el) { el.style.display = "flex"; el.classList.add("active"); }
-}
-
-function haptic(type) {
-  if (tg && tg.HapticFeedback) {
-    try { tg.HapticFeedback.impactOccurred(type || "medium"); } catch(e) {}
-  }
-}
-
-// ── Капча ──
-function showCaptcha(onPass) {
-  var a = Math.floor(Math.random() * 9) + 1;
-  var b = Math.floor(Math.random() * 9) + 1;
-  var correct = a + b;
-
-  var wrong = [];
-  while (wrong.length < 3) {
-    var w = correct + (Math.floor(Math.random() * 7) - 3);
-    if (w !== correct && w > 0 && wrong.indexOf(w) === -1) wrong.push(w);
-  }
-
-  var options = [correct].concat(wrong).sort(function() { return Math.random() - 0.5; });
-
-  var qEl = document.getElementById("captcha-question");
-  var oEl = document.getElementById("captcha-options");
-  var eEl = document.getElementById("captcha-error");
-  if (qEl) qEl.textContent = a + " + " + b + " = ?";
-  if (eEl) eEl.textContent = "";
-  if (oEl) {
-    oEl.innerHTML = options.map(function(v) {
-      return '<button class="captcha-btn" data-val="' + v + '">' + v + '</button>';
-    }).join("");
-
-    var handled = false;
-    oEl.querySelectorAll(".captcha-btn").forEach(function(btn) {
-      function handleAnswer() {
-        if (handled) return;
-        handled = true;
-        var val = parseInt(btn.getAttribute("data-val"));
-        if (val === correct) {
-          btn.classList.add("correct");
-          haptic("heavy");
-          sessionStorage.setItem("captchaPassed", "1");
-          setTimeout(function() {
-            var modal = document.getElementById("captcha-modal");
-            if (modal) modal.classList.remove("active");
-            onPass();
-          }, 120);
-        } else {
-          btn.classList.add("wrong");
-          haptic("medium");
-          if (eEl) eEl.textContent = "Неверно! Попробуй ещё раз.";
-          setTimeout(function() { showCaptcha(onPass); }, 500);
-        }
-      }
-      btn.addEventListener("touchstart", function(e) { e.preventDefault(); handleAnswer(); }, { passive: false });
-      btn.onclick = handleAnswer;
-    });
-  }
-
-  var modal = document.getElementById("captcha-modal");
-  if (modal) modal.classList.add("active");
-}
-
-// ── Регистрация + старт ──
-function startApp() {
-  if (!TG_ID) {
-    var loadEl = document.getElementById("load-status");
-    if (loadEl) loadEl.textContent = "Откройте через Telegram Mini App";
-    return;
-  }
-
-  var loadEl = document.getElementById("load-status");
-  if (loadEl) loadEl.textContent = "Регистрация...";
-
-  fetch(API_URL + "/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tg_id: TG_ID, username: TG_NAME, first_name: TG_FIRST, init_data: INIT_DATA })
-  }).then(function(r) { return r.json(); })
-  .then(function() {
-    // Сохраняем данные для других страниц
-    sessionStorage.setItem("tg_id", TG_ID);
-    sessionStorage.setItem("tg_name", TG_NAME);
-    sessionStorage.setItem("tg_first", TG_FIRST);
-    sessionStorage.setItem("init_data", INIT_DATA);
-    sessionStorage.setItem("appReady", "1");
-    showScreen("screen-home");
-  })
-  .catch(function() {
-    // Даже при ошибке — показываем главную
-    sessionStorage.setItem("tg_id", TG_ID);
-    sessionStorage.setItem("tg_name", TG_NAME);
-    sessionStorage.setItem("init_data", INIT_DATA);
-    sessionStorage.setItem("appReady", "1");
-    showScreen("screen-home");
-  });
-}
-
-window.addEventListener("load", function() {
-  var passed = sessionStorage.getItem("captchaPassed") === "1";
-  if (passed) {
-    startApp();
-  } else {
-    // Показываем loading, потом капчу
-    showScreen("screen-loading");
-    setTimeout(function() {
-      showCaptcha(function() {
-        startApp();
-      });
-    }, 400);
-  }
-});
-</script>
 </body>
 </html>
