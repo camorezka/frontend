@@ -153,25 +153,72 @@ html, body {
   z-index: 10;
 }
 
-/* БЕЛАЯ КНОПКА */
+/* НАСТОЯЩЕЕ СТЕКЛО */
 .spin-btn {
   width: 100%;
   padding: 22px 20px;
-  background: #ffffff;
-  border: 1px solid rgba(255,255,255,0.80);
+  /* Многослойный стеклянный фон */
+  background:
+    linear-gradient(
+      135deg,
+      rgba(94, 94, 94, 0) 0%,
+      rgba(255, 255, 255, 0.08) 40%,
+      rgba(255,255,255,0.04) 60%,
+      rgba(255,255,255,0.10) 100%
+    );
+  border: 1px solid rgba(19, 19, 19, 0.35);
+  border-bottom-color: rgba(255,255,255,0.12);
+  border-right-color: rgba(255,255,255,0.18);
   border-radius: 22px;
   font-family: 'Unbounded', sans-serif;
   font-size: 16px; font-weight: 700;
-  color: #000000;
+  color: #fff;
   cursor: pointer;
+  /* Многослойные тени — глубина стекла */
   box-shadow:
-    0 8px 32px rgba(255,255,255,0.25),
-    0 2px 0 rgba(255,255,255,0.90) inset,
-    0 -1px 0 rgba(0,0,0,0.08) inset;
+    0 8px 32px rgba(0,0,0,0.45),
+    0 2px 0 rgba(255,255,255,0.30) inset,
+    0 -1px 0 rgba(0,0,0,0.20) inset,
+    0 0 0 0.5px rgba(255,255,255,0.08) inset,
+    inset 0 1px 0 rgba(255,255,255,0.25);
+  backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
+  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
   transition: transform 0.13s, box-shadow 0.13s, opacity 0.13s;
   position: relative; overflow: hidden;
   touch-action: manipulation;
   letter-spacing: 0.3px;
+}
+
+/* Верхний блик — как у настоящего стекла */
+.spin-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.28) 0%,
+    rgba(255,255,255,0.10) 60%,
+    transparent 100%
+  );
+  border-radius: 22px 22px 0 0;
+  pointer-events: none;
+}
+
+/* Боковой световой блик */
+.spin-btn::after {
+  content: '';
+  position: absolute;
+  top: 8px; left: 10px;
+  width: 30%; height: 60%;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.18) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(6px);
+  pointer-events: none;
 }
 
 .spin-btn:active  {
@@ -348,13 +395,13 @@ html, body {
   position: fixed;
   inset: 0;
   z-index: 999;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+  padding: 0 0 env(safe-area-inset-bottom, 0px);
   /* Затемнённый фон */
-  background: rgba(0,0,0,0.60);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   animation: captcha-fade-in 0.22s ease;
 }
 .captcha-modal.active {
@@ -365,91 +412,47 @@ html, body {
   to   { opacity: 1; }
 }
 
-/* Стеклянная панель — ОТДЕЛЬНАЯ, НЕ ПРИЛИПАЕТ К КРАЯМ */
+/* Стеклянная панель снизу */
 .captcha-glass-panel {
+  width: 80%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  padding: 32px 28px 40px;
+  padding: 28px 24px 36px;
   text-align: center;
-  margin: 0 20px 32px;
-  width: calc(100% - 40px);
+  
 
-  /* ИДЕАЛЬНЫЙ GLASS EFFECT */
+  /* Стеклянный фон */
   background:
     linear-gradient(
       160deg,
-      rgba(255,255,255,0.18) 0%,
-      rgba(255,255,255,0.08) 30%,
-      rgba(255,255,255,0.04) 60%,
-      rgba(255,255,255,0.10) 100%
+      rgba(255,255,255,0.14) 0%,
+      rgba(255,255,255,0.06) 40%,
+      rgba(255,255,255,0.03) 70%,
+      rgba(255,255,255,0.08) 100%
     );
-  backdrop-filter: blur(60px) saturate(220%) brightness(1.12);
-  -webkit-backdrop-filter: blur(60px) saturate(220%) brightness(1.12);
+  backdrop-filter: blur(48px) saturate(200%) brightness(1.08);
+  -webkit-backdrop-filter: blur(48px) saturate(200%) brightness(1.08);
 
-  /* Граница стекла — со всех сторон */
-  border: 1px solid rgba(255,255,255,0.26);
-  border-top-color: rgba(255,255,255,0.40);
-  border-radius: 28px;
-
-  /* Тени — глубина и свечение */
-  box-shadow:
-    0 24px 80px rgba(0,0,0,0.65),
-    0 8px 32px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.38),
-    inset 0 -1px 0 rgba(255,255,255,0.10),
-    inset 0 0 80px rgba(255,255,255,0.04);
-
-  /* Верхний световой блик */
-  position: relative;
-  overflow: hidden;
-
-  animation: captcha-slide-up 0.30s cubic-bezier(0.34,1.3,0.64,1);
-}
-
-/* Верхний блик как у реального стекла */
-.captcha-glass-panel::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 42%;
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.22) 0%,
-    rgba(255,255,255,0.08) 55%,
-    transparent 100%
-  );
+  /* Граница стекла */
+  border: 1px solid rgba(255,255,255,0.22);
+  border-bottom: none;
   border-radius: 28px 28px 0 0;
-  pointer-events: none;
-  z-index: 0;
-}
+  margin: 0 12px;
+  width: calc(100% - 24px);
 
-/* Боковой блик */
-.captcha-glass-panel::after {
-  content: '';
-  position: absolute;
-  top: 10px; left: 14px;
-  width: 28%; height: 55%;
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.20) 0%,
-    transparent 70%
-  );
-  border-radius: 50%;
-  filter: blur(8px);
-  pointer-events: none;
-  z-index: 0;
-}
+  /* Тени — глубина */
+  box-shadow:
+    0 -8px 48px rgba(0,0,0,0.55),
+    0 -1px 0 rgba(255,255,255,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.28),
+    inset 0 0 60px rgba(255,255,255,0.03);
 
-/* Дети поверх псевдоэлементов */
-.captcha-glass-panel > * {
-  position: relative;
-  z-index: 1;
+  animation: captcha-slide-up 0.28s cubic-bezier(0.34,1.4,0.64,1);
 }
-
 @keyframes captcha-slide-up {
-  from { transform: translateY(40px); opacity: 0; }
+  from { transform: translateY(100%); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
 }
 
