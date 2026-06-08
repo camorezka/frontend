@@ -667,4 +667,4 @@ window.addEventListener("load", function() {
       startApp();
     });
   }
-});  
+});
