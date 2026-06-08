@@ -31,7 +31,7 @@ var PAY_MAX_ATTEMPTS   = 24;
 // Карусель движется СЛЕВА НАПРАВО (всегда)
 var carouselRAF  = null;
 var carouselPos  = 0;
-var carouselSpeed = 1.2; // px за кадр (~33px/сек при 60fps)
+var carouselSpeed = 2.5; // px за кадр (~150px/сек при 60fps)
 
 function getCarouselHalfWidth() {
   var track = document.getElementById("gifts-track");
@@ -94,6 +94,12 @@ function unlockVideos() {
 document.addEventListener("touchstart", unlockVideos, { passive: true });
 document.addEventListener("click",      unlockVideos, { passive: true });
 document.addEventListener("touchend",   unlockVideos, { passive: true });
+
+// Запуск сразу при DOMContentLoaded — не ждём полной загрузки
+document.addEventListener("DOMContentLoaded", function() {
+  forcePlayAllVideos();
+  startCarousel();
+});
 
 // Возврат на страницу (из фона, переключение вкладок)
 document.addEventListener("visibilitychange", function() {
@@ -673,16 +679,19 @@ function showResult(res) {
 // СТАРТ — КАПЧА КАЖДЫЙ РАЗ
 // ══════════════════════════════════════════════════════════
 
+// ══════════════════════════════════════════════════════════
+// СТАРТ — без капчи (капча уже пройдена на главной странице)
+// ══════════════════════════════════════════════════════════
+
 window.addEventListener("load", function() {
+  // Запускаем видео немедленно
   forcePlayAllVideos();
 
-  // Капча показывается только при первом заходе в сессию
-  if (sessionStorage.getItem("captcha_done") === "1") {
-    startApp();
-  } else {
-    showCaptcha(function() {
-      sessionStorage.setItem("captcha_done", "1");
-      startApp();
-    });
-  }
+  // Запускаем приложение без капчи (она на home.html)
+  startApp();
+
+  // Дополнительный запуск видео после инициализации
+  setTimeout(forcePlayAllVideos, 300);
+  setTimeout(forcePlayAllVideos, 800);
+  setTimeout(forcePlayAllVideos, 1500);
 });
