@@ -202,7 +202,7 @@ function haptic(type) {
 // КАПЧА
 // ══════════════════════════════════════════════════════════
 
-var captchaPassed = localStorage.getItem("lgCaptchaPassed") === "1";
+var captchaPassed = false; // капча каждый раз при заходе на сайт
 var registered    = localStorage.getItem("lgRegistered") === "1";
 
 function showCaptcha(onPass) {
@@ -239,7 +239,7 @@ function showCaptcha(onPass) {
           btn.classList.add("correct");
           haptic("heavy");
           captchaPassed = true;
-          localStorage.setItem("lgCaptchaPassed", "1");
+          
           setTimeout(function() {
             var modal = document.getElementById("captcha-modal");
             if (modal) modal.classList.remove("active");
@@ -261,7 +261,7 @@ function showCaptcha(onPass) {
           btn.classList.add("correct");
           haptic("heavy");
           captchaPassed = true;
-          localStorage.setItem("lgCaptchaPassed", "1");
+          
           setTimeout(function() {
             var modal = document.getElementById("captcha-modal");
             if (modal) modal.classList.remove("active");
@@ -690,7 +690,12 @@ function showResult(res) {
 // ══════════════════════════════════════════════════════════
 
 window.addEventListener("load", function() {
+  // Запускаем видео сразу — без ожидания клика
   forcePlayAllVideos();
+  setTimeout(forcePlayAllVideos, 200);
+  setTimeout(forcePlayAllVideos, 600);
+  setTimeout(forcePlayAllVideos, 1200);
+  setupVideoObserver();
 
   if (captchaPassed) {
     startApp();
