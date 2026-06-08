@@ -12,10 +12,8 @@
 <!-- КАПЧА при первом входе -->
 <script>
 (function() {
-  if (localStorage.getItem("lgCaptchaPassed") !== "1") {
-    // Покажем капчу — но DOM ещё не загружен, откладываем до DOMContentLoaded
-    window.__needCaptcha = true;
-  }
+  // Капча при каждом заходе на сайт
+  window.__needCaptcha = true;
 })();
 </script>
 <style>
@@ -169,7 +167,7 @@
           var val = parseInt(btn.getAttribute("data-val"));
           if (val === correct) {
             btn.classList.add("correct");
-            localStorage.setItem("lgCaptchaPassed", "1");
+            
             setTimeout(function() {
               var modal = document.getElementById("captcha-modal");
               if (modal) modal.classList.remove("active");
