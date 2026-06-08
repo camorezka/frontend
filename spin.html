@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
+<link rel="prefetch" href="index.html"/>
+<link rel="prefetch" href="profile.html"/>
 </head>
 <body>
 
@@ -107,21 +109,6 @@
   </div>
 </div>
 
-<!-- ПРОКРУТКА -->
-<div class="screen" id="screen-spinning">
-  <div class="spinning-wrap">
-    <div class="spinning-reel">
-      <div class="spin-sym" id="spin-sym-1">💍</div>
-    </div>
-    <div class="spinning-label">Крутим...</div>
-  </div>
-</div>
-
-<!-- РЕЗУЛЬТАТ -->
-<div class="screen" id="screen-result">
-  <div class="result-wrap" id="result-wrap"></div>
-</div>
-
 <!-- ОШИБКА -->
 <div class="screen" id="screen-error">
   <div class="error-wrap">
@@ -129,18 +116,6 @@
     <div class="error-title" id="error-title">Ошибка</div>
     <div class="error-sub" id="error-sub">Что-то пошло не так</div>
     <button class="error-btn" id="error-btn">Попробовать снова</button>
-  </div>
-</div>
-
-<!-- КАПЧА — модальная стеклянная панель -->
-<div id="captcha-modal" class="captcha-modal">
-  <div class="captcha-glass-panel">
-    <div class="captcha-icon">🔐</div>
-    <div class="captcha-title">Проверка</div>
-    <div class="captcha-sub">Подтверди что ты не бот</div>
-    <div class="captcha-question" id="captcha-question">?</div>
-    <div class="captcha-options" id="captcha-options"></div>
-    <div class="captcha-error" id="captcha-error"></div>
   </div>
 </div>
 
