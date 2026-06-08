@@ -144,5 +144,17 @@
 <div id="confetti-container"></div>
 
 <script src="app.js"></script>
+<script>
+// Дополнительная попытка запустить видео через разные таймауты
+// на случай если браузер блокирует autoplay
+(function tryPlay() {
+  var vids = document.querySelectorAll("video");
+  vids.forEach(function(v) { v.muted = true; v.play && v.play().catch(function(){}); });
+})();
+setTimeout(function() {
+  var vids = document.querySelectorAll("video");
+  vids.forEach(function(v) { v.muted = true; v.play && v.play().catch(function(){}); });
+}, 500);
+</script>
 </body>
 </html>
