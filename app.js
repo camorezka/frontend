@@ -10,10 +10,10 @@ var tg       = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.Web
 if (tg) { tg.ready(); tg.expand(); }
 
 var tgUser   = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : {};
-var TG_ID    = tgUser.id         || 0;
-var TG_NAME  = tgUser.username   || tgUser.first_name || "user";
-var TG_FIRST = tgUser.first_name || "";
-var INIT_DATA = (tg && tg.initData) ? tg.initData : "";
+var TG_ID    = parseInt(sessionStorage.getItem("tg_id") || "0") || tgUser.id || 0;
+var TG_NAME  = sessionStorage.getItem("tg_name") || tgUser.username || tgUser.first_name || "user";
+var TG_FIRST = sessionStorage.getItem("tg_first") || tgUser.first_name || "";
+var INIT_DATA = sessionStorage.getItem("init_data") || (tg && tg.initData ? tg.initData : "");
 
 // Состояние
 var currentBetId       = null;
@@ -30,7 +30,7 @@ var PAY_MAX_ATTEMPTS   = 24;
 // ── JS-КАРУСЕЛЬ: надёжный requestAnimationFrame вместо CSS animation ──
 var carouselRAF  = null;
 var carouselPos  = 0;
-var carouselSpeed = 0.55; // px за кадр (~33px/сек при 60fps)
+var carouselSpeed = 1.1; // px за кадр (~66px/сек при 60fps)
 
 function getCarouselHalfWidth() {
   var track = document.getElementById("gifts-track");
@@ -203,85 +203,6 @@ function haptic(type) {
 // ══════════════════════════════════════════════════════════
 // КАПЧА
 // ══════════════════════════════════════════════════════════
-
-var captchaPassed = sessionStorage.getItem("captchaPassed") === "1";
-
-function showCaptcha(onPass) {
-  var a = Math.floor(Math.random() * 9) + 1;
-  var b = Math.floor(Math.random() * 9) + 1;
-  var correct = a + b;
-
-  var wrong = [];
-  while (wrong.length < 3) {
-    var w = correct + (Math.floor(Math.random() * 7) - 3);
-    if (w !== correct && w > 0 && wrong.indexOf(w) === -1) wrong.push(w);
-  }
-
-  var options = [correct].concat(wrong).sort(function() { return Math.random() - 0.5; });
-
-  var qEl = document.getElementById("captcha-question");
-  var oEl = document.getElementById("captcha-options");
-  var eEl = document.getElementById("captcha-error");
-  if (qEl) qEl.textContent = a + " + " + b + " = ?";
-  if (eEl) eEl.textContent = "";
-  if (oEl) {
-    oEl.innerHTML = options.map(function(v) {
-      return '<button class="captcha-btn" data-val="' + v + '">' + v + '</button>';
-    }).join("");
-
-    var handled = false;
-    oEl.querySelectorAll(".captcha-btn").forEach(function(btn) {
-      btn.addEventListener("touchstart", function(e) {
-        e.preventDefault();
-        if (handled) return;
-        handled = true;
-        var val = parseInt(btn.getAttribute("data-val"));
-        if (val === correct) {
-          btn.classList.add("correct");
-          haptic("heavy");
-          captchaPassed = true;
-          sessionStorage.setItem("captchaPassed", "1");
-          setTimeout(function() {
-            var modal = document.getElementById("captcha-modal");
-            if (modal) modal.classList.remove("active");
-            onPass();
-          }, 120);
-        } else {
-          btn.classList.add("wrong");
-          haptic("medium");
-          if (eEl) eEl.textContent = "Неверно! Попробуй ещё раз.";
-          setTimeout(function() { showCaptcha(onPass); }, 500);
-        }
-      }, { passive: false });
-
-      btn.onclick = function() {
-        if (handled) return;
-        handled = true;
-        var val = parseInt(btn.getAttribute("data-val"));
-        if (val === correct) {
-          btn.classList.add("correct");
-          haptic("heavy");
-          captchaPassed = true;
-          sessionStorage.setItem("captchaPassed", "1");
-          setTimeout(function() {
-            var modal = document.getElementById("captcha-modal");
-            if (modal) modal.classList.remove("active");
-            onPass();
-          }, 120);
-        } else {
-          btn.classList.add("wrong");
-          haptic("medium");
-          if (eEl) eEl.textContent = "Неверно! Попробуй ещё раз.";
-          setTimeout(function() { showCaptcha(onPass); }, 500);
-        }
-      };
-    });
-  }
-
-  // Показываем модальную панель поверх экрана загрузки
-  var modal = document.getElementById("captcha-modal");
-  if (modal) modal.classList.add("active");
-}
 
 function setPayStatus(msg, cls) {
   var el = document.getElementById("pay-status");
@@ -662,11 +583,11 @@ function showResult(res) {
 window.addEventListener("load", function() {
   forcePlayAllVideos();
 
-  if (captchaPassed) {
-    startApp();
-  } else {
-    showCaptcha(function() {
-      startApp();
-    });
+  // Если пользователь не прошёл авторизацию — отправляем на home.html
+  if (sessionStorage.getItem("appReady") !== "1") {
+    window.location.replace("home.html");
+    return;
   }
+
+  startApp();
 });
