@@ -45,19 +45,19 @@ html, body {
 .screen.active { display: flex; }
 
 #screen-home {
-  margin-top:30px;
+  margin-top:40px;
   }
   
 #screen-inventory {
-  margin-top:30px;
+  margin-top:40px;
   }
 
 #screen-settings {
-  margin-top:30px;
+  margin-top:40px;
   }
   
 #screen-profile {
-  margin-top:30px;
+  margin-top:40px;
   }
 /* ══════════════════════════════
    LOADING
