@@ -13,120 +13,145 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px 24px;
-    gap: 16px;
+    padding: 16px 12px 12px;
+    gap: 12px;
+    overflow-y: auto;
+    padding-top: 60px;
+  }
+
+  .home-header {
+    padding: 0 4px 4px;
   }
   .home-logo {
     font-family: 'Unbounded', sans-serif;
-    font-size: clamp(22px, 6vw, 28px);
+    font-size: clamp(18px, 5vw, 24px);
     font-weight: 900;
     color: #fff;
     letter-spacing: 0.5px;
-    text-align: center;
   }
   .home-logo-sub {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--sub);
-    text-align: center;
-    margin-top: 8px;
+    margin-top: 4px;
   }
-  .home-soon {
-    margin-top: 32px;
-    padding: 18px 28px;
-    background:
-      linear-gradient(
-        135deg,
-        rgba(255,255,255,0.12) 0%,
-        rgba(255,255,255,0.04) 50%,
-        rgba(255,255,255,0.08) 100%
-      );
+
+  .home-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .home-block {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px 20px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.08) 100%);
     border: 1px solid rgba(255,255,255,0.20);
     border-top-color: rgba(255,255,255,0.35);
-    border-radius: 18px;
+    border-radius: 20px;
     backdrop-filter: blur(30px) saturate(180%);
     -webkit-backdrop-filter: blur(30px) saturate(180%);
-    box-shadow:
-      0 8px 32px rgba(0,0,0,0.4),
-      inset 0 1px 0 rgba(255,255,255,0.22);
-    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.22);
     position: relative;
     overflow: hidden;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
   }
-  .home-soon::before {
+  .home-block::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 40%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.13) 0%, transparent 100%);
     pointer-events: none;
-    border-radius: 18px 18px 0 0;
+    border-radius: 20px 20px 0 0;
   }
-  .home-soon-label {
+  .home-block-icon { font-size: 28px; line-height: 1; position: relative; z-index: 1; }
+  .home-block-title {
     font-family: 'Unbounded', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--sub);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 6px;
+    font-size: 14px; font-weight: 700; color: #fff;
+    position: relative; z-index: 1;
   }
-  .home-soon-text {
-    font-size: 14px;
-    color: rgba(255,255,255,0.7);
-    line-height: 1.6;
+  .home-block-sub {
+    font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.5;
+    position: relative; z-index: 1;
+  }
+  .home-block-badge {
+    display: inline-block;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 9px; font-weight: 700;
+    color: #000; background: #fff;
+    padding: 3px 8px; border-radius: 20px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    position: relative; z-index: 1;
+    margin-top: 4px; width: fit-content;
   }
 
-  /* Stars balance display */
-  .stars-balance {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 16px;
-    margin-top: 16px;
-  }
-  .stars-balance img {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-  }
-  .stars-balance .stars-amount {
-    font-family: 'Unbounded', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: #fff;
-  }
-  .stars-balance .stars-label {
-    font-size: 12px;
-    color: var(--sub);
-    margin-left: 4px;
-  }
+  .home-block:nth-child(1) { border-top-color: rgba(255,220,100,0.5); }
+  .home-block:nth-child(1)::after { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:radial-gradient(circle,rgba(255,220,80,.25) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
+  .home-block:nth-child(2) { border-top-color: rgba(100,180,255,0.5); }
+  .home-block:nth-child(2)::after { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:radial-gradient(circle,rgba(80,160,255,.2) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
+  .home-block:nth-child(3) { border-top-color: rgba(180,120,255,0.5); }
+  .home-block:nth-child(3)::after { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:radial-gradient(circle,rgba(160,100,255,.2) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
+  .home-block:nth-child(4) { border-top-color: rgba(100,255,160,0.5); }
+  .home-block:nth-child(4)::after { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:radial-gradient(circle,rgba(80,255,140,.2) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
 </style>
 </head>
 <body>
 
-<div class="screen active" id="screen-home" style="display:flex; justify-content:space-between;">
+<!-- ЗАГРУЗКА -->
+<div class="screen active" id="screen-loading">
+  <div class="load-orb"></div>
+  <div class="load-title">LEONARDO GAME</div>
+  <div class="load-sub" id="load-status">Подключение...</div>
+</div>
 
-  <!-- КОНТЕНТ -->
+<!-- ГЛАВНАЯ СТРАНИЦА -->
+<div class="screen" id="screen-home" style="display:none; flex-direction:column; justify-content:space-between;">
+
   <div class="home-content">
-    <div>
+    <div class="home-header">
       <div class="home-logo">LEONARDO GAME</div>
       <div class="home-logo-sub">Выигрывай крутые подарки вместе с нами</div>
     </div>
 
+    <div class="home-blocks">
 
+      <div class="home-block">
+        <div class="home-block-icon">🎰</div>
+        <div class="home-block-title">Рулетка фортуны</div>
+        <div class="home-block-sub">Крути рулетку и выигрывай эксклюзивные NFT-подарки каждый день</div>
+        <div class="home-block-badge">Играть</div>
+      </div>
 
-    <div class="home-soon">
-      <div class="home-soon-label">Скоро</div>
-      <div class="home-soon-text">Здесь появятся новости,<br>акции и специальные события</div>
+      <div class="home-block">
+        <div class="home-block-icon">🔥</div>
+        <div class="home-block-title">Акции и события</div>
+        <div class="home-block-sub">Следи за специальными предложениями — бонусные кручения и особые призы</div>
+        <div class="home-block-badge">Скоро</div>
+      </div>
+
+      <div class="home-block">
+        <div class="home-block-icon">💎</div>
+        <div class="home-block-title">Твой инвентарь</div>
+        <div class="home-block-sub">Все выигранные NFT-подарки хранятся здесь и отправляются через 21 день</div>
+        <div class="home-block-badge">Посмотреть</div>
+      </div>
+
+      <div class="home-block">
+        <div class="home-block-icon">🏆</div>
+        <div class="home-block-title">Рейтинг игроков</div>
+        <div class="home-block-sub">Соревнуйся с другими и попади в топ лучших игроков LEONARDO GAME</div>
+        <div class="home-block-badge">Скоро</div>
+      </div>
+
     </div>
   </div>
 
-  <!-- НИЖНЯЯ НАВИГАЦИЯ -->
   <nav class="bottom-nav">
     <a href="home.html" class="nav-tab active" id="nav-home">
       <img src="photos/main.png" class="nav-icon-img" alt=""/>
@@ -152,27 +177,127 @@
 
 </div>
 
+<!-- КАПЧА — модальная стеклянная панель -->
+<div id="captcha-modal" class="captcha-modal">
+  <div class="captcha-glass-panel">
+    <div class="captcha-icon">🔐</div>
+    <div class="captcha-title">Проверка</div>
+    <div class="captcha-sub">Подтверди что ты не бот</div>
+    <div class="captcha-question" id="captcha-question">?</div>
+    <div class="captcha-options" id="captcha-options"></div>
+    <div class="captcha-error" id="captcha-error"></div>
+  </div>
+</div>
+
 <script>
-  var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-  if (tg) { tg.ready(); tg.expand(); }
+"use strict";
+var API_URL = "https://backend-9iys.onrender.com";
 
-  var tgUser   = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : {};
-  var TG_ID    = tgUser.id       || 0;
-  var TG_NAME  = tgUser.username || tgUser.first_name || "user";
-  var INIT_DATA = (tg && tg.initData) ? tg.initData : "";
-  var API_URL  = "https://backend-9iys.onrender.com";
+var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+if (tg) { tg.ready(); tg.expand(); }
 
-  function loadStarsBalance() {
-    if (!TG_ID) return;
-    fetch(API_URL + "/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA))
-      .then(function(r) { return r.json(); })
-      .then(function(s) {
-        var starsAmount = s.stars_balance || 0;
-        var el = document.getElementById("stars-amount");
-        if (el) el.textContent = starsAmount;
-      }).catch(function() {});
+var tgUser   = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : {};
+var TG_ID    = tgUser.id         || 0;
+var TG_NAME  = tgUser.username   || tgUser.first_name || "user";
+var TG_FIRST = tgUser.first_name || "";
+var INIT_DATA = (tg && tg.initData) ? tg.initData : "";
+
+function haptic(type) {
+  if (tg && tg.HapticFeedback) {
+    try { tg.HapticFeedback.impactOccurred(type || "medium"); } catch(e) {}
+  }
+}
+
+function showScreen(id) {
+  var screens = ["screen-loading", "screen-home"];
+  screens.forEach(function(sid) {
+    var el = document.getElementById(sid);
+    if (el) { el.style.display = "none"; el.classList.remove("active"); }
+  });
+  var el = document.getElementById(id);
+  if (el) { el.style.display = "flex"; el.classList.add("active"); }
+}
+
+function showCaptcha(onPass) {
+  var a = Math.floor(Math.random() * 9) + 1;
+  var b = Math.floor(Math.random() * 9) + 1;
+  var correct = a + b;
+  var wrong = [];
+  while (wrong.length < 3) {
+    var w = correct + (Math.floor(Math.random() * 7) - 3);
+    if (w !== correct && w > 0 && wrong.indexOf(w) === -1) wrong.push(w);
+  }
+  var options = [correct].concat(wrong).sort(function() { return Math.random() - 0.5; });
+
+  var qEl = document.getElementById("captcha-question");
+  var oEl = document.getElementById("captcha-options");
+  var eEl = document.getElementById("captcha-error");
+  if (qEl) qEl.textContent = a + " + " + b + " = ?";
+  if (eEl) eEl.textContent = "";
+  if (oEl) {
+    oEl.innerHTML = options.map(function(v) {
+      return '<button class="captcha-btn" data-val="' + v + '">' + v + '</button>';
+    }).join("");
+
+    var handled = false;
+    oEl.querySelectorAll(".captcha-btn").forEach(function(btn) {
+      function tryAnswer() {
+        if (handled) return;
+        handled = true;
+        var val = parseInt(btn.getAttribute("data-val"));
+        if (val === correct) {
+          btn.classList.add("correct");
+          haptic("heavy");
+          setTimeout(function() {
+            var modal = document.getElementById("captcha-modal");
+            if (modal) modal.classList.remove("active");
+            onPass();
+          }, 120);
+        } else {
+          btn.classList.add("wrong");
+          haptic("medium");
+          if (eEl) eEl.textContent = "Неверно! Попробуй ещё раз.";
+          setTimeout(function() { showCaptcha(onPass); }, 500);
+        }
+      }
+      btn.addEventListener("touchstart", function(e) { e.preventDefault(); tryAnswer(); }, { passive: false });
+      btn.onclick = tryAnswer;
+    });
   }
 
+  var modal = document.getElementById("captcha-modal");
+  if (modal) modal.classList.add("active");
+}
+
+function startApp() {
+  var loadEl = document.getElementById("load-status");
+  if (loadEl) loadEl.textContent = "Регистрация...";
+
+  // Ставим флаг — пользователь прошёл через home.html
+  sessionStorage.setItem("entered_from_home", "1");
+
+  if (!TG_ID) {
+    showScreen("screen-home");
+    return;
+  }
+
+  fetch(API_URL + "/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ tg_id: TG_ID, username: TG_NAME, first_name: TG_FIRST, init_data: INIT_DATA })
+  }).then(function() {
+    showScreen("screen-home");
+  }).catch(function() {
+    showScreen("screen-home");
+  });
+}
+
+window.addEventListener("load", function() {
+  // Показываем капчу при каждом входе
+  showCaptcha(function() {
+    startApp();
+  });
+});
 </script>
 
 </body>
