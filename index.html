@@ -4,6 +4,13 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>LEONARDO GAME — Фортуна</title>
+<script>
+  // Если пользователь зашёл напрямую на index.html (не через home.html),
+  // редиректим его на home.html — точку входа
+  if (!sessionStorage.getItem("entered_from_home")) {
+    window.location.replace("home.html");
+  }
+</script>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -146,18 +153,6 @@
     <div class="error-title" id="error-title">Ошибка</div>
     <div class="error-sub" id="error-sub">Что-то пошло не так</div>
     <button class="error-btn" id="error-btn">Попробовать снова</button>
-  </div>
-</div>
-
-<!-- КАПЧА — модальная стеклянная панель -->
-<div id="captcha-modal" class="captcha-modal">
-  <div class="captcha-glass-panel">
-    <div class="captcha-icon">🔐</div>
-    <div class="captcha-title">Проверка</div>
-    <div class="captcha-sub">Подтверди что ты не бот</div>
-    <div class="captcha-question" id="captcha-question">?</div>
-    <div class="captcha-options" id="captcha-options"></div>
-    <div class="captcha-error" id="captcha-error"></div>
   </div>
 </div>
 
