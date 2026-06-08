@@ -8,14 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
-
-<!-- КАПЧА при первом входе -->
-<script>
-(function() {
-  // Капча при каждом заходе на сайт
-  window.__needCaptcha = true;
-})();
-</script>
 <style>
   .home-content {
     flex: 1;
@@ -121,76 +113,5 @@
 
 </div>
 
-<!-- КАПЧА — модальная стеклянная панель -->
-<div id="captcha-modal" class="captcha-modal">
-  <div class="captcha-glass-panel">
-    <div class="captcha-icon">🔐</div>
-    <div class="captcha-title">Проверка</div>
-    <div class="captcha-sub">Подтверди что ты не бот</div>
-    <div class="captcha-question" id="captcha-question">?</div>
-    <div class="captcha-options" id="captcha-options"></div>
-    <div class="captcha-error" id="captcha-error"></div>
-  </div>
-</div>
-
-<script>
-(function() {
-  if (!window.__needCaptcha) return;
-
-  function showHomeCaptcha() {
-    var a = Math.floor(Math.random() * 9) + 1;
-    var b = Math.floor(Math.random() * 9) + 1;
-    var correct = a + b;
-    var wrong = [];
-    while (wrong.length < 3) {
-      var w = correct + (Math.floor(Math.random() * 7) - 3);
-      if (w !== correct && w > 0 && wrong.indexOf(w) === -1) wrong.push(w);
-    }
-    var options = [correct].concat(wrong).sort(function() { return Math.random() - 0.5; });
-
-    var qEl = document.getElementById("captcha-question");
-    var oEl = document.getElementById("captcha-options");
-    var eEl = document.getElementById("captcha-error");
-    if (qEl) qEl.textContent = a + " + " + b + " = ?";
-    if (eEl) eEl.textContent = "";
-
-    if (oEl) {
-      oEl.innerHTML = options.map(function(v) {
-        return '<button class="captcha-btn" data-val="' + v + '">' + v + '</button>';
-      }).join("");
-
-      var handled = false;
-      oEl.querySelectorAll(".captcha-btn").forEach(function(btn) {
-        function tryAnswer() {
-          if (handled) return;
-          handled = true;
-          var val = parseInt(btn.getAttribute("data-val"));
-          if (val === correct) {
-            btn.classList.add("correct");
-            
-            setTimeout(function() {
-              var modal = document.getElementById("captcha-modal");
-              if (modal) modal.classList.remove("active");
-            }, 120);
-          } else {
-            btn.classList.add("wrong");
-            if (eEl) eEl.textContent = "Неверно! Попробуй ещё раз.";
-            setTimeout(function() { showHomeCaptcha(); }, 500);
-          }
-        }
-        btn.addEventListener("touchstart", function(e) { e.preventDefault(); tryAnswer(); }, { passive: false });
-        btn.onclick = tryAnswer;
-      });
-    }
-
-    var modal = document.getElementById("captcha-modal");
-    if (modal) modal.classList.add("active");
-  }
-
-  document.addEventListener("DOMContentLoaded", function() {
-    showHomeCaptcha();
-  });
-})();
-</script>
 </body>
 </html>
