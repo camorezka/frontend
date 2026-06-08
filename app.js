@@ -202,7 +202,8 @@ function haptic(type) {
 // КАПЧА
 // ══════════════════════════════════════════════════════════
 
-var captchaPassed = sessionStorage.getItem("captchaPassed") === "1";
+var captchaPassed = localStorage.getItem("lgCaptchaPassed") === "1";
+var registered    = localStorage.getItem("lgRegistered") === "1";
 
 function showCaptcha(onPass) {
   var a = Math.floor(Math.random() * 9) + 1;
@@ -238,7 +239,7 @@ function showCaptcha(onPass) {
           btn.classList.add("correct");
           haptic("heavy");
           captchaPassed = true;
-          sessionStorage.setItem("captchaPassed", "1");
+          localStorage.setItem("lgCaptchaPassed", "1");
           setTimeout(function() {
             var modal = document.getElementById("captcha-modal");
             if (modal) modal.classList.remove("active");
@@ -260,7 +261,7 @@ function showCaptcha(onPass) {
           btn.classList.add("correct");
           haptic("heavy");
           captchaPassed = true;
-          sessionStorage.setItem("captchaPassed", "1");
+          localStorage.setItem("lgCaptchaPassed", "1");
           setTimeout(function() {
             var modal = document.getElementById("captcha-modal");
             if (modal) modal.classList.remove("active");
@@ -376,6 +377,35 @@ function startApp() {
     return;
   }
 
+  // Если уже регистрировались — пропускаем /register, идём сразу в приложение
+  if (registered) {
+    var loadEl2 = document.getElementById("load-status");
+    if (loadEl2) loadEl2.textContent = "Загрузка...";
+    api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA))
+      .then(function(stats) {
+        var uEl = document.getElementById("top-username");
+        if (uEl) uEl.textContent = "@" + TG_NAME;
+        var suEl = document.getElementById("settings-username");
+        if (suEl) suEl.textContent = "@" + TG_NAME;
+        var total = (stats.total_cycles || 0) * 10 + (stats.cycle_spin || 0);
+        var sEl = document.getElementById("top-stats");
+        if (sEl) sEl.textContent = total + " ставок";
+        var ssEl = document.getElementById("settings-stats");
+        if (ssEl) ssEl.textContent = total + " ставок";
+        loadInventory();
+        showScreen("screen-main");
+        bindButtons();
+        setTimeout(forcePlayAllVideos, 300);
+        setTimeout(setupVideoObserver, 300);
+      }).catch(function(e) {
+        // stats не критичны — просто показываем экран
+        showScreen("screen-main");
+        bindButtons();
+        setTimeout(forcePlayAllVideos, 300);
+      });
+    return;
+  }
+
   var loadEl = document.getElementById("load-status");
   if (loadEl) loadEl.textContent = "Регистрация...";
 
@@ -385,6 +415,8 @@ function startApp() {
     first_name: TG_FIRST,
     init_data:  INIT_DATA,
   }).then(function() {
+    localStorage.setItem("lgRegistered", "1");
+    registered = true;
     return api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA));
   }).then(function(stats) {
     var uEl = document.getElementById("top-username");
