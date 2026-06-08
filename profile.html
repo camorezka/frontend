@@ -276,14 +276,19 @@
 </div>
 
 <script>
+  // Если не авторизован — на home.html
+  if (sessionStorage.getItem("appReady") !== "1") {
+    window.location.replace("home.html");
+  }
+
   // Telegram данные
   var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
   if (tg) { tg.ready(); tg.expand(); }
 
   var tgUser   = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : {};
-  var TG_ID    = tgUser.id       || 0;
-  var TG_NAME  = tgUser.username || tgUser.first_name || "user";
-  var INIT_DATA = (tg && tg.initData) ? tg.initData : "";
+  var TG_ID    = parseInt(sessionStorage.getItem("tg_id") || "0") || tgUser.id || 0;
+  var TG_NAME  = sessionStorage.getItem("tg_name") || tgUser.username || tgUser.first_name || "user";
+  var INIT_DATA = sessionStorage.getItem("init_data") || (tg && tg.initData ? tg.initData : "");
   var API_URL  = "https://backend-9iys.onrender.com";
 
   // Обновляем имя
