@@ -198,89 +198,6 @@ function haptic(type) {
   }
 }
 
-// ══════════════════════════════════════════════════════════
-// КАПЧА
-// ══════════════════════════════════════════════════════════
-
-var captchaPassed = sessionStorage.getItem("captchaPassed") === "1";
-
-function showCaptcha(onPass) {
-  var a = Math.floor(Math.random() * 9) + 1;
-  var b = Math.floor(Math.random() * 9) + 1;
-  var correct = a + b;
-
-  var wrong = [];
-  while (wrong.length < 3) {
-    var w = correct + (Math.floor(Math.random() * 7) - 3);
-    if (w !== correct && w > 0 && wrong.indexOf(w) === -1) wrong.push(w);
-  }
-
-  var options = [correct].concat(wrong).sort(function() { return Math.random() - 0.5; });
-
-  var qEl = document.getElementById("captcha-question");
-  var oEl = document.getElementById("captcha-options");
-  var eEl = document.getElementById("captcha-error");
-  if (qEl) qEl.textContent = a + " + " + b + " = ?";
-  if (eEl) eEl.textContent = "";
-  if (oEl) {
-    oEl.innerHTML = options.map(function(v) {
-      return '<button class="captcha-btn" data-val="' + v + '">' + v + '</button>';
-    }).join("");
-
-    var handled = false;
-    oEl.querySelectorAll(".captcha-btn").forEach(function(btn) {
-      btn.addEventListener("touchstart", function(e) {
-        e.preventDefault();
-        if (handled) return;
-        handled = true;
-        var val = parseInt(btn.getAttribute("data-val"));
-        if (val === correct) {
-          btn.classList.add("correct");
-          haptic("heavy");
-          captchaPassed = true;
-          sessionStorage.setItem("captchaPassed", "1");
-          setTimeout(function() {
-            var modal = document.getElementById("captcha-modal");
-            if (modal) modal.classList.remove("active");
-            onPass();
-          }, 120);
-        } else {
-          btn.classList.add("wrong");
-          haptic("medium");
-          if (eEl) eEl.textContent = "Неверно! Попробуй ещё раз.";
-          setTimeout(function() { showCaptcha(onPass); }, 500);
-        }
-      }, { passive: false });
-
-      btn.onclick = function() {
-        if (handled) return;
-        handled = true;
-        var val = parseInt(btn.getAttribute("data-val"));
-        if (val === correct) {
-          btn.classList.add("correct");
-          haptic("heavy");
-          captchaPassed = true;
-          sessionStorage.setItem("captchaPassed", "1");
-          setTimeout(function() {
-            var modal = document.getElementById("captcha-modal");
-            if (modal) modal.classList.remove("active");
-            onPass();
-          }, 120);
-        } else {
-          btn.classList.add("wrong");
-          haptic("medium");
-          if (eEl) eEl.textContent = "Неверно! Попробуй ещё раз.";
-          setTimeout(function() { showCaptcha(onPass); }, 500);
-        }
-      };
-    });
-  }
-
-  // Показываем модальную панель поверх экрана загрузки
-  var modal = document.getElementById("captcha-modal");
-  if (modal) modal.classList.add("active");
-}
-
 function setPayStatus(msg, cls) {
   var el = document.getElementById("pay-status");
   if (!el) return;
@@ -360,58 +277,6 @@ function bindSettings() {
       haptic("light");
     };
   }
-}
-
-// ══════════════════════════════════════════════════════════
-// СТАРТ
-// ══════════════════════════════════════════════════════════
-
-function startApp() {
-  if (!TG_ID) {
-    showError(
-      "Не Telegram",
-      "Откройте приложение через Telegram Mini App.",
-      null
-    );
-    return;
-  }
-
-  var loadEl = document.getElementById("load-status");
-  if (loadEl) loadEl.textContent = "Регистрация...";
-
-  api("/register", {
-    tg_id:      TG_ID,
-    username:   TG_NAME,
-    first_name: TG_FIRST,
-    init_data:  INIT_DATA,
-  }).then(function() {
-    return api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA));
-  }).then(function(stats) {
-    var uEl = document.getElementById("top-username");
-    if (uEl) uEl.textContent = "@" + TG_NAME;
-
-    var suEl = document.getElementById("settings-username");
-    if (suEl) suEl.textContent = "@" + TG_NAME;
-
-    var total = (stats.total_cycles || 0) * 10 + (stats.cycle_spin || 0);
-    var sEl = document.getElementById("top-stats");
-    if (sEl) sEl.textContent = total + " ставок";
-
-    var ssEl = document.getElementById("settings-stats");
-    if (ssEl) ssEl.textContent = total + " ставок";
-
-    loadInventory();
-    showScreen("screen-main");
-    bindButtons();
-
-    // Запускаем видео после показа экрана
-    setTimeout(forcePlayAllVideos, 300);
-    setTimeout(setupVideoObserver, 300);
-  }).catch(function(e) {
-    showError("Ошибка подключения", e.message || "Попробуй позже.", function() {
-      location.reload();
-    });
-  });
 }
 
 // ══════════════════════════════════════════════════════════
@@ -760,11 +625,31 @@ function runDemoSpin() {
 window.addEventListener("load", function() {
   forcePlayAllVideos();
 
-  if (captchaPassed) {
-    startApp();
-  } else {
-    showCaptcha(function() {
-      startApp();
-    });
+  // Если капча не пройдена — редирект на главную
+  if (sessionStorage.getItem("captchaPassed") !== "1") {
+    window.location.href = "index.html";
+    return;
+  }
+
+  // Сразу показываем рулетку — без загрузки
+  showScreen("screen-main");
+  bindButtons();
+  setTimeout(forcePlayAllVideos, 300);
+  setTimeout(setupVideoObserver, 300);
+
+  // Тихо регистрируем/обновляем статистику в фоне
+  if (TG_ID) {
+    api("/register", {
+      tg_id:      TG_ID,
+      username:   TG_NAME,
+      first_name: TG_FIRST,
+      init_data:  INIT_DATA,
+    }).then(function() {
+      return api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA));
+    }).then(function(stats) {
+      var total = (stats.total_cycles || 0) * 10 + (stats.cycle_spin || 0);
+      var sEl = document.getElementById("top-stats");
+      if (sEl) sEl.textContent = total + " ставок";
+    }).catch(function() {});
   }
 });
