@@ -40,8 +40,8 @@
         rgba(255,255,255,0.04) 60%,
         rgba(255,255,255,0.09) 100%
       );
-    border: 1px solid rgba(255,255,255,0.28);
-    border-bottom-color: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255, 255, 255, 0.41);
+    border-bottom-color: rgba(255, 255, 255, 0.21);
     border-right-color: rgba(255,255,255,0.14);
     border-radius: 22px;
     backdrop-filter: blur(40px) saturate(200%) brightness(1.08);
@@ -132,6 +132,7 @@
     text-align: center;
     position: relative;
     overflow: hidden;
+    margin: 10px;
   }
   .profile-stat::before {
     content: '';
@@ -143,7 +144,7 @@
     pointer-events: none;
   }
   .profile-stat-value {
-    font-family: 'Unbounded', sans-serif;
+    font-family: 'Arial', sans-serif;
     font-size: 22px;
     font-weight: 900;
     color: #fff;
@@ -229,10 +230,6 @@
       <div class="profile-stat">
         <div class="profile-stat-value" id="stat-wins">0</div>
         <div class="profile-stat-label">Выигрышей</div>
-      </div>
-      <div class="profile-stat">
-        <div class="profile-stat-value" id="stat-cycle">0</div>
-        <div class="profile-stat-label">В цикле</div>
       </div>
     </div>
 
