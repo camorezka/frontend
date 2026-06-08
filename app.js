@@ -300,16 +300,11 @@ function startApp() {
   }
 
   var loadEl = document.getElementById("load-status");
-  if (loadEl) loadEl.textContent = "Регистрация...";
+  if (loadEl) loadEl.textContent = "Загрузка...";
 
-  api("/register", {
-    tg_id:      TG_ID,
-    username:   TG_NAME,
-    first_name: TG_FIRST,
-    init_data:  INIT_DATA,
-  }).then(function() {
-    return api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA));
-  }).then(function(stats) {
+  // Регистрация уже выполнена в home.html — просто грузим статистику
+  api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA))
+  .then(function(stats) {
     var uEl = document.getElementById("top-username");
     if (uEl) uEl.textContent = "@" + TG_NAME;
 
@@ -327,13 +322,15 @@ function startApp() {
     showScreen("screen-main");
     bindButtons();
 
-    // Запускаем видео после показа экрана
     setTimeout(forcePlayAllVideos, 200);
     setTimeout(setupVideoObserver, 300);
-  }).catch(function(e) {
-    showError("Ошибка подключения", e.message || "Попробуй позже.", function() {
-      location.reload();
-    });
+  }).catch(function() {
+    // Даже если статистика не загрузилась — показываем экран, не блокируем пользователя
+    loadInventory();
+    showScreen("screen-main");
+    bindButtons();
+    setTimeout(forcePlayAllVideos, 200);
+    setTimeout(setupVideoObserver, 300);
   });
 }
 
