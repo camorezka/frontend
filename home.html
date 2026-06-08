@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>LEONARDO GAME — Главная</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+<style>
+  .home-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    gap: 16px;
+  }
+  .home-logo {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(22px, 6vw, 28px);
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+  .home-logo-sub {
+    font-size: 13px;
+    color: var(--sub);
+    text-align: center;
+    margin-top: 8px;
+  }
+  .home-soon {
+    margin-top: 32px;
+    padding: 18px 28px;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(255,255,255,0.12) 0%,
+        rgba(255,255,255,0.04) 50%,
+        rgba(255,255,255,0.08) 100%
+      );
+    border: 1px solid rgba(255,255,255,0.20);
+    border-top-color: rgba(255,255,255,0.35);
+    border-radius: 18px;
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.22);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-soon::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+    pointer-events: none;
+    border-radius: 18px 18px 0 0;
+  }
+  .home-soon-label {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--sub);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  .home-soon-text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+  }
+
+  /* Stars balance display */
+  .stars-balance {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    margin-top: 16px;
+  }
+  .stars-balance img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+  .stars-balance .stars-amount {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .stars-balance .stars-label {
+    font-size: 12px;
+    color: var(--sub);
+    margin-left: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="screen active" id="screen-home" style="display:flex; justify-content:space-between;">
+
+  <!-- КОНТЕНТ -->
+  <div class="home-content">
+    <div>
+      <div class="home-logo">LEONARDO GAME</div>
+      <div class="home-logo-sub">Выигрывай крутые подарки вместе с нами</div>
+    </div>
+
+    <!-- Баланс Stars -->
+    <div class="stars-balance" id="stars-balance">
+      <img src="photos/stars.png" alt="Stars"/>
+      <span class="stars-amount" id="stars-amount">0</span>
+      <span class="stars-label">Stars</span>
+    </div>
+
+    <div class="home-soon">
+      <div class="home-soon-label">Скоро</div>
+      <div class="home-soon-text">Здесь появятся новости,<br>акции и специальные события</div>
+    </div>
+  </div>
+
+  <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+  <nav class="bottom-nav">
+    <a href="home.html" class="nav-tab active" id="nav-home">
+      <img src="photos/main.png" class="nav-icon-img" alt=""/>
+      <span>Главная</span>
+    </a>
+    <a href="inventory.html" class="nav-tab" id="nav-inventory">
+      <img src="photos/inventory.png" class="nav-icon-img" alt=""/>
+      <span>Инвентарь</span>
+    </a>
+    <a href="index.html" class="nav-tab" id="nav-spin">
+      <img src="photos/fortune.png" class="nav-icon-img" alt=""/>
+      <span>Фортуна</span>
+    </a>
+    <a href="profile.html" class="nav-tab" id="nav-profile">
+      <img src="photos/profile.png" class="nav-icon-img" alt=""/>
+      <span>Профиль</span>
+    </a>
+    <a href="settings.html" class="nav-tab" id="nav-settings">
+      <img src="photos/settings.png" class="nav-icon-img" alt=""/>
+      <span>Настройки</span>
+    </a>
+  </nav>
+
+</div>
+
+<script>
+  var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+  if (tg) { tg.ready(); tg.expand(); }
+
+  var tgUser   = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : {};
+  var TG_ID    = tgUser.id       || 0;
+  var TG_NAME  = tgUser.username || tgUser.first_name || "user";
+  var INIT_DATA = (tg && tg.initData) ? tg.initData : "";
+  var API_URL  = "https://backend-9iys.onrender.com";
+
+  function loadStarsBalance() {
+    if (!TG_ID) return;
+    fetch(API_URL + "/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA))
+      .then(function(r) { return r.json(); })
+      .then(function(s) {
+        var starsAmount = s.stars_balance || 0;
+        var el = document.getElementById("stars-amount");
+        if (el) el.textContent = starsAmount;
+      }).catch(function() {});
+  }
+
+  loadStarsBalance();
+</script>
+
+</body>
+</html>

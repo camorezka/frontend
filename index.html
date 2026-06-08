@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>LEONARDO GAME — Фортуна</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ЗАГРУЗКА -->
+<div class="screen active" id="screen-loading">
+  <div class="load-orb"></div>
+  <div class="load-title">LEONARDO GAME</div>
+  <div class="load-sub" id="load-status">Подключение...</div>
+</div>
+
+<!-- ГЛАВНЫЙ ЭКРАН (КРУТИТЬ) -->
+<div class="screen" id="screen-main">
+
+  <!-- ЗАГОЛОВОК -->
+  <div class="main-title-block">
+    <div class="main-title">LEONARDO GAME</div>
+    <div class="main-sub">Выигрывай крутые подарки вместе с нами</div>
+  </div>
+
+  <!-- Stars balance -->
+  <div class="stars-balance-inline" id="stars-balance">
+    <img src="photos/stars.png" alt="Stars"/>
+    <span class="stars-amount" id="stars-amount">0</span>
+    <span class="stars-label">Stars</span>
+  </div>
+
+  <!-- ЛЕНТА ВИДЕО -->
+  <div class="gifts-track-wrap">
+    <div class="gifts-track" id="gifts-track">
+      <video src="photos/ring.mp4"     autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/bear.mp4"     autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/icecream.mp4" autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/lighting.mp4" autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/ring2.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/rocket.mp4"   autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/socks.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/sushi.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/skull.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/koldun.mp4"   autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/lolipop.mp4"  autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/heart.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/eye.mp4"      autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/cat.mp4"      autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <!-- дубли для бесшовного loop -->
+      <video src="photos/ring.mp4"     autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/bear.mp4"     autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/icecream.mp4" autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/lighting.mp4" autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/ring2.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/rocket.mp4"   autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/socks.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/sushi.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/skull.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/koldun.mp4"   autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/lolipop.mp4"  autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/heart.mp4"    autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/eye.mp4"      autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <video src="photos/cat.mp4"      autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+    </div>
+  </div>
+
+  <!-- КНОПКА + ПОДПИСЬ -->
+  <div class="spin-btn-wrap">
+    <button class="spin-btn" id="spin-btn">Крутить рулетку</button>
+    <div class="spin-hint">Прокрути рулетку чтобы сорвать куш!</div>
+  </div>
+
+  <!-- СТЕКЛЯННАЯ ПАНЕЛЬ -->
+  <div class="glass-panel" id="glass-panel" style="display:none">
+    <div class="tab-pane active" id="tab-spin">
+      <div class="algo-compact" id="algo-block"></div>
+    </div>
+  </div>
+
+  <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+  <nav class="bottom-nav">
+    <a href="home.html" class="nav-tab" id="nav-home">
+      <img src="photos/main.png" class="nav-icon-img" alt=""/>
+      <span>Главная</span>
+    </a>
+    <a href="inventory.html" class="nav-tab" id="nav-inventory">
+      <img src="photos/inventory.png" class="nav-icon-img" alt=""/>
+      <span>Инвентарь</span>
+    </a>
+    <a href="index.html" class="nav-tab active" id="nav-spin">
+      <img src="photos/fortune.png" class="nav-icon-img" alt=""/>
+      <span>Фортуна</span>
+    </a>
+    <a href="profile.html" class="nav-tab" id="nav-profile">
+      <img src="photos/profile.png" class="nav-icon-img" alt=""/>
+      <span>Профиль</span>
+    </a>
+    <a href="settings.html" class="nav-tab" id="nav-settings">
+      <img src="photos/settings.png" class="nav-icon-img" alt=""/>
+      <span>Настройки</span>
+    </a>
+  </nav>
+
+</div>
+
+<!-- ИНСТРУКЦИЯ: отправить кольца -->
+<div class="screen" id="screen-pay">
+  <div class="pay-wrap">
+    <div class="pay-icon">💍</div>
+    <div class="pay-title">Отправьте 2 кольца</div>
+    <div class="pay-instruction">
+      Отправьте 2 кольца на аккаунт <b id="ring-account">@kinub</b>
+    </div>
+    <div class="pay-steps">
+      <div class="pay-step">1. Откройте профиль <b id="ring-account-link">@kinub</b> в Telegram</div>
+      <div class="pay-step">2. Нажмите «Подарить» → выберите «Кольцо»</div>
+      <div class="pay-step">3. Отправьте 2 кольца (по одному или сразу 2)</div>
+      <div class="pay-step">4. Ждите — рулетка запустится автоматически ✨</div>
+    </div>
+    <div class="pay-bet-id">ID ставки: <b id="pay-bet-id">—</b></div>
+    <div class="pay-status" id="pay-status"></div>
+    <button class="pay-confirm-btn" id="pay-confirm-btn">✅ Я отправил — проверить</button>
+    <button class="pay-back-btn" id="pay-back-btn">← Назад</button>
+  </div>
+</div>
+
+<!-- ПРОКРУТКА -->
+<div class="screen" id="screen-spinning">
+  <div class="spinning-wrap">
+    <div class="spinning-reel">
+      <div class="spin-sym" id="spin-sym-1">💍</div>
+    </div>
+    <div class="spinning-label">Крутим...</div>
+  </div>
+</div>
+
+<!-- РЕЗУЛЬТАТ -->
+<div class="screen" id="screen-result">
+  <div class="result-wrap" id="result-wrap"></div>
+</div>
+
+<!-- ОШИБКА -->
+<div class="screen" id="screen-error">
+  <div class="error-wrap">
+    <div class="error-icon">⚠️</div>
+    <div class="error-title" id="error-title">Ошибка</div>
+    <div class="error-sub" id="error-sub">Что-то пошло не так</div>
+    <button class="error-btn" id="error-btn">Попробовать снова</button>
+  </div>
+</div>
+
+<!-- КАПЧА — модальная стеклянная панель -->
+<div id="captcha-modal" class="captcha-modal">
+  <div class="captcha-glass-panel">
+    <div class="captcha-icon">🔐</div>
+    <div class="captcha-title">Проверка</div>
+    <div class="captcha-sub">Подтверди что ты не бот</div>
+    <div class="captcha-question" id="captcha-question">?</div>
+    <div class="captcha-options" id="captcha-options"></div>
+    <div class="captcha-error" id="captcha-error"></div>
+  </div>
+</div>
+
+<!-- ТОСТ -->
+<div class="toast" id="toast"></div>
+<div id="confetti-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
