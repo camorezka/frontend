@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>LEONARDO GAME</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Lottie player для .tgs стикеров -->
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
@@ -29,7 +31,7 @@
       <!-- РУЛЕТКА -->
       <div class="home-block hb-gold hb-left" onclick="switchTab('spin')">
         <div class="hb-media">
-          <video src="photos2/dep.mp4" autoplay loop muted playsinline webkit-playsinline preload="auto"></video>
+          <lottie-player src="photos2/dep.tgs" background="transparent" speed="1" loop autoplay></lottie-player>
         </div>
         <div class="hb-body">
           <div class="home-block-title">РУЛЕТКА</div>
@@ -43,13 +45,13 @@
           <div class="home-block-sub">Все выигранные NFT-подарки хранятся здесь</div>
         </div>
         <div class="hb-media">
-          <video src="photos2/inv.mp4" autoplay loop muted playsinline webkit-playsinline preload="auto"></video>
+          <lottie-player src="photos2/inv.tgs" background="transparent" speed="1" loop autoplay></lottie-player>
         </div>
       </div>
       <!-- РЕФ. СИСТЕМА -->
       <div class="home-block hb-blue hb-left">
         <div class="hb-media">
-          <video src="photos2/ref.mp4" autoplay loop muted playsinline webkit-playsinline preload="auto"></video>
+          <lottie-player src="photos2/ref.tgs" background="transparent" speed="1" loop autoplay></lottie-player>
         </div>
         <div class="hb-body">
           <div class="home-block-title">РЕФ. СИСТЕМА</div>
@@ -63,25 +65,29 @@
           <div class="home-block-sub">Соревнуйся с другими — попади в топ</div>
         </div>
         <div class="hb-media">
-          <video src="photos2/top.mp4" autoplay loop muted playsinline webkit-playsinline preload="auto"></video>
+          <lottie-player src="photos2/top.tgs" background="transparent" speed="1" loop autoplay></lottie-player>
         </div>
       </div>
     </div>
   </div>
   <nav class="bottom-nav">
-    <button class="nav-tab active" onclick="switchTab('home')" id="navbtn-home">
+    <button class="nav-tab active" onclick="switchTab('home')" data-tab="home" id="navbtn-home">
       <img src="photos/main.png" class="nav-icon-img" alt=""/><span>Главная</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('inventory')" id="navbtn-inventory">
+    <button class="nav-tab" onclick="switchTab('inventory')" data-tab="inventory" id="navbtn-inventory">
       <img src="photos/inventory.png" class="nav-icon-img" alt=""/><span>Инвентарь</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('spin')" id="navbtn-spin">
-      <img src="photos/fortune.png" class="nav-icon-img" alt=""/><span>Фортуна</span>
+    <button class="nav-tab nav-tab-spin" onclick="switchTab('spin')" data-tab="spin" id="navbtn-spin">
+      <div class="nav-spin-highlight"></div>
+      <div class="nav-spin-icon-wrap">
+        <img src="photos/fortune.png" class="nav-icon-img nav-icon-fortune" alt=""/>
+      </div>
+      <span class="nav-spin-label">Фортуна</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('profile')" id="navbtn-profile">
+    <button class="nav-tab" onclick="switchTab('profile')" data-tab="profile" id="navbtn-profile">
       <img src="photos/profile.png" class="nav-icon-img" alt=""/><span>Профиль</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('settings')" id="navbtn-settings">
+    <button class="nav-tab" onclick="switchTab('settings')" data-tab="settings" id="navbtn-settings">
       <img src="photos/settings.png" class="nav-icon-img" alt=""/><span>Настройки</span>
     </button>
   </nav>
@@ -97,19 +103,23 @@
     </div>
   </div>
   <nav class="bottom-nav">
-    <button class="nav-tab" onclick="switchTab('home')" id="navbtn2-home">
+    <button class="nav-tab" onclick="switchTab('home')" data-tab="home" id="navbtn2-home">
       <img src="photos/main.png" class="nav-icon-img" alt=""/><span>Главная</span>
     </button>
-    <button class="nav-tab active" onclick="switchTab('inventory')" id="navbtn2-inventory">
+    <button class="nav-tab active" onclick="switchTab('inventory')" data-tab="inventory" id="navbtn2-inventory">
       <img src="photos/inventory.png" class="nav-icon-img" alt=""/><span>Инвентарь</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('spin')" id="navbtn2-spin">
-      <img src="photos/fortune.png" class="nav-icon-img" alt=""/><span>Фортуна</span>
+    <button class="nav-tab nav-tab-spin" onclick="switchTab('spin')" data-tab="spin" id="navbtn2-spin">
+      <div class="nav-spin-highlight"></div>
+      <div class="nav-spin-icon-wrap">
+        <img src="photos/fortune.png" class="nav-icon-img nav-icon-fortune" alt=""/>
+      </div>
+      <span class="nav-spin-label">Фортуна</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('profile')" id="navbtn2-profile">
+    <button class="nav-tab" onclick="switchTab('profile')" data-tab="profile" id="navbtn2-profile">
       <img src="photos/profile.png" class="nav-icon-img" alt=""/><span>Профиль</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('settings')" id="navbtn2-settings">
+    <button class="nav-tab" onclick="switchTab('settings')" data-tab="settings" id="navbtn2-settings">
       <img src="photos/settings.png" class="nav-icon-img" alt=""/><span>Настройки</span>
     </button>
   </nav>
@@ -158,19 +168,23 @@
     <div class="spin-hint">Прокрути рулетку чтобы сорвать куш!</div>
   </div>
   <nav class="bottom-nav">
-    <button class="nav-tab" onclick="switchTab('home')" id="navbtn3-home">
+    <button class="nav-tab" onclick="switchTab('home')" data-tab="home" id="navbtn3-home">
       <img src="photos/main.png" class="nav-icon-img" alt=""/><span>Главная</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('inventory')" id="navbtn3-inventory">
+    <button class="nav-tab" onclick="switchTab('inventory')" data-tab="inventory" id="navbtn3-inventory">
       <img src="photos/inventory.png" class="nav-icon-img" alt=""/><span>Инвентарь</span>
     </button>
-    <button class="nav-tab active" onclick="switchTab('spin')" id="navbtn3-spin">
-      <img src="photos/fortune.png" class="nav-icon-img" alt=""/><span>Фортуна</span>
+    <button class="nav-tab nav-tab-spin active" onclick="switchTab('spin')" data-tab="spin" id="navbtn3-spin">
+      <div class="nav-spin-highlight"></div>
+      <div class="nav-spin-icon-wrap">
+        <img src="photos/fortune.png" class="nav-icon-img nav-icon-fortune" alt=""/>
+      </div>
+      <span class="nav-spin-label">Фортуна</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('profile')" id="navbtn3-profile">
+    <button class="nav-tab" onclick="switchTab('profile')" data-tab="profile" id="navbtn3-profile">
       <img src="photos/profile.png" class="nav-icon-img" alt=""/><span>Профиль</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('settings')" id="navbtn3-settings">
+    <button class="nav-tab" onclick="switchTab('settings')" data-tab="settings" id="navbtn3-settings">
       <img src="photos/settings.png" class="nav-icon-img" alt=""/><span>Настройки</span>
     </button>
   </nav>
@@ -207,19 +221,23 @@
     </div>
   </div>
   <nav class="bottom-nav">
-    <button class="nav-tab" onclick="switchTab('home')" id="navbtn4-home">
+    <button class="nav-tab" onclick="switchTab('home')" data-tab="home" id="navbtn4-home">
       <img src="photos/main.png" class="nav-icon-img" alt=""/><span>Главная</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('inventory')" id="navbtn4-inventory">
+    <button class="nav-tab" onclick="switchTab('inventory')" data-tab="inventory" id="navbtn4-inventory">
       <img src="photos/inventory.png" class="nav-icon-img" alt=""/><span>Инвентарь</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('spin')" id="navbtn4-spin">
-      <img src="photos/fortune.png" class="nav-icon-img" alt=""/><span>Фортуна</span>
+    <button class="nav-tab nav-tab-spin" onclick="switchTab('spin')" data-tab="spin" id="navbtn4-spin">
+      <div class="nav-spin-highlight"></div>
+      <div class="nav-spin-icon-wrap">
+        <img src="photos/fortune.png" class="nav-icon-img nav-icon-fortune" alt=""/>
+      </div>
+      <span class="nav-spin-label">Фортуна</span>
     </button>
-    <button class="nav-tab active" onclick="switchTab('profile')" id="navbtn4-profile">
+    <button class="nav-tab active" onclick="switchTab('profile')" data-tab="profile" id="navbtn4-profile">
       <img src="photos/profile.png" class="nav-icon-img" alt=""/><span>Профиль</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('settings')" id="navbtn4-settings">
+    <button class="nav-tab" onclick="switchTab('settings')" data-tab="settings" id="navbtn4-settings">
       <img src="photos/settings.png" class="nav-icon-img" alt=""/><span>Настройки</span>
     </button>
   </nav>
@@ -255,19 +273,23 @@
     </div>
   </div>
   <nav class="bottom-nav">
-    <button class="nav-tab" onclick="switchTab('home')" id="navbtn5-home">
+    <button class="nav-tab" onclick="switchTab('home')" data-tab="home" id="navbtn5-home">
       <img src="photos/main.png" class="nav-icon-img" alt=""/><span>Главная</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('inventory')" id="navbtn5-inventory">
+    <button class="nav-tab" onclick="switchTab('inventory')" data-tab="inventory" id="navbtn5-inventory">
       <img src="photos/inventory.png" class="nav-icon-img" alt=""/><span>Инвентарь</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('spin')" id="navbtn5-spin">
-      <img src="photos/fortune.png" class="nav-icon-img" alt=""/><span>Фортуна</span>
+    <button class="nav-tab nav-tab-spin" onclick="switchTab('spin')" data-tab="spin" id="navbtn5-spin">
+      <div class="nav-spin-highlight"></div>
+      <div class="nav-spin-icon-wrap">
+        <img src="photos/fortune.png" class="nav-icon-img nav-icon-fortune" alt=""/>
+      </div>
+      <span class="nav-spin-label">Фортуна</span>
     </button>
-    <button class="nav-tab" onclick="switchTab('profile')" id="navbtn5-profile">
+    <button class="nav-tab" onclick="switchTab('profile')" data-tab="profile" id="navbtn5-profile">
       <img src="photos/profile.png" class="nav-icon-img" alt=""/><span>Профиль</span>
     </button>
-    <button class="nav-tab active" onclick="switchTab('settings')" id="navbtn5-settings">
+    <button class="nav-tab active" onclick="switchTab('settings')" data-tab="settings" id="navbtn5-settings">
       <img src="photos/settings.png" class="nav-icon-img" alt=""/><span>Настройки</span>
     </button>
   </nav>
