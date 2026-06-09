@@ -13,6 +13,7 @@
   --gold:         #F5C518;
   --green:        #4ade80;
   --red:          #f87171;
+  --blue-accent:  #38bdf8;
   --text:         #ffffff;
   --sub:          rgba(255,255,255,0.45);
   --btn-bg:       #ffffff;
@@ -44,21 +45,11 @@ html, body {
 }
 .screen.active { display: flex; }
 
-#screen-home {
-  margin-top:40px;
-  }
-  
-#screen-inventory {
-  margin-top:40px;
-  }
+#screen-home      { margin-top: 40px; }
+#screen-inventory { margin-top: 40px; }
+#screen-settings  { margin-top: 40px; }
+#screen-profile   { margin-top: 40px; }
 
-#screen-settings {
-  margin-top:40px;
-  }
-  
-#screen-profile {
-  margin-top:40px;
-  }
 /* ══════════════════════════════
    LOADING
 ══════════════════════════════ */
@@ -86,7 +77,7 @@ html, body {
 .load-sub { color: var(--sub); font-size: 13px; }
 
 /* ══════════════════════════════
-   PAGE LAYOUT (общий для вкладок с навбаром)
+   PAGE LAYOUT
 ══════════════════════════════ */
 .page-content {
   flex: 1;
@@ -98,7 +89,10 @@ html, body {
   padding-top: 58px;
   padding-bottom: 8px;
   width: 100%;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
+.page-content::-webkit-scrollbar { display: none; }
 
 .page-title {
   font-family: 'Unbounded', sans-serif;
@@ -146,36 +140,56 @@ html, body {
 }
 .home-logo-sub { font-size: 12px; color: var(--sub); margin-top: 4px; }
 
-.home-blocks { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.home-blocks { display: flex; flex-direction: column; gap: 14px; width: 100%; }
 
+/* Скролл главной без скроллбара */
+#screen-home .page-content {
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+#screen-home .page-content::-webkit-scrollbar { display: none; }
+#screen-home .home-blocks { padding-bottom: calc(var(--nav-h) + 40px); }
+
+/* ── HOME BLOCKS ─── */
 .home-block {
   width: 100%; box-sizing: border-box;
-  padding: 20px;
+  padding: 22px 24px;
   background: linear-gradient(135deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.08) 100%);
   border: 1px solid rgba(255,255,255,0.20);
   border-top-color: rgba(255,255,255,0.35);
-  border-radius: 20px;
+  border-radius: 22px;
   backdrop-filter: blur(30px) saturate(180%);
   -webkit-backdrop-filter: blur(30px) saturate(180%);
   box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.22);
   position: relative; overflow: hidden;
-  min-height: 90px; display: flex; flex-direction: column; justify-content: center; gap: 6px;
+  min-height: 110px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 18px;
   cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.22s ease,
+              border-color 0.22s ease,
+              background 0.22s ease;
 }
 .home-block::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 40%;
   background: linear-gradient(180deg, rgba(255,255,255,0.13) 0%, transparent 100%);
-  pointer-events: none; border-radius: 20px 20px 0 0;
+  pointer-events: none; border-radius: 22px 22px 0 0;
 }
-.home-block-icon  { font-size: 28px; line-height: 1; position: relative; z-index: 1; }
-.home-block-title { font-family: 'Unbounded', sans-serif; font-size: 14px; font-weight: 700; color: #fff; position: relative; z-index: 1; }
-.home-block-sub   { font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.5; position: relative; z-index: 1; }
-.home-block-badge {
-  display: inline-block; font-family: 'Unbounded', sans-serif;
-  font-size: 9px; font-weight: 700; color: #000; background: #fff;
-  padding: 3px 8px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase;
-  position: relative; z-index: 1; margin-top: 4px; width: fit-content;
+
+.home-block:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.35);
+  background: linear-gradient(135deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.13) 100%);
 }
+.home-block:active {
+  transform: scale(0.97);
+  transition: transform 0.1s;
+}
+
 .hb-gold   { border-top-color: rgba(255,220,100,0.5); }
 .hb-gold::after   { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:radial-gradient(circle,rgba(255,220,80,.25) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
 .hb-blue   { border-top-color: rgba(100,180,255,0.5); }
@@ -185,49 +199,38 @@ html, body {
 .hb-green  { border-top-color: rgba(100,255,160,0.5); }
 .hb-green::after  { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:radial-gradient(circle,rgba(80,255,140,.2) 0%,transparent 70%); border-radius:50%; pointer-events:none; }
 
-/* ── Новые блоки главной (горизонтальный layout + аудио) ─── */
-.home-block {
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 18px !important;
-  padding: 22px 24px !important;
-  min-height: 120px !important;
-  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease !important;
-}
-.home-block:hover {
-  transform: translateY(-3px) scale(1.02) !important;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.35) !important;
-  background: linear-gradient(135deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.13) 100%) !important;
-}
-.home-block:active {
-  transform: scale(0.97) !important;
-  transition: transform 0.1s !important;
-}
-.hb-gold:hover   { border-color: rgba(255,220,100,0.65) !important; box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 24px rgba(255,220,80,0.18) !important; }
-.hb-purple:hover { border-color: rgba(180,120,255,0.65) !important; box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 24px rgba(160,100,255,0.18) !important; }
-.hb-blue:hover   { border-color: rgba(100,180,255,0.65) !important; box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 24px rgba(80,160,255,0.18) !important; }
-.hb-green:hover  { border-color: rgba(100,255,160,0.65) !important; box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 24px rgba(80,255,140,0.18) !important; }
+.hb-gold:hover   { border-color: rgba(255,220,100,0.65); box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 24px rgba(255,220,80,0.18); }
+.hb-purple:hover { border-color: rgba(180,120,255,0.65); box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 24px rgba(160,100,255,0.18); }
+.hb-blue:hover   { border-color: rgba(100,180,255,0.65); box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 24px rgba(80,160,255,0.18); }
+.hb-green:hover  { border-color: rgba(100,255,160,0.65); box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 24px rgba(80,255,140,0.18); }
 
-.hb-left  { flex-direction: row !important; }
-.hb-right { flex-direction: row-reverse !important; }
+.hb-left  { flex-direction: row; }
+.hb-right { flex-direction: row-reverse; }
 
+/* ── .tgs / lottie media container ── */
 .hb-media {
   flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  width: 96px; height: 96px;
+  width: 100px; height: 100px;
   border-radius: 20px;
   overflow: hidden;
   position: relative; z-index: 1;
   transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
 }
-.home-block:hover .hb-media {
-  transform: scale(1.06);
-}
-.hb-media video {
+.home-block:hover .hb-media { transform: scale(1.06); }
+
+.hb-media video,
+.hb-media lottie-player {
   width: 100%; height: 100%;
   object-fit: cover;
   border-radius: 20px;
   display: block;
+}
+
+/* Lottie-player нужен display:block и полные размеры */
+.hb-media lottie-player {
+  --lottie-player-width: 100%;
+  --lottie-player-height: 100%;
 }
 
 .hb-body {
@@ -236,25 +239,22 @@ html, body {
 }
 .hb-body-right { text-align: right; align-items: flex-end; }
 
+.home-block-icon  { font-size: 28px; line-height: 1; position: relative; z-index: 1; }
 .home-block-title {
-  font-family: 'Unbounded', sans-serif; font-size: 15px; font-weight: 700; color: #fff; position: relative; z-index: 1;
+  font-family: 'Unbounded', sans-serif; font-size: 15px; font-weight: 700; color: #fff;
+  position: relative; z-index: 1;
   transition: letter-spacing 0.22s ease;
 }
-.home-block:hover .home-block-title {
-  letter-spacing: 0.5px;
-}
+.home-block:hover .home-block-title { letter-spacing: 0.5px; }
 .home-block-sub {
   font-size: 12px; color: rgba(255,255,255,0.65); line-height: 1.55; position: relative; z-index: 1;
 }
-
-/* Скролл главной без скроллбара — последний блок видно */
-#screen-home .page-content {
-  overflow-y: scroll;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.home-block-badge {
+  display: inline-block; font-family: 'Unbounded', sans-serif;
+  font-size: 9px; font-weight: 700; color: #000; background: #fff;
+  padding: 3px 8px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase;
+  position: relative; z-index: 1; margin-top: 4px; width: fit-content;
 }
-#screen-home .page-content::-webkit-scrollbar { display: none; }
-#screen-home .home-blocks { padding-bottom: calc(var(--nav-h) + 28px); }
 
 /* ══════════════════════════════
    ИНВЕНТАРЬ — общие компоненты
@@ -266,6 +266,12 @@ html, body {
   border-radius: 16px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 2px 10px rgba(0,0,0,0.25);
   display: flex; align-items: center; gap: 14px;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+.inv-item:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.22);
+  transform: translateY(-1px);
 }
 .inv-icon  { font-size: 30px; }
 .inv-name  { font-size: 14px; font-weight: 600; color: #fff; }
@@ -311,7 +317,9 @@ html, body {
   border: 1px solid rgba(255,255,255,0.13); border-radius: 18px;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 2px 12px rgba(0,0,0,0.3); text-align: center; position: relative; overflow: hidden;
+  transition: background 0.2s, transform 0.15s;
 }
+.stat-card:hover { background: rgba(255,255,255,0.10); transform: translateY(-1px); }
 .stat-card::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 40%;
   background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 100%);
@@ -330,7 +338,9 @@ html, body {
   box-shadow: 0 2px 10px rgba(0,0,0,0.25);
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   width: 100%; box-sizing: border-box;
+  transition: background 0.2s;
 }
+.settings-item:hover { background: rgba(255,255,255,0.09); }
 .settings-item-label { font-size: 14px; font-weight: 600; color: #fff; }
 .settings-item-sub   { font-size: 12px; color: var(--sub); margin-top: 2px; }
 .settings-item-value { font-size: 13px; color: var(--sub); flex-shrink: 0; }
@@ -414,7 +424,8 @@ html, body {
   background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 70%);
   border-radius: 50%; filter: blur(6px); pointer-events: none;
 }
-.spin-btn:active   { transform: scale(0.97); box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.20) inset, 0 -1px 0 rgba(0,0,0,0.25) inset; }
+.spin-btn:hover   { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 2px 0 rgba(255,255,255,0.35) inset; }
+.spin-btn:active  { transform: scale(0.97); box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.20) inset, 0 -1px 0 rgba(0,0,0,0.25) inset; }
 .spin-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 .spin-hint { text-align: center; font-size: 12px; color: var(--sub); line-height: 1.5; }
@@ -436,6 +447,7 @@ html, body {
   z-index: 100;
   padding-bottom: env(safe-area-inset-bottom, 0px);
   border-radius: 20px;
+  overflow: visible;
 }
 .bottom-nav::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
@@ -463,6 +475,82 @@ html, body {
 }
 .nav-tab.active .nav-icon-img { opacity: 1; }
 
+/* Ховер на обычные табы */
+.nav-tab:not(.nav-tab-spin):hover { color: rgba(255,255,255,0.75); }
+.nav-tab:not(.nav-tab-spin):hover .nav-icon-img { opacity: 0.75; }
+
+/* ── FORTUNE / SPIN кнопка (центральная) ── */
+.nav-tab-spin {
+  position: relative;
+  flex: 1.2;
+  padding-bottom: 4px;
+  overflow: visible;
+  z-index: 10;
+}
+
+/* Закруглённое выделение сверху */
+.nav-spin-highlight {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 58px;
+  height: 28px;
+  background: linear-gradient(180deg, rgba(56,189,248,0.22) 0%, rgba(56,189,248,0.06) 100%);
+  border: 1px solid rgba(56,189,248,0.35);
+  border-bottom: none;
+  border-radius: 18px 18px 0 0;
+  pointer-events: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+.nav-tab-spin.active .nav-spin-highlight,
+.nav-tab-spin:hover .nav-spin-highlight {
+  background: linear-gradient(180deg, rgba(56,189,248,0.40) 0%, rgba(56,189,248,0.12) 100%);
+  border-color: rgba(56,189,248,0.60);
+}
+
+.nav-spin-icon-wrap {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px;
+  z-index: 1;
+}
+
+/* Иконка рулетки — голубая, крупнее */
+.nav-icon-fortune {
+  width: 28px !important;
+  height: 28px !important;
+  opacity: 0.6 !important;
+  filter: invert(72%) sepia(80%) saturate(400%) hue-rotate(170deg) brightness(1.1);
+  animation: fortune-spin-cycle 6s ease-in-out infinite;
+}
+.nav-tab-spin.active .nav-icon-fortune,
+.nav-tab-spin:hover .nav-icon-fortune {
+  opacity: 1 !important;
+  filter: invert(72%) sepia(80%) saturate(500%) hue-rotate(170deg) brightness(1.2) drop-shadow(0 0 6px rgba(56,189,248,0.6));
+}
+
+/* Циклическая анимация вращения: крутится → останавливается → крутится */
+@keyframes fortune-spin-cycle {
+  0%   { transform: rotate(0deg); }
+  35%  { transform: rotate(360deg); }
+  50%  { transform: rotate(360deg); }
+  85%  { transform: rotate(720deg); }
+  100% { transform: rotate(720deg); }
+}
+
+/* Надпись рулетки — голубая */
+.nav-spin-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(56,189,248,0.7);
+  transition: color 0.2s;
+}
+.nav-tab-spin.active .nav-spin-label,
+.nav-tab-spin:hover .nav-spin-label {
+  color: var(--blue-accent);
+}
+
 /* ══════════════════════════════
    ОПЛАТА
 ══════════════════════════════ */
@@ -484,12 +572,16 @@ html, body {
   background: var(--btn-bg); border: none; border-radius: 18px;
   font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 14px; color: var(--btn-text);
   cursor: pointer; box-shadow: 0 4px 24px rgba(255,255,255,0.15); touch-action: manipulation;
+  transition: transform 0.13s, box-shadow 0.13s;
 }
-.pay-confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.pay-confirm-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,255,255,0.22); }
+.pay-confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .pay-back-btn {
   background: var(--white-dim); border: 1px solid var(--glass-border);
   border-radius: 12px; padding: 12px 32px; color: var(--sub); font-size: 13px; cursor: pointer; touch-action: manipulation;
+  transition: background 0.2s, color 0.2s;
 }
+.pay-back-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
 /* ══════════════════════════════
    ПРОКРУТКА
@@ -527,7 +619,9 @@ html, body {
   font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 14px; color: var(--btn-text);
   cursor: pointer; margin-top: 8px; touch-action: manipulation;
   box-shadow: 0 4px 24px rgba(255,255,255,0.15);
+  transition: transform 0.13s, box-shadow 0.13s;
 }
+.result-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,255,255,0.22); }
 
 /* ══════════════════════════════
    ОШИБКА
@@ -537,7 +631,8 @@ html, body {
 .error-icon  { font-size: 56px; }
 .error-title { font-family: 'Unbounded', sans-serif; font-size: 18px; font-weight: 700; color: var(--red); }
 .error-sub   { font-size: 13px; color: var(--sub); }
-.error-btn   { padding: 14px 32px; background: var(--white-dim); border: 1px solid var(--glass-border); border-radius: 14px; color: var(--text); font-size: 14px; cursor: pointer; touch-action: manipulation; }
+.error-btn   { padding: 14px 32px; background: var(--white-dim); border: 1px solid var(--glass-border); border-radius: 14px; color: var(--text); font-size: 14px; cursor: pointer; touch-action: manipulation; transition: background 0.2s; }
+.error-btn:hover { background: rgba(255,255,255,0.12); }
 
 /* ══════════════════════════════
    ТОСТ
@@ -563,4 +658,60 @@ html, body {
 @keyframes conf-fall {
   0%  { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
   100%{ transform: translateY(110vh) translateX(var(--cx,40px)) rotate(var(--cr,360deg)); opacity: 0; }
+}
+
+/* ══════════════════════════════
+   ПК ОПТИМИЗАЦИЯ
+══════════════════════════════ */
+@media (min-width: 600px) {
+  html, body { display: flex; justify-content: center; align-items: center; background: #0a0a0a; }
+
+  .screen {
+    max-width: 420px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.08);
+    height: 92vh;
+    height: 92dvh;
+    top: 4vh;
+  }
+
+  .bottom-nav {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: calc(420px - 16px);
+  }
+
+  #screen-home, #screen-inventory, #screen-settings, #screen-profile {
+    margin-top: 0;
+  }
+
+  .home-block {
+    min-height: 120px;
+  }
+
+  .hb-media {
+    width: 110px;
+    height: 110px;
+  }
+
+  .spin-btn { font-size: 17px; }
+
+  .gifts-track video {
+    width: 180px; height: 180px;
+    max-width: 180px; max-height: 180px;
+  }
+}
+
+@media (min-width: 900px) {
+  .screen {
+    max-width: 430px;
+  }
+  .bottom-nav {
+    width: calc(430px - 16px);
+  }
 }
