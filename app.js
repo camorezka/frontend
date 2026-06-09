@@ -27,7 +27,7 @@ var PAY_MAX_ATTEMPTS = 24;
 // ══════════════════════════════════════════════════════════
 var carouselRAF   = null;
 var carouselPos   = 0;
-var carouselSpeed = 2.5;
+var carouselSpeed = 1.8;
 
 function getCarouselHalfWidth() {
   var track = document.getElementById("gifts-track");
