@@ -84,13 +84,7 @@ setInterval(function() {
   if (!carouselRAF) startCarousel();
 }, 3000);
 
-setInterval(function() {
-  if (document.visibilityState !== "visible") return;
-  if (currentTab !== "home") return;
-  document.querySelectorAll("#screen-home video").forEach(function(v) {
-    if (v.paused || v.ended) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
-  });
-}, 2000);
+// Home blocks use .tgs lottie-player — no video polling needed
 
 // ══════════════════════════════════════════════════════════
 // НАВИГАЦИЯ — переключение вкладок БЕЗ перезагрузки
