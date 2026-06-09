@@ -107,19 +107,9 @@ function switchTab(tab) {
   var el = document.getElementById(tabScreens[tab]);
   if (el) { el.style.display = "flex"; el.classList.add("active"); }
 
-  // Обновляем активную кнопку во всех нав-барах
+  // Активируем кнопки текущего таба по data-tab атрибуту
   document.querySelectorAll(".nav-tab").forEach(function(btn) {
-    btn.classList.remove("active");
-  });
-  // Активируем кнопки этого таба во всех навбарах
-  for (var i = 1; i <= 5; i++) {
-    var btn = document.getElementById("navbtn" + (i > 1 ? i : "") + "-" + tab);
-    // navbtn-home (первый навбар без цифры), navbtn2-home, etc.
-  }
-  // Универсальный способ — ищем по onclick
-  document.querySelectorAll(".nav-tab").forEach(function(btn) {
-    var attr = btn.getAttribute("onclick") || "";
-    if (attr.indexOf("'" + tab + "'") !== -1) btn.classList.add("active");
+    if (btn.getAttribute("data-tab") === tab) btn.classList.add("active");
   });
 
   haptic("light");
@@ -309,8 +299,7 @@ function loadProfile() {
   if (!TG_ID) return;
   api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA))
     .then(function(s) {
-      var total = (s.total_cycles || 0) * 10 + (s.cycle_spin || 0);
-      var sc = document.getElementById("profile-spins-count");
+      var total = (s.total_cycles || 0) * 5 + (s.cycle_spin || 0);
       var st = document.getElementById("stat-total");
       var sw = document.getElementById("stat-wins");
       if (sc) sc.textContent = total;
@@ -334,7 +323,7 @@ function loadSettingsData() {
   if (!TG_ID) return;
   api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA))
     .then(function(s) {
-      var total = (s.total_cycles || 0) * 10 + (s.cycle_spin || 0);
+      var total = (s.total_cycles || 0) * 5 + (s.cycle_spin || 0);
       var ssEl = document.getElementById("settings-stats");
       if (ssEl) ssEl.textContent = total + " ставок";
     }).catch(function() {});
