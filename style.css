@@ -429,6 +429,7 @@ html, body {
 ══════════════════════════════ */
 .bottom-nav {
   position: fixed;
+  overflow: hidden;
   bottom: 14px; left: 8px; right: 8px;
   height: var(--nav-h);
   background: linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.30) 100%);
@@ -441,7 +442,6 @@ html, body {
   z-index: 100;
   padding-bottom: env(safe-area-inset-bottom, 0px);
   border-radius: 20px;
-  overflow: visible;
 }
 .bottom-nav::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
@@ -493,43 +493,46 @@ html, body {
   display: none;
 }
 
-/* Арка-бугорок — уже, торчит меньше */
 .nav-spin-icon-wrap {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(100% - 2px);     /* слегка утоплен — меньше выпуклость */
+
+  /* выпуклость почти внутри панели */
+  bottom: calc(100% - 12px);
+
+  width: 90px;
+  height: 42px;
 
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  padding-bottom: 4px;
 
-  width: 52px;                  /* уже было 66px → уже */
-  height: 28px;                 /* ниже было 38px → меньше торчит */
+  border-radius: 50px 50px 0 0;
 
-  /* Арочная форма */
-  border-radius: 28px 28px 0 0;
-
-  /* Стиль повторяет стекло панели */
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.11) 0%,
-    rgba(255,255,255,0.05) 55%,
-    rgba(0,0,0,0.22) 100%
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.14) 0%,
+    rgba(255,255,255,0.08) 60%,
+    rgba(255,255,255,0.04) 100%
   );
-  border: 1px solid rgba(255,255,255,0.18);
-  border-top-color: rgba(255,255,255,0.32);
-  border-bottom: none;
-  /* Скрываем стык арки с панелью — нет видимой линии */
+
+  border: 1px solid rgba(255,255,255,0.16);
+
+  /* убираем линию снизу */
+  border-bottom: 0;
+
   box-shadow:
-    0 -3px 14px rgba(0,0,0,0.28),
-    inset 0 1px 0 rgba(255,255,255,0.22);
-  backdrop-filter: blur(40px) saturate(180%) brightness(1.05);
-  -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.05);
-  transition: border-color 0.2s, box-shadow 0.2s;
-  /* Перекрываем снизу, чтобы не было горизонтальной линии */
-  clip-path: inset(0 0 -4px 0);
+    0 -4px 18px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.25);
+
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+
+  z-index: 15;
 }
+
+
 .nav-tab-spin.active .nav-spin-icon-wrap,
 .nav-tab-spin:hover .nav-spin-icon-wrap {
   border-color: rgba(255,255,255,0.30);
@@ -539,19 +542,30 @@ html, body {
     inset 0 1px 0 rgba(255,255,255,0.30);
 }
 
-/* Иконка рулетки — крупнее, расположена ниже внутри панели */
 .nav-icon-fortune {
-  width: 34px !important;
-  height: 34px !important;
-  opacity: 0.65 !important;
-  filter: brightness(0) invert(1);
-  animation: fortune-spin 4s linear infinite;
-  display: block;
+  width: 42px !important;
+  height: 42px !important;
+
   position: absolute;
-  bottom: 18px;                 /* опускаем ниже — внутрь панели */
+
   left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  opacity: .85 !important;
+
+  filter: brightness(0) invert(1);
+
+  animation: fortune-spin 4s linear infinite;
 }
+
+
+:root{
+  --nav-h: 84px;
+}
+
+
 .nav-tab-spin.active .nav-icon-fortune,
 .nav-tab-spin:hover .nav-icon-fortune {
   opacity: 1 !important;
