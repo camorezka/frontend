@@ -90,11 +90,13 @@ setInterval(function() {
 // НАВИГАЦИЯ — переключение вкладок БЕЗ перезагрузки
 // ══════════════════════════════════════════════════════════
 var tabScreens = {
-  home:      "screen-home",
-  inventory: "screen-inventory",
-  spin:      "screen-spin",
-  profile:   "screen-profile",
-  settings:  "screen-settings"
+  home:        "screen-home",
+  inventory:   "screen-inventory",
+  spin:        "screen-spin",
+  profile:     "screen-profile",
+  settings:    "screen-settings",
+  referral:    "screen-referral",
+  leaderboard: "screen-leaderboard"
 };
 
 function switchTab(tab) {
@@ -122,6 +124,12 @@ function switchTab(tab) {
     setTimeout(forcePlayAllVideos, 100);
     setTimeout(forcePlayAllVideos, 400);
   }
+  if (tab === "spin") {
+    var spinWrap = document.getElementById("spin-btn-wrap");
+    if (spinWrap) spinWrap.style.marginTop = "";
+    var spinBtnEl = document.getElementById("spin-btn");
+    if (spinBtnEl) spinBtnEl.disabled = false;
+  }
   if (tab === "home") {
     // Перезагрузить TGS если ещё не загружены (или была ошибка)
     setTimeout(loadTgsAnimations, 80);
@@ -136,6 +144,12 @@ function switchTab(tab) {
   if (tab === "settings") {
     loadSettingsData();
   }
+  if (tab === "referral") {
+    loadReferral();
+  }
+  if (tab === "leaderboard") {
+    loadLeaderboard();
+  }
 }
 
 // ══════════════════════════════════════════════════════════
@@ -144,6 +158,7 @@ function switchTab(tab) {
 var ALL_SCREENS = [
   "screen-loading", "screen-home", "screen-inventory",
   "screen-spin", "screen-profile", "screen-settings",
+  "screen-referral", "screen-leaderboard",
   "screen-pay", "screen-spinning", "screen-result", "screen-error"
 ];
 
@@ -288,6 +303,25 @@ function loadProfile() {
   var uEl = document.getElementById("profile-username");
   if (uEl) uEl.textContent = "@" + TG_NAME;
 
+  // Загружаем фото профиля из Telegram
+  var photoEl = document.getElementById("profile-tg-photo");
+  var fallbackEl = document.getElementById("profile-avatar-fallback");
+  if (photoEl && tgUser && tgUser.photo_url) {
+    photoEl.src = tgUser.photo_url;
+    photoEl.style.display = "block";
+    if (fallbackEl) fallbackEl.style.display = "none";
+  } else if (photoEl) {
+    // Попробуем получить фото через API
+    api("/profile-photo/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA))
+      .then(function(res) {
+        if (res.photo_url) {
+          photoEl.src = res.photo_url;
+          photoEl.style.display = "block";
+          if (fallbackEl) fallbackEl.style.display = "none";
+        }
+      }).catch(function() {});
+  }
+
   loadStarsBalance("profile-stars-amount");
   if (!TG_ID) return;
   api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA))
@@ -364,6 +398,9 @@ function onSpinClick() {
   if (!TG_ID) { toast("Открой через Telegram Mini App"); return; }
   var btn = document.getElementById("spin-btn");
   if (btn) btn.disabled = true;
+  // Сдвигаем блок с кольцами вниз на 45px
+  var wrap = document.getElementById("spin-btn-wrap");
+  if (wrap) wrap.style.marginTop = "45px";
   haptic("medium");
 
   api("/create-bet", { tg_id: TG_ID, init_data: INIT_DATA })
@@ -500,6 +537,146 @@ function showResult(res) {
 }
 
 // ══════════════════════════════════════════════════════════
+// РЕФЕРАЛЬНАЯ СИСТЕМА
+// ══════════════════════════════════════════════════════════
+function loadReferral() {
+  var BOT_USERNAME = "leonardo_game_bot";
+  var refLink = "https://t.me/" + BOT_USERNAME + "?start=ref_" + TG_ID;
+  var linkBox = document.getElementById("ref-link-box");
+  if (linkBox) linkBox.textContent = refLink;
+
+  if (!TG_ID) return;
+  api("/referral/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA))
+    .then(function(res) {
+      var cntEl = document.getElementById("ref-count");
+      var ernEl = document.getElementById("ref-earned");
+      if (cntEl) cntEl.textContent = res.referral_count || 0;
+      if (ernEl) ernEl.textContent = (res.referral_count || 0) + " ⭐";
+    }).catch(function() {});
+}
+
+function copyRefLink() {
+  var BOT_USERNAME = "leonardo_game_bot";
+  var refLink = "https://t.me/" + BOT_USERNAME + "?start=ref_" + TG_ID;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(refLink).then(function() {
+      toast("Ссылка скопирована!");
+      haptic("light");
+    }).catch(function() { toast("Не удалось скопировать"); });
+  } else {
+    toast("Скопируй ссылку вручную");
+  }
+}
+
+function shareRefLink() {
+  var BOT_USERNAME = "leonardo_game_bot";
+  var refLink = "https://t.me/" + BOT_USERNAME + "?start=ref_" + TG_ID;
+  if (tg && tg.openTelegramLink) {
+    var shareUrl = "https://t.me/share/url?url=" + encodeURIComponent(refLink) + "&text=" + encodeURIComponent("🎰 Играй в LEONARDO GAME — выигрывай NFT-подарки!");
+    tg.openTelegramLink(shareUrl);
+  } else {
+    copyRefLink();
+  }
+  haptic("medium");
+}
+
+// ══════════════════════════════════════════════════════════
+// ТОПЫ ИГРОКОВ
+// ══════════════════════════════════════════════════════════
+var lbData = [];
+var lbPage = 0;
+var LB_PAGE_SIZE = 10;
+
+function loadLeaderboard() {
+  var podium = document.getElementById("lb-podium");
+  var list   = document.getElementById("lb-rest-list");
+  if (podium) podium.innerHTML = "<div class='lb-loading'>Загрузка...</div>";
+  if (list)   list.innerHTML = "";
+
+  api("/leaderboard?init_data=" + encodeURIComponent(INIT_DATA))
+    .then(function(res) {
+      lbData = res.players || [];
+      lbPage = 0;
+      renderPodium(lbData.slice(0, 3));
+      renderLbPage();
+    }).catch(function() {
+      if (podium) podium.innerHTML = "<div class='lb-loading'>Ошибка загрузки</div>";
+    });
+}
+
+function renderPodium(top3) {
+  var podium = document.getElementById("lb-podium");
+  if (!podium) return;
+  if (!top3 || top3.length === 0) { podium.innerHTML = ""; return; }
+
+  var medals = ["🥇", "🥈", "🥉"];
+  var labels = ["1", "2", "3"];
+
+  var p1 = top3[0] || null;
+  var p2 = top3[1] || null;
+  var p3 = top3[2] || null;
+
+  function podCard(p, rank, highlight) {
+    if (!p) return "<div class='lb-pod-card lb-pod-empty'></div>";
+    return "<div class='lb-pod-card" + (highlight ? " lb-pod-first" : "") + "'>" +
+      "<div class='lb-pod-medal'>" + medals[rank] + "</div>" +
+      "<div class='lb-pod-avatar'>👤</div>" +
+      "<div class='lb-pod-name'>@" + (p.username || "игрок") + "</div>" +
+      "<div class='lb-pod-score'>" + (p.total_spins || 0) + " ставок</div>" +
+      "</div>";
+  }
+
+  podium.innerHTML =
+    "<div class='lb-podium-row'>" +
+      "<div class='lb-pod-side'>" + podCard(p2, 1, false) + "</div>" +
+      "<div class='lb-pod-center'>" + podCard(p1, 0, true) + "</div>" +
+      "<div class='lb-pod-side'>" + podCard(p3, 2, false) + "</div>" +
+    "</div>";
+}
+
+function renderLbPage() {
+  var list = document.getElementById("lb-rest-list");
+  var pageInfo = document.getElementById("lb-page-info");
+  if (!list) return;
+
+  var rest = lbData.slice(3); // позиции 4-100
+  var totalPages = Math.max(1, Math.ceil(rest.length / LB_PAGE_SIZE));
+  if (lbPage >= totalPages) lbPage = totalPages - 1;
+  if (lbPage < 0) lbPage = 0;
+
+  var start = lbPage * LB_PAGE_SIZE;
+  var page  = rest.slice(start, start + LB_PAGE_SIZE);
+
+  if (page.length === 0) {
+    list.innerHTML = "<div class='lb-empty'>Список пуст</div>";
+  } else {
+    list.innerHTML = page.map(function(p, idx) {
+      var rank = 4 + start + idx;
+      var isMe = (p.tg_id === TG_ID);
+      return "<div class='lb-row" + (isMe ? " lb-row-me" : "") + "'>" +
+        "<div class='lb-row-rank'>" + rank + "</div>" +
+        "<div class='lb-row-avatar'>👤</div>" +
+        "<div class='lb-row-name'>@" + (p.username || "игрок") + "</div>" +
+        "<div class='lb-row-score'>" + (p.total_spins || 0) + " ст.</div>" +
+        "</div>";
+    }).join("");
+  }
+
+  if (pageInfo) pageInfo.textContent = (lbPage + 1) + " / " + totalPages;
+  var prev = document.getElementById("lb-prev");
+  var next = document.getElementById("lb-next");
+  if (prev) prev.disabled = lbPage === 0;
+  if (next) next.disabled = lbPage >= totalPages - 1;
+}
+
+function lbPrev() { if (lbPage > 0) { lbPage--; renderLbPage(); haptic("light"); } }
+function lbNext() {
+  var rest = lbData.slice(3);
+  var totalPages = Math.ceil(rest.length / LB_PAGE_SIZE);
+  if (lbPage < totalPages - 1) { lbPage++; renderLbPage(); haptic("light"); }
+}
+
+// ══════════════════════════════════════════════════════════
 // КНОПКИ
 // ══════════════════════════════════════════════════════════
 function bindButtons() {
@@ -510,7 +687,28 @@ function bindButtons() {
   if (confirmBtn) confirmBtn.onclick = function() { onCheckPayment(); };
 
   var backBtn = document.getElementById("pay-back-btn");
-  if (backBtn) backBtn.onclick = function() { stopPayCheck(); switchTab("spin"); };
+  if (backBtn) backBtn.onclick = function() {
+    stopPayCheck();
+    currentBetId = null;
+    // Сбрасываем сдвиг
+    var spinWrap = document.getElementById("spin-btn-wrap");
+    if (spinWrap) spinWrap.style.marginTop = "";
+    // Возвращаемся на экран рулетки
+    ALL_SCREENS.forEach(function(sid) {
+      var s = document.getElementById(sid);
+      if (s) { s.style.display = "none"; s.classList.remove("active"); }
+    });
+    var spinEl = document.getElementById("screen-spin");
+    if (spinEl) { spinEl.style.display = "flex"; spinEl.classList.add("active"); }
+    currentTab = "spin";
+    document.querySelectorAll(".nav-tab").forEach(function(btn) {
+      btn.classList.remove("active");
+      if (btn.getAttribute("data-tab") === "spin") btn.classList.add("active");
+    });
+    var spinBtn = document.getElementById("spin-btn");
+    if (spinBtn) spinBtn.disabled = false;
+    setTimeout(forcePlayAllVideos, 100);
+  };
 
   var errBtn = document.getElementById("error-btn");
   if (errBtn) errBtn.onclick = function() { switchTab("spin"); };
