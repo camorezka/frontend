@@ -50,7 +50,7 @@
         </div>
       </div>
       <!-- РЕФ. СИСТЕМА -->
-      <div class="home-block hb-blue hb-left">
+      <div class="home-block hb-blue hb-left" onclick="switchTab('referral')">
         <div class="hb-media">
           <div class="tgs-container" data-tgs="photos2/ref.tgs"></div>
         </div>
@@ -60,7 +60,7 @@
         </div>
       </div>
       <!-- ТОПЫ ИГРОКОВ -->
-      <div class="home-block hb-green hb-right">
+      <div class="home-block hb-green hb-right" onclick="switchTab('leaderboard')">
         <div class="hb-body hb-body-right">
           <div class="home-block-title">ТОПЫ ИГРОКОВ</div>
           <div class="home-block-sub">Соревнуйся с другими — попади в топ</div>
@@ -141,13 +141,16 @@
       <video src="photos/ring2.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/rocket.mp4"   autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/socks.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
-      <video src="photos/sushi.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/skull.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/koldun.mp4"   autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/lolipop.mp4"  autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/heart.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/eye.mp4"      autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/cat.mp4"      autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/button.mp4"   autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/snake.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/crystal.mp4"  autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/sigareta.mp4" autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/ring.mp4"     autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/bear.mp4"     autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/icecream.mp4" autoplay loop muted playsinline webkit-playsinline></video>
@@ -155,16 +158,19 @@
       <video src="photos/ring2.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/rocket.mp4"   autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/socks.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
-      <video src="photos/sushi.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/skull.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/koldun.mp4"   autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/lolipop.mp4"  autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/heart.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/eye.mp4"      autoplay loop muted playsinline webkit-playsinline></video>
       <video src="photos/cat.mp4"      autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/button.mp4"   autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/snake.mp4"    autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/crystal.mp4"  autoplay loop muted playsinline webkit-playsinline></video>
+      <video src="photos/sigareta.mp4" autoplay loop muted playsinline webkit-playsinline></video>
     </div>
   </div>
-  <div class="spin-btn-wrap">
+  <div class="spin-btn-wrap" id="spin-btn-wrap">
     <button class="spin-btn" id="spin-btn">Крутить рулетку</button>
     <div class="spin-hint">Прокрути рулетку чтобы сорвать куш!</div>
   </div>
@@ -201,7 +207,10 @@
       <span class="stars-label">Stars</span>
     </div>
     <div class="profile-card">
-      <div class="profile-avatar">👤</div>
+      <div class="profile-avatar" id="profile-avatar-wrap">
+        <img id="profile-tg-photo" src="" alt="" style="display:none;width:56px;height:56px;border-radius:50%;object-fit:cover;"/>
+        <span id="profile-avatar-fallback">👤</span>
+      </div>
       <div class="profile-info">
         <div class="profile-username" id="profile-username">@user</div>
         <div class="profile-spins">Круток: <b id="profile-spins-count">0</b></div>
@@ -340,6 +349,77 @@
     <div class="error-sub" id="error-sub">Что-то пошло не так</div>
     <button class="error-btn" id="error-btn">Попробовать снова</button>
   </div>
+</div>
+
+<!-- ══ РЕФЕРАЛЬНАЯ СИСТЕМА ══ -->
+<div class="screen" id="screen-referral">
+  <div class="page-content">
+    <div class="ref-header">
+      <div class="page-title">Реф. система</div>
+      <div class="ref-subtitle">Приглашай друзей — получай звёзды</div>
+    </div>
+    <div class="ref-reward-card">
+      <div class="ref-reward-icon">⭐</div>
+      <div class="ref-reward-info">
+        <div class="ref-reward-title">+1 звезда за друга</div>
+        <div class="ref-reward-sub">Каждый кто зайдёт по твоей ссылке принесёт тебе 1 звезду</div>
+      </div>
+    </div>
+    <div class="ref-stats-row">
+      <div class="ref-stat-box">
+        <div class="ref-stat-value" id="ref-count">0</div>
+        <div class="ref-stat-label">Приглашено</div>
+      </div>
+      <div class="ref-stat-box">
+        <div class="ref-stat-value" id="ref-earned">0 ⭐</div>
+        <div class="ref-stat-label">Заработано</div>
+      </div>
+    </div>
+    <div class="ref-link-block">
+      <div class="ref-link-label">Твоя реферальная ссылка</div>
+      <div class="ref-link-box" id="ref-link-box">Загрузка...</div>
+      <button class="ref-copy-btn" id="ref-copy-btn" onclick="copyRefLink()">📋 Копировать ссылку</button>
+      <button class="ref-share-btn" onclick="shareRefLink()">🚀 Поделиться</button>
+    </div>
+    <div class="ref-how-block">
+      <div class="ref-how-title">Как это работает</div>
+      <div class="ref-how-step"><span class="ref-step-num">1</span> Скопируй свою реферальную ссылку</div>
+      <div class="ref-how-step"><span class="ref-step-num">2</span> Отправь другу в Telegram</div>
+      <div class="ref-how-step"><span class="ref-step-num">3</span> Когда друг откроет приложение — ты получишь 1 ⭐</div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-tab" onclick="switchTab('home')" data-tab="home"><img src="photos/main.png" class="nav-icon-img" alt=""/><span>Главная</span></button>
+    <button class="nav-tab" onclick="switchTab('inventory')" data-tab="inventory"><img src="photos/inventory.png" class="nav-icon-img" alt=""/><span>Инвентарь</span></button>
+    <button class="nav-tab nav-tab-spin" onclick="switchTab('spin')" data-tab="spin"><div class="nav-spin-highlight"></div><div class="nav-spin-icon-wrap"><img src="photos/fortune.png" class="nav-icon-img nav-icon-fortune" alt=""/></div><span class="nav-spin-label">Фортуна</span></button>
+    <button class="nav-tab" onclick="switchTab('profile')" data-tab="profile"><img src="photos/profile.png" class="nav-icon-img" alt=""/><span>Профиль</span></button>
+    <button class="nav-tab" onclick="switchTab('settings')" data-tab="settings"><img src="photos/settings.png" class="nav-icon-img" alt=""/><span>Настройки</span></button>
+  </nav>
+</div>
+
+<!-- ══ ТОПЫ ИГРОКОВ ══ -->
+<div class="screen" id="screen-leaderboard">
+  <div class="page-content">
+    <div class="page-title">Топ игроков</div>
+    <div id="lb-podium" class="lb-podium">
+      <!-- Top 1-3 rendered by JS -->
+    </div>
+    <div class="lb-rest-wrap">
+      <div id="lb-rest-list" class="lb-rest-list"><!-- 4-100 --></div>
+      <div class="lb-nav-row">
+        <button class="lb-arrow-btn" id="lb-prev" onclick="lbPrev()">&#8592;</button>
+        <span class="lb-page-info" id="lb-page-info">1 / 1</span>
+        <button class="lb-arrow-btn" id="lb-next" onclick="lbNext()">&#8594;</button>
+      </div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-tab" onclick="switchTab('home')" data-tab="home"><img src="photos/main.png" class="nav-icon-img" alt=""/><span>Главная</span></button>
+    <button class="nav-tab" onclick="switchTab('inventory')" data-tab="inventory"><img src="photos/inventory.png" class="nav-icon-img" alt=""/><span>Инвентарь</span></button>
+    <button class="nav-tab nav-tab-spin" onclick="switchTab('spin')" data-tab="spin"><div class="nav-spin-highlight"></div><div class="nav-spin-icon-wrap"><img src="photos/fortune.png" class="nav-icon-img nav-icon-fortune" alt=""/></div><span class="nav-spin-label">Фортуна</span></button>
+    <button class="nav-tab" onclick="switchTab('profile')" data-tab="profile"><img src="photos/profile.png" class="nav-icon-img" alt=""/><span>Профиль</span></button>
+    <button class="nav-tab" onclick="switchTab('settings')" data-tab="settings"><img src="photos/settings.png" class="nav-icon-img" alt=""/><span>Настройки</span></button>
+  </nav>
 </div>
 
 <!-- ══ ТОСТ + КОНФЕТТИ ══ -->
