@@ -493,22 +493,23 @@ html, body {
   display: none;
 }
 
-/* Арка-бугорок — торчит СВЕРХУ панели, встроена в неё */
+/* Арка-бугорок — уже, торчит меньше */
 .nav-spin-icon-wrap {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 100%;                 /* нижний край арки вровень с верхом панели */
+  bottom: calc(100% - 2px);     /* слегка утоплен — меньше выпуклость */
 
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
+  padding-bottom: 4px;
 
-  width: 66px;
-  height: 38px;
+  width: 52px;                  /* уже было 66px → уже */
+  height: 28px;                 /* ниже было 38px → меньше торчит */
 
-  /* Арочная форма: закруглённый верх, плоский низ сливается с панелью */
-  border-radius: 40px 40px 0 0;
+  /* Арочная форма */
+  border-radius: 28px 28px 0 0;
 
   /* Стиль повторяет стекло панели */
   background: linear-gradient(180deg,
@@ -519,35 +520,43 @@ html, body {
   border: 1px solid rgba(255,255,255,0.18);
   border-top-color: rgba(255,255,255,0.32);
   border-bottom: none;
+  /* Скрываем стык арки с панелью — нет видимой линии */
+  box-shadow:
+    0 -3px 14px rgba(0,0,0,0.28),
+    inset 0 1px 0 rgba(255,255,255,0.22);
   backdrop-filter: blur(40px) saturate(180%) brightness(1.05);
   -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.05);
-  box-shadow:
-    0 -4px 18px rgba(0,0,0,0.32),
-    inset 0 1px 0 rgba(255,255,255,0.26);
   transition: border-color 0.2s, box-shadow 0.2s;
+  /* Перекрываем снизу, чтобы не было горизонтальной линии */
+  clip-path: inset(0 0 -4px 0);
 }
 .nav-tab-spin.active .nav-spin-icon-wrap,
 .nav-tab-spin:hover .nav-spin-icon-wrap {
   border-color: rgba(255,255,255,0.30);
   border-top-color: rgba(255,255,255,0.50);
   box-shadow:
-    0 -6px 22px rgba(0,0,0,0.38),
-    inset 0 1px 0 rgba(255,255,255,0.34);
+    0 -5px 18px rgba(0,0,0,0.34),
+    inset 0 1px 0 rgba(255,255,255,0.30);
 }
 
-/* Иконка рулетки — белая, крутится непрерывно */
+/* Иконка рулетки — крупнее, расположена ниже внутри панели */
 .nav-icon-fortune {
-  width: 30px !important;
-  height: 30px !important;
+  width: 34px !important;
+  height: 34px !important;
   opacity: 0.65 !important;
   filter: brightness(0) invert(1);
   animation: fortune-spin 4s linear infinite;
   display: block;
+  position: absolute;
+  bottom: 18px;                 /* опускаем ниже — внутрь панели */
+  left: 50%;
+  transform: translateX(-50%);
 }
 .nav-tab-spin.active .nav-icon-fortune,
 .nav-tab-spin:hover .nav-icon-fortune {
   opacity: 1 !important;
   filter: brightness(0) invert(1) drop-shadow(0 0 6px rgba(255,255,255,0.55));
+  transform: translateX(-50%);
 }
 
 /* Непрерывное плавное вращение */
