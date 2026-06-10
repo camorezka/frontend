@@ -477,51 +477,68 @@ html, body {
 .nav-tab-spin {
   position: relative;
   flex: 1.4;
-  padding-bottom: 4px;
+  align-self: stretch;          /* занимает всю высоту панели */
+  padding: 0 2px 8px;
+  gap: 0;
   overflow: visible;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;    /* метка внизу */
 }
 
-/* Выпуклое пятно сверху по центру — выступает над панелью */
+/* Старый тёмный пузырь — убран */
 .nav-spin-highlight {
   display: none;
 }
 
+/* Арка-бугорок — торчит СВЕРХУ панели, встроена в неё */
 .nav-spin-icon-wrap {
-  position: relative;
-  display: flex; align-items: center; justify-content: center;
-  width: 58px; height: 58px;
-  z-index: 2;
-  margin-top: -30px;
-  border-radius: 50%;
-  background: linear-gradient(155deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 55%, rgba(255,255,255,0.14) 100%);
-  border: 1px solid rgba(255,255,255,0.30);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 100%;                 /* нижний край арки вровень с верхом панели */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 66px;
+  height: 38px;
+
+  /* Арочная форма: закруглённый верх, плоский низ сливается с панелью */
+  border-radius: 40px 40px 0 0;
+
+  /* Стиль повторяет стекло панели */
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.11) 0%,
+    rgba(255,255,255,0.05) 55%,
+    rgba(0,0,0,0.22) 100%
+  );
+  border: 1px solid rgba(255,255,255,0.18);
+  border-top-color: rgba(255,255,255,0.32);
+  border-bottom: none;
+  backdrop-filter: blur(40px) saturate(180%) brightness(1.05);
+  -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.05);
   box-shadow:
-    0 -6px 24px rgba(0,0,0,0.30),
-    0 6px 20px rgba(0,0,0,0.50),
-    inset 0 1px 0 rgba(255,255,255,0.40),
-    0 0 0 1px rgba(255,255,255,0.07);
-  transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1),
-              box-shadow 0.18s ease,
-              border-color 0.2s;
+    0 -4px 18px rgba(0,0,0,0.32),
+    inset 0 1px 0 rgba(255,255,255,0.26);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 .nav-tab-spin.active .nav-spin-icon-wrap,
 .nav-tab-spin:hover .nav-spin-icon-wrap {
-  border-color: rgba(255,255,255,0.50);
+  border-color: rgba(255,255,255,0.30);
+  border-top-color: rgba(255,255,255,0.50);
   box-shadow:
-    0 -8px 28px rgba(255,255,255,0.10),
-    0 8px 24px rgba(0,0,0,0.55),
-    inset 0 1px 0 rgba(255,255,255,0.50),
-    0 0 0 1px rgba(255,255,255,0.12);
-  transform: translateY(-2px);
+    0 -6px 22px rgba(0,0,0,0.38),
+    inset 0 1px 0 rgba(255,255,255,0.34);
 }
 
-/* Иконка рулетки — крупная, белая, крутится непрерывно */
+/* Иконка рулетки — белая, крутится непрерывно */
 .nav-icon-fortune {
-  width: 38px !important;
-  height: 38px !important;
+  width: 30px !important;
+  height: 30px !important;
   opacity: 0.65 !important;
   filter: brightness(0) invert(1);
   animation: fortune-spin 4s linear infinite;
@@ -530,7 +547,7 @@ html, body {
 .nav-tab-spin.active .nav-icon-fortune,
 .nav-tab-spin:hover .nav-icon-fortune {
   opacity: 1 !important;
-  filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(255,255,255,0.6));
+  filter: brightness(0) invert(1) drop-shadow(0 0 6px rgba(255,255,255,0.55));
 }
 
 /* Непрерывное плавное вращение */
@@ -545,6 +562,8 @@ html, body {
   font-weight: 500;
   color: var(--sub);
   transition: color 0.2s;
+  position: relative;
+  z-index: 1;
 }
 .nav-tab-spin.active .nav-spin-label,
 .nav-tab-spin:hover .nav-spin-label {
