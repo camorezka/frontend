@@ -111,6 +111,7 @@ function switchTab(tab) {
 
   // Активируем кнопки текущего таба по data-tab атрибуту
   document.querySelectorAll(".nav-tab").forEach(function(btn) {
+    btn.classList.remove("active");
     if (btn.getAttribute("data-tab") === tab) btn.classList.add("active");
   });
 
