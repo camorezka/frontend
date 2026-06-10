@@ -327,9 +327,10 @@ function loadProfile() {
   api("/stats/" + TG_ID + "?init_data=" + encodeURIComponent(INIT_DATA))
     .then(function(s) {
       var total = (s.total_cycles || 0) * 5 + (s.cycle_spin || 0);
+      var sc = document.getElementById("stat-cycles"); // FIX: sc was undefined
       var st = document.getElementById("stat-total");
       var sw = document.getElementById("stat-wins");
-      if (sc) sc.textContent = total;
+      if (sc) sc.textContent = s.total_cycles || 0;
       if (st) st.textContent = total;
       if (sw) sw.textContent = s.total_wins || 0;
     }).catch(function() {});
@@ -745,6 +746,16 @@ function startApp() {
   var loadEl = document.getElementById("load-status");
   if (loadEl) loadEl.textContent = "Загрузка...";
 
+  // Читаем реферальный параметр из Telegram start_param
+  var referrerId = null;
+  try {
+    var startParam = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param : "";
+    if (startParam && startParam.startsWith("ref_")) {
+      var parsed = parseInt(startParam.substring(4), 10);
+      if (!isNaN(parsed) && parsed > 0) referrerId = parsed;
+    }
+  } catch(e) {}
+
   // Dev-режим без Telegram
   if (!TG_ID) {
     showHomeScreen();
@@ -761,7 +772,10 @@ function startApp() {
   // Максимум 1.2 секунды ожидания регистрации
   var loadTimeout = setTimeout(finishInit, 1200);
 
-  api("/register", { tg_id: TG_ID, username: TG_NAME, first_name: TG_FIRST, init_data: INIT_DATA })
+  var regBody = { tg_id: TG_ID, username: TG_NAME, first_name: TG_FIRST, init_data: INIT_DATA };
+  if (referrerId) regBody.referrer_id = referrerId;
+
+  api("/register", regBody)
     .then(function() {
       clearTimeout(loadTimeout);
       finishInit();
