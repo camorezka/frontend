@@ -45,10 +45,12 @@ html, body {
 }
 .screen.active { display: flex; }
 
-#screen-home      { margin-top: 40px; }
-#screen-inventory { margin-top: 40px; }
-#screen-settings  { margin-top: 40px; }
-#screen-profile   { margin-top: 40px; }
+#screen-home        { margin-top: 40px; }
+#screen-inventory   { margin-top: 40px; }
+#screen-settings    { margin-top: 40px; }
+#screen-profile     { margin-top: 40px; }
+#screen-referral    { margin-top: 40px; }
+#screen-leaderboard { margin-top: 40px; }
 
 /* ══════════════════════════════
    LOADING
