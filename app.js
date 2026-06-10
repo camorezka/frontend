@@ -121,6 +121,10 @@ function switchTab(tab) {
     setTimeout(forcePlayAllVideos, 100);
     setTimeout(forcePlayAllVideos, 400);
   }
+  if (tab === "home") {
+    // Перезагрузить TGS если ещё не загружены (или была ошибка)
+    setTimeout(loadTgsAnimations, 80);
+  }
   if (tab === "inventory") {
     loadInventoryPage();
   }
@@ -525,38 +529,47 @@ function bindButtons() {
 // ══════════════════════════════════════════════════════════
 // СТАРТ
 // ══════════════════════════════════════════════════════════
+function showHomeScreen() {
+  ALL_SCREENS.forEach(function(sid) {
+    var s = document.getElementById(sid);
+    if (s) { s.style.display = "none"; s.classList.remove("active"); }
+  });
+  var homeEl = document.getElementById("screen-home");
+  if (homeEl) { homeEl.style.display = "flex"; homeEl.classList.add("active"); }
+  currentTab = "home";
+  bindButtons();
+  // Грузим TGS анимации теперь, когда экран виден
+  setTimeout(loadTgsAnimations, 120);
+}
+
 function startApp() {
   var loadEl = document.getElementById("load-status");
-  if (loadEl) loadEl.textContent = "Регистрация...";
+  if (loadEl) loadEl.textContent = "Загрузка...";
 
-  // Если не Telegram — всё равно показываем (dev-режим)
+  // Dev-режим без Telegram
   if (!TG_ID) {
-    showScreen("screen-home");
-    // Показываем home (первая вкладка)
-    Object.keys(tabScreens).forEach(function(key) {
-      var el = document.getElementById(tabScreens[key]);
-      if (el) { el.style.display = "none"; el.classList.remove("active"); }
-    });
-    var homeEl = document.getElementById("screen-home");
-    if (homeEl) { homeEl.style.display = "flex"; homeEl.classList.add("active"); }
-    bindButtons();
+    showHomeScreen();
     return;
   }
 
+  var appShown = false;
+  function finishInit() {
+    if (appShown) return;
+    appShown = true;
+    showHomeScreen();
+  }
+
+  // Максимум 1.2 секунды ожидания регистрации
+  var loadTimeout = setTimeout(finishInit, 1200);
+
   api("/register", { tg_id: TG_ID, username: TG_NAME, first_name: TG_FIRST, init_data: INIT_DATA })
     .then(function() {
-      // Прячем лоадер, показываем home сразу после регистрации
-      ALL_SCREENS.forEach(function(sid) {
-        var s = document.getElementById(sid);
-        if (s) { s.style.display = "none"; s.classList.remove("active"); }
-      });
-      var homeEl = document.getElementById("screen-home");
-      if (homeEl) { homeEl.style.display = "flex"; homeEl.classList.add("active"); }
-      currentTab = "home";
-      bindButtons();
+      clearTimeout(loadTimeout);
+      finishInit();
     })
-    .catch(function(e) {
-      showError("Ошибка подключения", (e && e.message) || "Попробуй позже.", function() { location.reload(); });
+    .catch(function() {
+      clearTimeout(loadTimeout);
+      finishInit(); // Всё равно показываем главную при ошибке
     });
 }
 
@@ -591,7 +604,10 @@ function loadTgsAnimations() {
     container._tgsLoaded = true;
 
     fetch(src)
-      .then(function(r) { return r.arrayBuffer(); })
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.arrayBuffer();
+      })
       .then(function(buf) {
         var uint8 = new Uint8Array(buf);
         var json;
@@ -606,27 +622,39 @@ function loadTgsAnimations() {
             var text2 = new TextDecoder('utf-8').decode(uint8);
             json = JSON.parse(text2);
           } catch(e2) {
-            console.warn('TGS load error:', src, e2);
+            console.warn('TGS parse error:', src, e2);
+            container._tgsLoaded = false;
             return;
           }
         }
 
         container.innerHTML = '';
-        lottie.loadAnimation({
+        // SVG рендерер — работает даже когда контейнер был скрыт
+        var anim = lottie.loadAnimation({
           container: container,
-          renderer: 'canvas',
+          renderer: 'svg',
           loop: true,
           autoplay: true,
-          animationData: json
+          animationData: json,
+          rendererSettings: {
+            progressiveLoad: false,
+            hideOnTransparent: false,
+            viewBoxOnly: true
+          }
         });
+        // Принудительный resize после появления
+        setTimeout(function() {
+          try { anim.resize(); } catch(e) {}
+        }, 200);
+        setTimeout(function() {
+          try { anim.resize(); } catch(e) {}
+        }, 600);
       })
-      .catch(function(e) { console.warn('TGS fetch error:', src, e); });
+      .catch(function(e) {
+        console.warn('TGS fetch error:', src, e);
+        container._tgsLoaded = false; // Разрешаем повторную попытку
+      });
   });
 }
 
-// Загружаем TGS когда страница готова
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', loadTgsAnimations);
-} else {
-  loadTgsAnimations();
-}
+// TGS загружаются из showHomeScreen() — когда главная точно видна
