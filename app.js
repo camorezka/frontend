@@ -836,17 +836,25 @@ function renderPodium(top3) {
   if (!top3 || top3.length === 0) { podium.innerHTML = ""; return; }
 
   var medals = ["🥇", "🥈", "🥉"];
-  var labels = ["1", "2", "3"];
 
   var p1 = top3[0] || null;
   var p2 = top3[1] || null;
   var p3 = top3[2] || null;
 
+  function avatarHtml(p, size) {
+    var sz = size || 44;
+    if (p && p.photo_url) {
+      return "<img src='" + p.photo_url + "' class='lb-avatar-img' style='width:" + sz + "px;height:" + sz + "px;border-radius:50%;object-fit:cover;display:block;' onerror=\"this.style.display='none';this.nextSibling.style.display='flex';\"/>" +
+             "<span class='lb-avatar-fallback' style='display:none;width:" + sz + "px;height:" + sz + "px;'>" + initials(p) + "</span>";
+    }
+    return "<span class='lb-avatar-fallback' style='width:" + sz + "px;height:" + sz + "px;'>" + initials(p) + "</span>";
+  }
+
   function podCard(p, rank, highlight) {
     if (!p) return "<div class='lb-pod-card lb-pod-empty'></div>";
     return "<div class='lb-pod-card" + (highlight ? " lb-pod-first" : "") + "'>" +
       "<div class='lb-pod-medal'>" + medals[rank] + "</div>" +
-      "<div class='lb-pod-avatar'>👤</div>" +
+      "<div class='lb-pod-av-wrap'>" + avatarHtml(p, highlight ? 52 : 44) + "</div>" +
       "<div class='lb-pod-name'>@" + (p.username || "игрок") + "</div>" +
       "<div class='lb-pod-score'>" + (p.total_spins || 0) + " ставок</div>" +
       "</div>";
@@ -858,6 +866,13 @@ function renderPodium(top3) {
       "<div class='lb-pod-center'>" + podCard(p1, 0, true) + "</div>" +
       "<div class='lb-pod-side'>" + podCard(p3, 2, false) + "</div>" +
     "</div>";
+}
+
+function initials(p) {
+  if (!p) return "👤";
+  var name = p.first_name || p.username || "";
+  if (!name) return "?";
+  return name.charAt(0).toUpperCase();
 }
 
 function renderLbPage() {
@@ -879,10 +894,17 @@ function renderLbPage() {
     list.innerHTML = page.map(function(p, idx) {
       var rank = 4 + start + idx;
       var isMe = (p.tg_id === TG_ID);
+      var avHtml;
+      if (p.photo_url) {
+        avHtml = "<img src='" + p.photo_url + "' class='lb-row-av-img' onerror=\"this.style.display='none';this.nextSibling.style.display='flex';\"/>" +
+                 "<span class='lb-row-av-fb' style='display:none;'>" + initials(p) + "</span>";
+      } else {
+        avHtml = "<span class='lb-row-av-fb'>" + initials(p) + "</span>";
+      }
       return "<div class='lb-row" + (isMe ? " lb-row-me" : "") + "'>" +
         "<div class='lb-row-rank'>" + rank + "</div>" +
-        "<div class='lb-row-avatar'>👤</div>" +
-        "<div class='lb-row-name'>@" + (p.username || "игрок") + "</div>" +
+        "<div class='lb-row-avatar'>" + avHtml + "</div>" +
+        "<div class='lb-row-name'>" + (p.first_name ? p.first_name + (p.username ? " <span class='lb-un'>@" + p.username + "</span>" : "") : "@" + (p.username || "игрок")) + "</div>" +
         "<div class='lb-row-score'>" + (p.total_spins || 0) + " ст.</div>" +
         "</div>";
     }).join("");
@@ -1110,4 +1132,4 @@ function loadTgsAnimations() {
   });
 }
 
-// TGS загружаются из showHomeScreen() — когда главная точно видна  
+// TGS загружаются из showHomeScreen() — когда главная точно видна
