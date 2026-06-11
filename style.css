@@ -491,6 +491,9 @@ html, body {
   z-index:20;
 }
 
+/* Highlight div под спин-кнопкой в нав — скрыть */
+.nav-spin-highlight { display: none; }
+
 /* обёртка иконки — без выпуклости, просто по центру */
 .nav-spin-icon-wrap{
   display:flex;
@@ -710,6 +713,14 @@ html, body {
 }
 
 /* ══ РЕФЕРАЛЬНАЯ СИСТЕМА ══ */
+#screen-referral .page-content {
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding-bottom: calc(var(--nav-h) + 28px);
+}
+#screen-referral .page-content::-webkit-scrollbar { display: none; }
+
 .ref-header { margin-bottom: 18px; }
 .ref-subtitle { color: var(--text-secondary, #aaa); font-size: 13px; margin-top: 4px; }
 
@@ -810,9 +821,53 @@ html, body {
 }
 
 /* ══ ТОПЫ ИГРОКОВ ══ */
-.lb-loading, .lb-empty { text-align: center; color: #aaa; padding: 24px; font-size: 14px; }
+#screen-leaderboard .page-content {
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding-bottom: calc(var(--nav-h) + 28px);
+}
+#screen-leaderboard .page-content::-webkit-scrollbar { display: none; }
 
-.lb-podium { margin-bottom: 16px; }
+.lb-pod-av-wrap {
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 6px;
+}
+.lb-avatar-img {
+  width: 44px; height: 44px;
+  border-radius: 50%; object-fit: cover; display: block;
+  border: 2px solid rgba(255,255,255,0.15);
+}
+.lb-pod-first .lb-avatar-img { width: 52px; height: 52px; border-color: rgba(245,197,24,0.5); }
+.lb-avatar-fallback {
+  display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.10);
+  font-size: 18px; font-weight: 700; color: #fff;
+  border: 2px solid rgba(255,255,255,0.12);
+  flex-shrink: 0;
+}
+.lb-pod-first .lb-avatar-fallback { width: 52px; height: 52px; font-size: 22px; border-color: rgba(245,197,24,0.35); }
+
+/* Строка рейтинга */
+.lb-row-avatar {
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.lb-row-av-img {
+  width: 32px; height: 32px;
+  border-radius: 50%; object-fit: cover; display: block;
+  border: 1.5px solid rgba(255,255,255,0.12);
+}
+.lb-row-av-fb {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  font-size: 13px; font-weight: 700; color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.10);
+  flex-shrink: 0;
+}
+.lb-un { font-size: 11px; color: var(--sub); margin-left: 3px; }
 .lb-podium-row {
   display: flex;
   align-items: flex-end;
@@ -838,7 +893,6 @@ html, body {
 }
 .lb-pod-card.lb-pod-empty { background: transparent; border: none; }
 .lb-pod-medal { font-size: 22px; margin-bottom: 6px; }
-.lb-pod-avatar { font-size: 24px; margin-bottom: 6px; }
 .lb-pod-name { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lb-pod-score { font-size: 11px; color: #aaa; }
 
