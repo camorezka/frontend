@@ -898,3 +898,53 @@ html, body {
   overflow: hidden;
   flex-shrink: 0;
 }
+
+/* ══════════════════════════════
+   ДЕМО-КНОПКА И АНИМАЦИЯ СПИНА
+══════════════════════════════ */
+.demo-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.65);
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+  touch-action: manipulation;
+  letter-spacing: 0.2px;
+}
+.demo-btn:active { opacity: 0.6; background: rgba(255,255,255,0.10); }
+.demo-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* Прицел — анимация пульса */
+@keyframes aim-pulse {
+  0%,100% { box-shadow: 0 0 28px rgba(245,197,24,0.55), inset 0 0 18px rgba(245,197,24,0.08); border-color: rgba(245,197,24,0.95); }
+  50%     { box-shadow: 0 0 50px rgba(245,197,24,0.90), inset 0 0 28px rgba(245,197,24,0.18); border-color: rgba(245,197,24,1); }
+}
+
+/* Демо-бейдж на экране результата */
+.result-demo-badge {
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  color: #fff;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+/* Кнопка-ghost (вторая кнопка в результате) */
+.result-btn-ghost {
+  background: rgba(255,255,255,0.06) !important;
+  color: rgba(255,255,255,0.6) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  box-shadow: none !important;
+  margin-top: -4px;
+}
