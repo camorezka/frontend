@@ -358,7 +358,203 @@ function loadSettingsData() {
 }
 
 // ══════════════════════════════════════════════════════════
-// РУЛЕТКА
+// ДЕМО-РЕЖИМ И АНИМАЦИЯ РУЛЕТКИ
+// Трек выезжает на передний план, разгоняется, замедляется,
+// останавливается на случайном NFT. Работает и в реал-спине,
+// и в демо (без ставки).
+// ══════════════════════════════════════════════════════════
+
+var DEMO_GIFTS = [
+  { name: "💍 Кольцо",    stars: 50  },
+  { name: "🐻 Медведь",   stars: 75  },
+  { name: "🍦 Мороженое", stars: 60  },
+  { name: "⚡ Молния",    stars: 120 },
+  { name: "🚀 Ракета",    stars: 200 },
+  { name: "🧦 Носки",     stars: 40  },
+  { name: "💀 Череп",     stars: 350 },
+  { name: "🔮 Колдун",    stars: 180 },
+  { name: "🍭 Леденец",   stars: 65  },
+  { name: "❤️ Сердце",    stars: 90  },
+  { name: "👁 Глаз",      stars: 150 },
+  { name: "🐱 Кот",       stars: 110 },
+  { name: "💎 Кристалл",  stars: 300 },
+  { name: "🐍 Змея",      stars: 220 },
+  { name: "🚬 Сигарета",  stars: 130 }
+];
+
+var spinAnimRAF      = null;
+var spinAnimSpeed    = 0;
+var spinAnimPos      = 0;
+var spinAnimPhase    = "idle";
+var spinAnimTarget   = 0;
+var spinAnimCB       = null;
+var spinAnimWinIdx   = 0;
+
+function getTrackItemWidth() {
+  var track = document.getElementById("gifts-track");
+  if (!track || !track.children.length) return 202;
+  var v = track.children[0];
+  return v.offsetWidth + 12;
+}
+
+function _liftTrack(up) {
+  var wrap = document.querySelector(".gifts-track-wrap");
+  var spinScreen = document.getElementById("screen-spin");
+  var overlay = document.getElementById("spin-overlay");
+
+  if (up) {
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "spin-overlay";
+      overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:199;pointer-events:none;";
+      document.body.appendChild(overlay);
+    }
+    if (wrap) {
+      wrap.style.cssText = "position:fixed;top:50%;left:0;right:0;height:214px;transform:translateY(-50%);" +
+        "z-index:200;-webkit-mask-image:none;mask-image:none;background:transparent;" +
+        "display:flex;align-items:center;overflow:hidden;";
+    }
+    // Прицел
+    var aim = document.getElementById("spin-aim-line");
+    if (!aim) {
+      aim = document.createElement("div");
+      aim.id = "spin-aim-line";
+      aim.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);" +
+        "width:192px;height:192px;border:2.5px solid rgba(245,197,24,0.95);border-radius:20px;" +
+        "box-shadow:0 0 28px rgba(245,197,24,0.55),inset 0 0 18px rgba(245,197,24,0.08);" +
+        "z-index:202;pointer-events:none;animation:aim-pulse 0.7s ease-in-out infinite;";
+      document.body.appendChild(aim);
+    }
+  } else {
+    if (overlay) { overlay.remove(); }
+    var aim2 = document.getElementById("spin-aim-line");
+    if (aim2) aim2.remove();
+    if (wrap) {
+      wrap.style.cssText = "";
+    }
+    carouselPos = spinAnimPos % (getTrackItemWidth() * 17 || 3434);
+    setTimeout(startCarousel, 300);
+  }
+}
+
+function startSpinAnimation(onDone) {
+  if (carouselRAF) { cancelAnimationFrame(carouselRAF); carouselRAF = null; }
+  if (spinAnimRAF) { cancelAnimationFrame(spinAnimRAF); spinAnimRAF = null; }
+
+  var itemW       = getTrackItemWidth();
+  var totalItems  = 17; // половина трека (дублированный)
+  var halfWidth   = itemW * totalItems;
+
+  spinAnimPos     = carouselPos;
+  spinAnimSpeed   = Math.max(carouselSpeed, 2);
+  spinAnimPhase   = "accel";
+  spinAnimCB      = onDone;
+  spinAnimWinIdx  = Math.floor(Math.random() * totalItems);
+
+  // Целевая позиция: ≥5 полных кругов + остановка на winIdx (по центру экрана)
+  var screenCenter = window.innerWidth / 2;
+  var winItemCenter = spinAnimWinIdx * itemW + itemW / 2;
+  var base = Math.ceil(spinAnimPos / halfWidth + 5) * halfWidth;
+  spinAnimTarget = base + winItemCenter - screenCenter;
+  if (spinAnimTarget < spinAnimPos + halfWidth * 3) spinAnimTarget += halfWidth;
+
+  _liftTrack(true);
+  tickSpinAnim(itemW, halfWidth);
+  return spinAnimWinIdx;
+}
+
+function tickSpinAnim(itemW, halfWidth) {
+  var track = document.getElementById("gifts-track");
+  if (!track) return;
+  var SPEED_MAX   = 52;
+  var ACCEL       = 1.8;
+  var SPEED_MIN   = 0.3;
+
+  if (spinAnimPhase === "accel") {
+    spinAnimSpeed = Math.min(spinAnimSpeed + ACCEL, SPEED_MAX);
+    if (spinAnimSpeed >= SPEED_MAX - 0.5) spinAnimPhase = "max";
+  }
+  if (spinAnimPhase === "max") {
+    var rem = spinAnimTarget - spinAnimPos;
+    if (rem < SPEED_MAX * 55) spinAnimPhase = "decel";
+  }
+  if (spinAnimPhase === "decel") {
+    var rem = spinAnimTarget - spinAnimPos;
+    if (rem <= 0) {
+      spinAnimPos   = spinAnimTarget % halfWidth;
+      spinAnimPhase = "done";
+    } else {
+      var t = Math.max(0, Math.min(1, rem / (SPEED_MAX * 55)));
+      spinAnimSpeed = SPEED_MIN + (SPEED_MAX - SPEED_MIN) * Math.pow(t, 0.65);
+      spinAnimSpeed = Math.max(spinAnimSpeed, SPEED_MIN);
+    }
+  }
+
+  spinAnimPos += spinAnimSpeed;
+  if (halfWidth > 0 && spinAnimPos >= halfWidth) spinAnimPos -= halfWidth;
+  track.style.transform = "translateX(-" + spinAnimPos + "px)";
+
+  if (spinAnimPhase === "done") {
+    haptic("heavy");
+    setTimeout(function() {
+      _liftTrack(false);
+      if (spinAnimCB) spinAnimCB();
+    }, 380);
+    return;
+  }
+  spinAnimRAF = requestAnimationFrame(function() { tickSpinAnim(itemW, halfWidth); });
+}
+
+// ──────────────────────────────────────────────
+// ДЕМО-РЕЗУЛЬТАТ
+// ──────────────────────────────────────────────
+function showDemoResult(gift) {
+  var wrap = document.getElementById("result-wrap");
+  if (!wrap) return;
+  haptic("heavy");
+  confetti();
+  wrap.innerHTML =
+    '<div class="result-demo-badge">ДЕМО</div>' +
+    '<div class="result-icon">🎉</div>' +
+    '<div class="result-title win">Выпало: ' + gift.name + '</div>' +
+    '<div class="result-nft">' +
+      '<div class="result-nft-name">' + gift.name + '</div>' +
+      '<div class="result-nft-info">' + gift.stars + '⭐ · Демо-режим</div>' +
+    '</div>' +
+    '<div class="result-sub">🎭 Это демо-прокрутка — без реальной ставки.<br>Нажми «Крутить реально» чтобы играть по-настоящему!</div>' +
+    '<button class="result-btn" onclick="switchTab(\'spin\')">Крутить реально</button>' +
+    '<button class="result-btn result-btn-ghost" onclick="onDemoSpin()">Ещё раз (демо)</button>';
+  showScreen("screen-result");
+}
+
+function onDemoSpin() {
+  var spinBtn = document.getElementById("spin-btn");
+  var btnWrap = document.getElementById("spin-btn-wrap");
+
+  // Переключаемся на экран рулетки
+  ALL_SCREENS.forEach(function(sid) {
+    var s = document.getElementById(sid);
+    if (s) { s.style.display = "none"; s.classList.remove("active"); }
+  });
+  var spinEl = document.getElementById("screen-spin");
+  if (spinEl) { spinEl.style.display = "flex"; spinEl.classList.add("active"); }
+  currentTab = "spin";
+
+  if (btnWrap) btnWrap.style.opacity = "0";
+  if (spinBtn) spinBtn.disabled = true;
+
+  setTimeout(function() {
+    var winIdx = startSpinAnimation(function() {
+      if (btnWrap) btnWrap.style.opacity = "";
+      if (spinBtn) spinBtn.disabled = false;
+      var gift = DEMO_GIFTS[winIdx % DEMO_GIFTS.length];
+      showDemoResult(gift);
+    });
+  }, 200);
+}
+
+// ══════════════════════════════════════════════════════════
+// РУЛЕТКА (реальная)
 // ══════════════════════════════════════════════════════════
 function setPayStatus(msg, cls) {
   var el = document.getElementById("pay-status");
@@ -383,10 +579,10 @@ function confetti() {
         var xPct = fromRight ? (80 + Math.random() * 20) : (Math.random() * 20);
         var vx = fromRight ? -(30 + Math.random() * 80) : (30 + Math.random() * 80);
         p.style.cssText = [
-          "width:" + w + "px", "height:" + h + "px",
-          "background:" + color, "left:" + xPct + "%",
-          "--cx:" + vx + "px", "--cr:" + rot + "deg",
-          "animation-duration:" + dur + "s"
+          "width:"+w+"px","height:"+h+"px",
+          "background:"+color,"left:"+xPct+"%",
+          "--cx:"+vx+"px","--cr:"+rot+"deg",
+          "animation-duration:"+dur+"s"
         ].join(";");
         document.body.appendChild(p);
         setTimeout(function() { p.remove(); }, (dur + 0.2) * 1000);
@@ -399,9 +595,6 @@ function onSpinClick() {
   if (!TG_ID) { toast("Открой через Telegram Mini App"); return; }
   var btn = document.getElementById("spin-btn");
   if (btn) btn.disabled = true;
-  // Сдвигаем блок с кольцами вниз на 45px
-  var wrap = document.getElementById("spin-btn-wrap");
-  if (wrap) wrap.style.marginTop = "45px";
   haptic("medium");
 
   api("/create-bet", { tg_id: TG_ID, init_data: INIT_DATA })
@@ -486,8 +679,24 @@ function onCheckPayment() {
 
 function showSpinAnimation() {
   haptic("heavy");
-  showScreen("screen-spinning");
-  setTimeout(function() { doSpin(); }, 1500);
+  // Показываем экран рулетки для анимации
+  ALL_SCREENS.forEach(function(sid) {
+    var s = document.getElementById(sid);
+    if (s && sid !== "screen-spin") { s.style.display = "none"; s.classList.remove("active"); }
+  });
+  var spinEl = document.getElementById("screen-spin");
+  if (spinEl) { spinEl.style.display = "flex"; spinEl.classList.add("active"); }
+  currentTab = "spin";
+
+  var btnWrap = document.getElementById("spin-btn-wrap");
+  if (btnWrap) btnWrap.style.opacity = "0";
+
+  setTimeout(function() {
+    startSpinAnimation(function() {
+      if (btnWrap) btnWrap.style.opacity = "";
+      doSpin();
+    });
+  }, 200);
 }
 
 function doSpin() {
@@ -537,12 +746,20 @@ function showResult(res) {
   showScreen("screen-result");
 }
 
+
 // ══════════════════════════════════════════════════════════
 // РЕФЕРАЛЬНАЯ СИСТЕМА
+// Формат ссылки: https://t.me/virus_play_bot/app?startapp=ref_TGID
 // ══════════════════════════════════════════════════════════
+var BOT_USERNAME = "virus_play_bot";
+var APP_NAME     = "app";  // имя mini app в боте
+
+function getRefLink() {
+  return "https://t.me/" + BOT_USERNAME + "/" + APP_NAME + "?startapp=ref_" + TG_ID;
+}
+
 function loadReferral() {
-  var BOT_USERNAME = "leonardo_game_bot";
-  var refLink = "https://t.me/" + BOT_USERNAME + "?start=ref_" + TG_ID;
+  var refLink = getRefLink();
   var linkBox = document.getElementById("ref-link-box");
   if (linkBox) linkBox.textContent = refLink;
 
@@ -557,23 +774,31 @@ function loadReferral() {
 }
 
 function copyRefLink() {
-  var BOT_USERNAME = "leonardo_game_bot";
-  var refLink = "https://t.me/" + BOT_USERNAME + "?start=ref_" + TG_ID;
+  var refLink = getRefLink();
   if (navigator.clipboard) {
     navigator.clipboard.writeText(refLink).then(function() {
-      toast("Ссылка скопирована!");
+      toast("Ссылка скопирована! 🔗");
       haptic("light");
-    }).catch(function() { toast("Не удалось скопировать"); });
+    }).catch(function() {
+      // fallback
+      var ta = document.createElement("textarea");
+      ta.value = refLink;
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      try { document.execCommand("copy"); toast("Ссылка скопирована! 🔗"); } catch(e) { toast("Скопируй ссылку вручную"); }
+      document.body.removeChild(ta);
+    });
   } else {
     toast("Скопируй ссылку вручную");
   }
 }
 
 function shareRefLink() {
-  var BOT_USERNAME = "leonardo_game_bot";
-  var refLink = "https://t.me/" + BOT_USERNAME + "?start=ref_" + TG_ID;
+  var refLink = getRefLink();
+  var shareText = "🎰 Играй в LEONARDO GAME — выигрывай NFT-подарки Telegram!\n\n✅ Первый выигрыш гарантирован на 3-й ставке!";
   if (tg && tg.openTelegramLink) {
-    var shareUrl = "https://t.me/share/url?url=" + encodeURIComponent(refLink) + "&text=" + encodeURIComponent("🎰 Играй в LEONARDO GAME — выигрывай NFT-подарки!");
+    var shareUrl = "https://t.me/share/url?url=" + encodeURIComponent(refLink) + "&text=" + encodeURIComponent(shareText);
     tg.openTelegramLink(shareUrl);
   } else {
     copyRefLink();
@@ -746,13 +971,23 @@ function startApp() {
   var loadEl = document.getElementById("load-status");
   if (loadEl) loadEl.textContent = "Загрузка...";
 
-  // Читаем реферальный параметр из Telegram start_param
+  // Читаем реферальный параметр из Telegram start_param (Mini App формат: ?startapp=ref_XXX)
   var referrerId = null;
+  var isRefVisit = false;
   try {
-    var startParam = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param : "";
+    var startParam = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param)
+      ? tg.initDataUnsafe.start_param : "";
+    if (!startParam) {
+      // fallback: читаем из URL напрямую
+      var urlParams = new URLSearchParams(window.location.search);
+      startParam = urlParams.get("startapp") || urlParams.get("start") || "";
+    }
     if (startParam && startParam.startsWith("ref_")) {
       var parsed = parseInt(startParam.substring(4), 10);
-      if (!isNaN(parsed) && parsed > 0) referrerId = parsed;
+      if (!isNaN(parsed) && parsed > 0 && parsed !== TG_ID) {
+        referrerId = parsed;
+        isRefVisit = true;
+      }
     }
   } catch(e) {}
 
@@ -763,26 +998,31 @@ function startApp() {
   }
 
   var appShown = false;
-  function finishInit() {
+  function finishInit(alreadyReg) {
     if (appShown) return;
     appShown = true;
     showHomeScreen();
+    // Показываем уведомление о реферале
+    if (isRefVisit && !alreadyReg) {
+      setTimeout(function() {
+        toast("⭐ Ты пришёл по реферальной ссылке — твой друг получил звезду!");
+      }, 800);
+    }
   }
 
-  // Максимум 1.2 секунды ожидания регистрации
-  var loadTimeout = setTimeout(finishInit, 1200);
+  var loadTimeout = setTimeout(function() { finishInit(false); }, 1200);
 
   var regBody = { tg_id: TG_ID, username: TG_NAME, first_name: TG_FIRST, init_data: INIT_DATA };
   if (referrerId) regBody.referrer_id = referrerId;
 
   api("/register", regBody)
-    .then(function() {
+    .then(function(res) {
       clearTimeout(loadTimeout);
-      finishInit();
+      finishInit(res.already_registered);
     })
     .catch(function() {
       clearTimeout(loadTimeout);
-      finishInit(); // Всё равно показываем главную при ошибке
+      finishInit(false);
     });
 }
 
@@ -870,4 +1110,4 @@ function loadTgsAnimations() {
   });
 }
 
-// TGS загружаются из showHomeScreen() — когда главная точно видна
+// TGS загружаются из showHomeScreen() — когда главная точно видна  
