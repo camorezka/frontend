@@ -359,179 +359,228 @@ function loadSettingsData() {
 
 // ══════════════════════════════════════════════════════════
 // ДЕМО-РЕЖИМ И АНИМАЦИЯ РУЛЕТКИ
-// Трек выезжает на передний план, разгоняется, замедляется,
-// останавливается на случайном NFT. Работает и в реал-спине,
-// и в демо (без ставки).
+// Переключатель под кнопкой. При включённом демо — нажатие
+// «Крутить» запускает быстрый бесплатный прогон (~2 сек),
+// трек на передний план, прицел, потом видео победителя + конфетти.
 // ══════════════════════════════════════════════════════════
 
+var demoMode = false; // состояние переключателя
+
+// Список подарков с именами видео (порядок как в треке)
 var DEMO_GIFTS = [
-  { name: "💍 Кольцо",    stars: 50  },
-  { name: "🐻 Медведь",   stars: 75  },
-  { name: "🍦 Мороженое", stars: 60  },
-  { name: "⚡ Молния",    stars: 120 },
-  { name: "🚀 Ракета",    stars: 200 },
-  { name: "🧦 Носки",     stars: 40  },
-  { name: "💀 Череп",     stars: 350 },
-  { name: "🔮 Колдун",    stars: 180 },
-  { name: "🍭 Леденец",   stars: 65  },
-  { name: "❤️ Сердце",    stars: 90  },
-  { name: "👁 Глаз",      stars: 150 },
-  { name: "🐱 Кот",       stars: 110 },
-  { name: "💎 Кристалл",  stars: 300 },
-  { name: "🐍 Змея",      stars: 220 },
-  { name: "🚬 Сигарета",  stars: 130 }
+  { name: "💍 Кольцо",    src: "photos/ring.mp4",     stars: 50  },
+  { name: "🐻 Медведь",   src: "photos/bear.mp4",     stars: 75  },
+  { name: "🍦 Мороженое", src: "photos/icecream.mp4", stars: 60  },
+  { name: "⚡ Молния",    src: "photos/lighting.mp4", stars: 120 },
+  { name: "💍 Кольцо 2",  src: "photos/ring2.mp4",    stars: 55  },
+  { name: "🚀 Ракета",    src: "photos/rocket.mp4",   stars: 200 },
+  { name: "🧦 Носки",     src: "photos/socks.mp4",    stars: 40  },
+  { name: "💀 Череп",     src: "photos/skull.mp4",    stars: 350 },
+  { name: "🔮 Колдун",    src: "photos/koldun.mp4",   stars: 180 },
+  { name: "🍭 Леденец",   src: "photos/lolipop.mp4",  stars: 65  },
+  { name: "❤️ Сердце",    src: "photos/heart.mp4",    stars: 90  },
+  { name: "👁 Глаз",      src: "photos/eye.mp4",      stars: 150 },
+  { name: "🐱 Кот",       src: "photos/cat.mp4",      stars: 110 },
+  { name: "🎮 Кнопка",    src: "photos/button.mp4",   stars: 80  },
+  { name: "🐍 Змея",      src: "photos/snake.mp4",    stars: 220 },
+  { name: "💎 Кристалл",  src: "photos/crystal.mp4",  stars: 300 },
+  { name: "🚬 Сигарета",  src: "photos/sigareta.mp4", stars: 130 }
 ];
 
-var spinAnimRAF      = null;
-var spinAnimSpeed    = 0;
-var spinAnimPos      = 0;
-var spinAnimPhase    = "idle";
-var spinAnimTarget   = 0;
-var spinAnimCB       = null;
-var spinAnimWinIdx   = 0;
+function toggleDemoMode() {
+  demoMode = !demoMode;
+  var toggle = document.getElementById("demo-toggle");
+  var spinBtn = document.getElementById("spin-btn");
+  var hint    = document.querySelector(".spin-hint");
+  if (toggle) toggle.classList.toggle("demo-toggle-on", demoMode);
+  if (spinBtn) spinBtn.textContent = demoMode ? "🎭 Демо-прокрутка" : "Крутить рулетку";
+  if (hint)   hint.textContent    = demoMode ? "Бесплатная демо-прокрутка — без ставки" : "Прокрути рулетку чтобы сорвать куш!";
+}
+
+// ── анимация трека ───────────────────────────────────────
+
+var spinAnimRAF   = null;
+var spinAnimPos   = 0;
+var spinAnimCB    = null;
+var spinAnimPhase = "idle";
 
 function getTrackItemWidth() {
   var track = document.getElementById("gifts-track");
   if (!track || !track.children.length) return 202;
-  var v = track.children[0];
-  return v.offsetWidth + 12;
+  return track.children[0].offsetWidth + 12;
 }
 
 function _liftTrack(up) {
-  var wrap = document.querySelector(".gifts-track-wrap");
-  var spinScreen = document.getElementById("screen-spin");
+  var wrap    = document.querySelector(".gifts-track-wrap");
   var overlay = document.getElementById("spin-overlay");
+  var aim     = document.getElementById("spin-aim-line");
 
   if (up) {
     if (!overlay) {
       overlay = document.createElement("div");
       overlay.id = "spin-overlay";
-      overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:199;pointer-events:none;";
+      overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:199;pointer-events:none;transition:opacity .15s;";
       document.body.appendChild(overlay);
     }
     if (wrap) {
-      wrap.style.cssText = "position:fixed;top:50%;left:0;right:0;height:214px;transform:translateY(-50%);" +
-        "z-index:200;-webkit-mask-image:none;mask-image:none;background:transparent;" +
+      wrap.style.cssText =
+        "position:fixed;top:50%;left:0;right:0;height:214px;" +
+        "transform:translateY(-50%);z-index:200;" +
+        "-webkit-mask-image:none;mask-image:none;" +
         "display:flex;align-items:center;overflow:hidden;";
     }
-    // Прицел
-    var aim = document.getElementById("spin-aim-line");
     if (!aim) {
       aim = document.createElement("div");
       aim.id = "spin-aim-line";
-      aim.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);" +
-        "width:192px;height:192px;border:2.5px solid rgba(245,197,24,0.95);border-radius:20px;" +
-        "box-shadow:0 0 28px rgba(245,197,24,0.55),inset 0 0 18px rgba(245,197,24,0.08);" +
-        "z-index:202;pointer-events:none;animation:aim-pulse 0.7s ease-in-out infinite;";
+      aim.style.cssText =
+        "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);" +
+        "width:190px;height:190px;" +
+        "border:2.5px solid rgba(245,197,24,0.95);border-radius:20px;" +
+        "box-shadow:0 0 30px rgba(245,197,24,0.6),inset 0 0 20px rgba(245,197,24,0.1);" +
+        "z-index:202;pointer-events:none;animation:aim-pulse 0.6s ease-in-out infinite;";
       document.body.appendChild(aim);
     }
   } else {
-    if (overlay) { overlay.remove(); }
-    var aim2 = document.getElementById("spin-aim-line");
-    if (aim2) aim2.remove();
-    if (wrap) {
-      wrap.style.cssText = "";
-    }
+    if (overlay) overlay.remove();
+    if (aim)     aim.remove();
+    if (wrap)    wrap.style.cssText = "";
     carouselPos = spinAnimPos % (getTrackItemWidth() * 17 || 3434);
-    setTimeout(startCarousel, 300);
+    setTimeout(startCarousel, 200);
   }
 }
 
+// Главная функция анимации: быстрый старт → ровный максимум → 2-секундное торможение
 function startSpinAnimation(onDone) {
-  if (carouselRAF) { cancelAnimationFrame(carouselRAF); carouselRAF = null; }
-  if (spinAnimRAF) { cancelAnimationFrame(spinAnimRAF); spinAnimRAF = null; }
+  if (carouselRAF)  { cancelAnimationFrame(carouselRAF);  carouselRAF  = null; }
+  if (spinAnimRAF)  { cancelAnimationFrame(spinAnimRAF);  spinAnimRAF  = null; }
 
-  var itemW       = getTrackItemWidth();
-  var totalItems  = 17; // половина трека (дублированный)
-  var halfWidth   = itemW * totalItems;
+  var itemW      = getTrackItemWidth();
+  var totalItems = 17;
+  var halfWidth  = itemW * totalItems;
 
-  spinAnimPos     = carouselPos;
-  spinAnimSpeed   = Math.max(carouselSpeed, 2);
-  spinAnimPhase   = "accel";
-  spinAnimCB      = onDone;
-  spinAnimWinIdx  = Math.floor(Math.random() * totalItems);
+  spinAnimPos    = carouselPos;
+  spinAnimPhase  = "accel";
+  spinAnimCB     = onDone;
 
-  // Целевая позиция: ≥5 полных кругов + остановка на winIdx (по центру экрана)
-  var screenCenter = window.innerWidth / 2;
-  var winItemCenter = spinAnimWinIdx * itemW + itemW / 2;
-  var base = Math.ceil(spinAnimPos / halfWidth + 5) * halfWidth;
-  spinAnimTarget = base + winItemCenter - screenCenter;
-  if (spinAnimTarget < spinAnimPos + halfWidth * 3) spinAnimTarget += halfWidth;
+  var winIdx = Math.floor(Math.random() * totalItems);
+
+  // Целевая позиция: минимум 4 оборота + центрировка winIdx
+  var screenCenter  = window.innerWidth / 2;
+  var winCenter     = winIdx * itemW + itemW / 2;
+  var minLoops      = 4;
+  var base          = Math.ceil(spinAnimPos / halfWidth + minLoops) * halfWidth;
+  var target        = base + winCenter - screenCenter;
+  if (target < spinAnimPos + halfWidth * 2) target += halfWidth;
 
   _liftTrack(true);
-  tickSpinAnim(itemW, halfWidth);
-  return spinAnimWinIdx;
-}
 
-function tickSpinAnim(itemW, halfWidth) {
-  var track = document.getElementById("gifts-track");
-  if (!track) return;
-  var SPEED_MAX   = 52;
-  var ACCEL       = 1.8;
-  var SPEED_MIN   = 0.3;
+  // Параметры скорости
+  var SPEED_TOP   = 60;   // px/frame на максимуме
+  var speed       = Math.max(carouselSpeed || 1, 3);
+  var decelStart  = null; // timestamp когда начали тормозить
+  var DECEL_MS    = 2000; // ровно 2 секунды торможения
 
-  if (spinAnimPhase === "accel") {
-    spinAnimSpeed = Math.min(spinAnimSpeed + ACCEL, SPEED_MAX);
-    if (spinAnimSpeed >= SPEED_MAX - 0.5) spinAnimPhase = "max";
-  }
-  if (spinAnimPhase === "max") {
-    var rem = spinAnimTarget - spinAnimPos;
-    if (rem < SPEED_MAX * 55) spinAnimPhase = "decel";
-  }
-  if (spinAnimPhase === "decel") {
-    var rem = spinAnimTarget - spinAnimPos;
-    if (rem <= 0) {
-      spinAnimPos   = spinAnimTarget % halfWidth;
-      spinAnimPhase = "done";
-    } else {
-      var t = Math.max(0, Math.min(1, rem / (SPEED_MAX * 55)));
-      spinAnimSpeed = SPEED_MIN + (SPEED_MAX - SPEED_MIN) * Math.pow(t, 0.65);
-      spinAnimSpeed = Math.max(spinAnimSpeed, SPEED_MIN);
+  function tick() {
+    var track = document.getElementById("gifts-track");
+    if (!track) return;
+
+    var remaining = target - spinAnimPos;
+
+    if (spinAnimPhase === "accel") {
+      speed = Math.min(speed + 3.5, SPEED_TOP);
+      if (speed >= SPEED_TOP) spinAnimPhase = "max";
     }
+    if (spinAnimPhase === "max") {
+      if (remaining < SPEED_TOP * 30) {
+        spinAnimPhase = "decel";
+        decelStart = performance.now();
+        // Пересчитаем target чтобы торможение было ровно DECEL_MS
+        // Интеграл скорости при кубическом easing = target - pos ≈ SPEED_TOP * DECEL_MS/1000 * 0.5
+        var decelDist = SPEED_TOP * (DECEL_MS / 1000) * 0.5;
+        target = spinAnimPos + decelDist;
+        // Скорректируем так чтобы конец попал на winIdx
+        var overshoot = target % halfWidth;
+        var desired   = winCenter - screenCenter;
+        if (desired < 0) desired += halfWidth;
+        var diff = desired - overshoot;
+        if (Math.abs(diff) > halfWidth / 2) diff += (diff < 0 ? halfWidth : -halfWidth);
+        target += diff;
+      }
+    }
+    if (spinAnimPhase === "decel" && decelStart !== null) {
+      var elapsed  = performance.now() - decelStart;
+      var progress = Math.min(elapsed / DECEL_MS, 1);
+      // Ease-out cubic: замедление ощущается плавно
+      var ease     = 1 - Math.pow(1 - progress, 3);
+      var decelDist = target - spinAnimPos;
+      speed = Math.max(SPEED_TOP * (1 - ease), 0.2);
+      if (progress >= 1 || decelDist <= 0.5) {
+        spinAnimPos   = target % halfWidth;
+        spinAnimPhase = "done";
+        track.style.transform = "translateX(-" + spinAnimPos + "px)";
+        haptic("heavy");
+        setTimeout(function() {
+          _liftTrack(false);
+          if (spinAnimCB) spinAnimCB(winIdx);
+        }, 350);
+        return;
+      }
+    }
+
+    spinAnimPos += speed;
+    if (halfWidth > 0 && spinAnimPos >= halfWidth) spinAnimPos -= halfWidth;
+    track.style.transform = "translateX(-" + spinAnimPos + "px)";
+    spinAnimRAF = requestAnimationFrame(tick);
   }
 
-  spinAnimPos += spinAnimSpeed;
-  if (halfWidth > 0 && spinAnimPos >= halfWidth) spinAnimPos -= halfWidth;
-  track.style.transform = "translateX(-" + spinAnimPos + "px)";
-
-  if (spinAnimPhase === "done") {
-    haptic("heavy");
-    setTimeout(function() {
-      _liftTrack(false);
-      if (spinAnimCB) spinAnimCB();
-    }, 380);
-    return;
-  }
-  spinAnimRAF = requestAnimationFrame(function() { tickSpinAnim(itemW, halfWidth); });
+  spinAnimRAF = requestAnimationFrame(tick);
+  return winIdx;
 }
 
-// ──────────────────────────────────────────────
-// ДЕМО-РЕЗУЛЬТАТ
-// ──────────────────────────────────────────────
+// ── Демо-результат: показываем видео победителя на весь экран ──
+
 function showDemoResult(gift) {
-  var wrap = document.getElementById("result-wrap");
-  if (!wrap) return;
   haptic("heavy");
   confetti();
-  wrap.innerHTML =
-    '<div class="result-demo-badge">ДЕМО</div>' +
-    '<div class="result-icon">🎉</div>' +
-    '<div class="result-title win">Выпало: ' + gift.name + '</div>' +
-    '<div class="result-nft">' +
-      '<div class="result-nft-name">' + gift.name + '</div>' +
-      '<div class="result-nft-info">' + gift.stars + '⭐ · Демо-режим</div>' +
-    '</div>' +
-    '<div class="result-sub">🎭 Это демо-прокрутка — без реальной ставки.<br>Нажми «Крутить реально» чтобы играть по-настоящему!</div>' +
-    '<button class="result-btn" onclick="switchTab(\'spin\')">Крутить реально</button>' +
-    '<button class="result-btn result-btn-ghost" onclick="onDemoSpin()">Ещё раз (демо)</button>';
-  showScreen("screen-result");
+
+  // Показываем видео победителя поверх всего
+  var existing = document.getElementById("demo-result-overlay");
+  if (existing) existing.remove();
+
+  var ov = document.createElement("div");
+  ov.id = "demo-result-overlay";
+  ov.style.cssText =
+    "position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:300;" +
+    "display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;";
+
+  ov.innerHTML =
+    '<div style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:Unbounded,sans-serif;' +
+      'font-size:11px;font-weight:700;letter-spacing:1.5px;padding:5px 16px;border-radius:20px;">ДЕМО</div>' +
+    '<video src="' + gift.src + '" autoplay loop muted playsinline ' +
+      'style="width:220px;height:220px;border-radius:28px;object-fit:cover;' +
+      'border:2px solid rgba(245,197,24,0.6);box-shadow:0 0 60px rgba(245,197,24,0.35);"></video>' +
+    '<div style="font-family:Unbounded,sans-serif;font-size:20px;font-weight:900;color:#F5C518;text-align:center;">' +
+      gift.name + '</div>' +
+    '<div style="font-size:13px;color:rgba(255,255,255,0.55);text-align:center;line-height:1.6;">' +
+      '🎭 Демо-режим · без реальной ставки</div>' +
+    '<button onclick="document.getElementById(\'demo-result-overlay\').remove();toggleDemoMode();" ' +
+      'style="width:100%;max-width:320px;padding:16px;border-radius:18px;border:none;' +
+      'background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,.85) 100%);' +
+      'font-family:Unbounded,sans-serif;font-size:14px;font-weight:700;color:#000;cursor:pointer;' +
+      'box-shadow:0 4px 20px rgba(255,255,255,0.15);">Крутить по-настоящему</button>' +
+    '<button onclick="document.getElementById(\'demo-result-overlay\').remove();onSpinClick();" ' +
+      'style="width:100%;max-width:320px;padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.2);' +
+      'background:rgba(255,255,255,0.06);font-family:Unbounded,sans-serif;font-size:13px;' +
+      'font-weight:600;color:rgba(255,255,255,0.55);cursor:pointer;">Ещё раз (демо)</button>';
+
+  document.body.appendChild(ov);
 }
 
 function onDemoSpin() {
   var spinBtn = document.getElementById("spin-btn");
   var btnWrap = document.getElementById("spin-btn-wrap");
 
-  // Переключаемся на экран рулетки
+  // Убедимся что на экране спина
   ALL_SCREENS.forEach(function(sid) {
     var s = document.getElementById(sid);
     if (s) { s.style.display = "none"; s.classList.remove("active"); }
@@ -543,14 +592,11 @@ function onDemoSpin() {
   if (btnWrap) btnWrap.style.opacity = "0";
   if (spinBtn) spinBtn.disabled = true;
 
-  setTimeout(function() {
-    var winIdx = startSpinAnimation(function() {
-      if (btnWrap) btnWrap.style.opacity = "";
-      if (spinBtn) spinBtn.disabled = false;
-      var gift = DEMO_GIFTS[winIdx % DEMO_GIFTS.length];
-      showDemoResult(gift);
-    });
-  }, 200);
+  startSpinAnimation(function(winIdx) {
+    if (btnWrap) btnWrap.style.opacity = "";
+    if (spinBtn) spinBtn.disabled = false;
+    showDemoResult(DEMO_GIFTS[winIdx % DEMO_GIFTS.length]);
+  });
 }
 
 // ══════════════════════════════════════════════════════════
@@ -592,6 +638,9 @@ function confetti() {
 }
 
 function onSpinClick() {
+  // Если включён демо-режим — запускаем демо
+  if (demoMode) { onDemoSpin(); return; }
+
   if (!TG_ID) { toast("Открой через Telegram Mini App"); return; }
   var btn = document.getElementById("spin-btn");
   if (btn) btn.disabled = true;
@@ -679,7 +728,6 @@ function onCheckPayment() {
 
 function showSpinAnimation() {
   haptic("heavy");
-  // Показываем экран рулетки для анимации
   ALL_SCREENS.forEach(function(sid) {
     var s = document.getElementById(sid);
     if (s && sid !== "screen-spin") { s.style.display = "none"; s.classList.remove("active"); }
@@ -691,12 +739,10 @@ function showSpinAnimation() {
   var btnWrap = document.getElementById("spin-btn-wrap");
   if (btnWrap) btnWrap.style.opacity = "0";
 
-  setTimeout(function() {
-    startSpinAnimation(function() {
-      if (btnWrap) btnWrap.style.opacity = "";
-      doSpin();
-    });
-  }, 200);
+  startSpinAnimation(function() {
+    if (btnWrap) btnWrap.style.opacity = "";
+    doSpin();
+  });
 }
 
 function doSpin() {
@@ -749,10 +795,10 @@ function showResult(res) {
 
 // ══════════════════════════════════════════════════════════
 // РЕФЕРАЛЬНАЯ СИСТЕМА
-// Формат ссылки: https://t.me/virus_play_bot/app?startapp=ref_TGID
+// Формат ссылки: https://t.me/leonardo_game_bot/app?startapp=ref_TGID
 // ══════════════════════════════════════════════════════════
-var BOT_USERNAME = "virus_play_bot";
-var APP_NAME     = "app";  // имя mini app в боте
+var BOT_USERNAME = "leonardo_game_bot";
+var APP_NAME     = "app";
 
 function getRefLink() {
   return "https://t.me/" + BOT_USERNAME + "/" + APP_NAME + "?startapp=ref_" + TG_ID;
@@ -796,7 +842,7 @@ function copyRefLink() {
 
 function shareRefLink() {
   var refLink = getRefLink();
-  var shareText = "🎰 Играй в LEONARDO GAME — выигрывай NFT-подарки Telegram!\n\n✅ Первый выигрыш гарантирован на 3-й ставке!";
+  var shareText = "🎰 Играй в LEONARDO GAME — выигрывай NFT-подарки Telegram!";
   if (tg && tg.openTelegramLink) {
     var shareUrl = "https://t.me/share/url?url=" + encodeURIComponent(refLink) + "&text=" + encodeURIComponent(shareText);
     tg.openTelegramLink(shareUrl);
