@@ -953,26 +953,55 @@ html, body {
   flex-shrink: 0;
 }
 
-/* ══════════════════════════════
-   ДЕМО-КНОПКА И АНИМАЦИЯ СПИНА
-══════════════════════════════ */
-.demo-btn {
-  width: 100%;
-  padding: 14px 20px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.15);
+/* ── Демо-переключатель ── */
+.demo-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
   border-radius: 16px;
-  font-family: 'Unbounded', sans-serif;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background 0.15s;
+}
+.demo-toggle-row:active { background: rgba(255,255,255,0.09); }
+.demo-toggle-label {
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255,255,255,0.65);
-  cursor: pointer;
-  transition: opacity 0.15s, background 0.15s;
-  touch-action: manipulation;
-  letter-spacing: 0.2px;
+  color: rgba(255,255,255,0.6);
+  transition: color 0.2s;
 }
-.demo-btn:active { opacity: 0.6; background: rgba(255,255,255,0.10); }
-.demo-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.demo-toggle {
+  width: 44px; height: 26px;
+  border-radius: 13px;
+  background: rgba(255,255,255,0.15);
+  position: relative;
+  transition: background 0.25s;
+  flex-shrink: 0;
+}
+.demo-toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.demo-toggle-on {
+  background: #a855f7;
+}
+.demo-toggle-on::after {
+  transform: translateX(18px);
+}
+.demo-toggle-on + .demo-toggle-label,
+.demo-toggle-row:has(.demo-toggle-on) .demo-toggle-label {
+  color: #a855f7;
+}
 
 /* Прицел — анимация пульса */
 @keyframes aim-pulse {
