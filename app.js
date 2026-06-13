@@ -407,60 +407,9 @@ function toggleDemoMode() {
 }
 
 // ══════════════════════════════════════════════════════════
-// АНИМАЦИЯ ТРЕКА — лифт (overlay + прицел)
+// АНИМАЦИЯ ТРЕКА
 // ══════════════════════════════════════════════════════════
-var spinAnimRAF   = null;
-var spinAnimPos   = 0;
-var spinAnimCB    = null;
-var spinAnimPhase = "idle";
-
-function getTrackItemWidth() {
-  var track = document.getElementById("gifts-track");
-  if (!track || !track.children.length) return 202;
-  return track.children[0].offsetWidth + 12;
-}
-
-function _liftTrack(up) {
-  var wrap    = document.querySelector(".gifts-track-wrap");
-  var overlay = document.getElementById("spin-overlay");
-  var aim     = document.getElementById("spin-aim-line");
-
-  if (up) {
-    if (!overlay) {
-      overlay = document.createElement("div");
-      overlay.id = "spin-overlay";
-      overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:199;pointer-events:none;transition:opacity .15s;";
-      document.body.appendChild(overlay);
-    }
-    if (wrap) {
-      wrap.style.cssText =
-        "position:fixed;top:50%;left:0;right:0;height:214px;" +
-        "transform:translateY(-50%);z-index:200;" +
-        "-webkit-mask-image:none;mask-image:none;" +
-        "display:flex;align-items:center;overflow:hidden;";
-    }
-    if (!aim) {
-      aim = document.createElement("div");
-      aim.id = "spin-aim-line";
-      aim.style.cssText =
-        "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);" +
-        "width:190px;height:190px;" +
-        "border:2.5px solid rgba(255,255,255,0.85);border-radius:20px;" +
-        "box-shadow:0 0 30px rgba(255,255,255,0.35),inset 0 0 20px rgba(255,255,255,0.08);" +
-        "z-index:202;pointer-events:none;animation:aim-pulse 0.6s ease-in-out infinite;";
-      document.body.appendChild(aim);
-    }
-  } else {
-    if (overlay) overlay.remove();
-    if (aim)     aim.remove();
-    if (wrap)    wrap.style.cssText = "";
-    // Используем реальную половину трека (scrollWidth/2) чтобы не было рывка
-    var track2 = document.getElementById("gifts-track");
-    var realHalf = track2 ? track2.scrollWidth / 2 : (getTrackItemWidth() * 17);
-    carouselPos = spinAnimPos % (realHalf || 3434);
-    setTimeout(startCarousel, 200);
-  }
-}
+var spinAnimRAF = null;
 
 // ══════════════════════════════════════════════════════════
 // ЭФФЕКТ ЗВЁЗД (падают при проигрыше/до НФТ)
@@ -546,90 +495,215 @@ function fireParticles() {
 }
 
 // ══════════════════════════════════════════════════════════
-// ГЛАВНАЯ АНИМАЦИЯ СПИНА
+// ГЛАВНАЯ АНИМАЦИЯ СПИНА — тап для разгона
 // ══════════════════════════════════════════════════════════
-function startSpinAnimation(onDone) {
-  if (carouselRAF)  { cancelAnimationFrame(carouselRAF);  carouselRAF  = null; }
-  if (spinAnimRAF)  { cancelAnimationFrame(spinAnimRAF);  spinAnimRAF  = null; }
+var TAPS_NEEDED   = 4;     // сколько кликов нужно чтобы разогнать
+var SPIN_DURATION = 3000;  // итоговая длительность замедления, мс
 
-  var track0     = document.getElementById("gifts-track");
-  var itemW      = getTrackItemWidth();
-  var totalItems = 17;
-  // Берём реальную половину трека — точнее чем itemW * N при дробных пикселях
-  var halfWidth  = track0 ? (track0.scrollWidth / 2) : (itemW * totalItems);
-  if (halfWidth < 100) halfWidth = itemW * totalItems; // fallback
-
-  spinAnimPos    = carouselPos;
-  spinAnimPhase  = "accel";
-  spinAnimCB     = onDone;
-
-  var winIdx = Math.floor(Math.random() * totalItems);
-
-  var screenCenter  = window.innerWidth / 2;
-  var winCenter     = winIdx * itemW + itemW / 2;
-  var minLoops      = 4;
-  var base          = Math.ceil(spinAnimPos / halfWidth + minLoops) * halfWidth;
-  var target        = base + winCenter - screenCenter;
-  if (target < spinAnimPos + halfWidth * 2) target += halfWidth;
-
-  _liftTrack(true);
-
-  var SPEED_TOP   = 60;
-  var speed       = Math.max(carouselSpeed || 1, 3);
-  var decelStart  = null;
-  var DECEL_MS    = 2000;
-
-  function tick() {
-    var track = document.getElementById("gifts-track");
-    if (!track) return;
-
-    var remaining = target - spinAnimPos;
-
-    if (spinAnimPhase === "accel") {
-      speed = Math.min(speed + 3.5, SPEED_TOP);
-      if (speed >= SPEED_TOP) spinAnimPhase = "max";
-    }
-    if (spinAnimPhase === "max") {
-      if (remaining < SPEED_TOP * 30) {
-        spinAnimPhase = "decel";
-        decelStart = performance.now();
-        var decelDist = SPEED_TOP * (DECEL_MS / 1000) * 0.5;
-        target = spinAnimPos + decelDist;
-        var overshoot = target % halfWidth;
-        var desired   = winCenter - screenCenter;
-        if (desired < 0) desired += halfWidth;
-        var diff = desired - overshoot;
-        if (Math.abs(diff) > halfWidth / 2) diff += (diff < 0 ? halfWidth : -halfWidth);
-        target += diff;
-      }
-    }
-    if (spinAnimPhase === "decel" && decelStart !== null) {
-      var elapsed  = performance.now() - decelStart;
-      var progress = Math.min(elapsed / DECEL_MS, 1);
-      var ease     = 1 - Math.pow(1 - progress, 3);
-      var decelDist2 = target - spinAnimPos;
-      speed = Math.max(SPEED_TOP * (1 - ease), 0.2);
-      if (progress >= 1 || decelDist2 <= 0.5) {
-        spinAnimPos   = target % halfWidth;
-        spinAnimPhase = "done";
-        track.style.transform = "translateX(-" + spinAnimPos + "px)";
-        haptic("heavy");
-        setTimeout(function() {
-          _liftTrack(false);
-          if (spinAnimCB) spinAnimCB(winIdx);
-        }, 350);
-        return;
-      }
-    }
-
-    spinAnimPos += speed;
-    if (halfWidth > 0 && spinAnimPos >= halfWidth) spinAnimPos -= halfWidth;
-    track.style.transform = "translateX(-" + spinAnimPos + "px)";
-    spinAnimRAF = requestAnimationFrame(tick);
+function _buildSpinItems(withStar) {
+  // Берём видео-источники из основной карусели и опционально вставляем stars.png
+  var srcs = [];
+  document.querySelectorAll("#gifts-track video").forEach(function(v) {
+    if (srcs.indexOf(v.getAttribute("src")) === -1) srcs.push(v.getAttribute("src"));
+  });
+  if (!srcs.length) {
+    DEMO_GIFTS.forEach(function(g) { srcs.push(g.src); });
   }
 
+  var items = [];
+  // Берём 12 случайных видео для одного "круга"
+  var pool = srcs.slice();
+  for (var i = pool.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+  }
+  var setLen = Math.min(12, pool.length);
+  for (var k = 0; k < setLen; k++) items.push({ type: "video", src: pool[k] });
+
+  if (withStar) {
+    var starPos = 1 + Math.floor(Math.random() * (items.length - 2));
+    items.splice(starPos, 0, { type: "star" });
+  }
+  return items;
+}
+
+function _renderSpinItem(item) {
+  if (item.type === "star") {
+    return '<div class="spin-overlay-item spin-overlay-star">' +
+             '<img src="photos/stars.png" alt="star"/>' +
+           '</div>';
+  }
+  return '<div class="spin-overlay-item">' +
+           '<video src="' + item.src + '" autoplay loop muted playsinline webkit-playsinline></video>' +
+         '</div>';
+}
+
+// onDone(winIdx) — вызывается после остановки.
+// withStarItem — если true, в линию подсовывается одна звёздочка (stars.png)
+function startSpinAnimation(onDone, withStarItem) {
+  if (carouselRAF) { cancelAnimationFrame(carouselRAF); carouselRAF = null; }
+  if (spinAnimRAF) { cancelAnimationFrame(spinAnimRAF); spinAnimRAF = null; }
+
+  // ── Оверлей с блюром фона ──────────────────────────────
+  var blurBg = document.createElement("div");
+  blurBg.id = "spin-blur-bg";
+  blurBg.style.cssText =
+    "position:fixed;inset:0;z-index:198;" +
+    "backdrop-filter:blur(18px) brightness(0.45);" +
+    "-webkit-backdrop-filter:blur(18px) brightness(0.45);" +
+    "background:rgba(0,0,0,0.35);opacity:0;transition:opacity .25s;";
+  document.body.appendChild(blurBg);
+
+  var overlay = document.createElement("div");
+  overlay.id = "spin-overlay";
+  overlay.style.cssText =
+    "position:fixed;top:50%;left:0;right:0;height:200px;" +
+    "transform:translateY(-50%) scale(0.92);z-index:200;" +
+    "display:flex;align-items:center;overflow:hidden;" +
+    "opacity:0;transition:opacity .25s, transform .25s;";
+
+  var track = document.createElement("div");
+  track.id = "spin-overlay-track";
+  track.style.cssText = "display:flex;gap:12px;flex-shrink:0;will-change:transform;padding-left:50vw;";
+
+  var items = _buildSpinItems(!!withStarItem);
+  var winIdx = Math.floor(Math.random() * items.length);
+
+  // Дублируем набор несколько раз для длинной прокрутки
+  var REPEATS = 6;
+  var html = "";
+  for (var r = 0; r < REPEATS; r++) {
+    for (var i = 0; i < items.length; i++) html += _renderSpinItem(items[i]);
+  }
+  track.innerHTML = html;
+  overlay.appendChild(track);
+  document.body.appendChild(overlay);
+
+  // Тап-зона
+  var tapZone = document.createElement("div");
+  tapZone.id = "spin-tap-zone";
+  tapZone.style.cssText = "position:fixed;inset:0;z-index:201;";
+  document.body.appendChild(tapZone);
+
+  var hint = document.createElement("div");
+  hint.id = "spin-tap-hint";
+  hint.style.cssText =
+    "position:fixed;bottom:18%;left:0;right:0;text-align:center;z-index:202;" +
+    "font-family:Unbounded,sans-serif;font-size:14px;font-weight:700;color:#fff;" +
+    "text-shadow:0 2px 12px rgba(0,0,0,0.6);opacity:0;transition:opacity .3s;" +
+    "pointer-events:none;";
+  hint.textContent = "Жми, чтобы разогнать!";
+  document.body.appendChild(hint);
+
+  requestAnimationFrame(function() {
+    blurBg.style.opacity  = "1";
+    overlay.style.opacity = "1";
+    overlay.style.transform = "translateY(-50%) scale(1)";
+    hint.style.opacity = "1";
+  });
+
+  setTimeout(forcePlayAllVideos, 60);
+
+  // ── Геометрия ───────────────────────────────────────────
+  function itemWidth() {
+    var first = track.children[0];
+    if (!first) return 202;
+    return first.offsetWidth + 12;
+  }
+
+  var itemW       = itemWidth();
+  var setW        = itemW * items.length;
+  var screenCenter = window.innerWidth / 2;
+  var winCenter    = winIdx * itemW + itemW / 2;
+
+  var pos        = 0;
+  var taps       = 0;
+  var phase      = "wait"; // wait -> spinning -> decel -> done
+  var speed      = 0;
+  var BASE_SPEED = 6;
+  var SPEED_STEP = 9;
+  var MAX_SPEED  = BASE_SPEED + SPEED_STEP * TAPS_NEEDED;
+  var decelStart = null;
+  var target     = 0;
+
+  function onTap() {
+    if (phase === "done" || phase === "decel") return;
+    if (taps >= TAPS_NEEDED) return;
+    taps++;
+    haptic("medium");
+    if (phase === "wait") {
+      phase = "spinning";
+      hint.style.opacity = "0";
+    }
+    speed = BASE_SPEED + SPEED_STEP * taps;
+    if (taps >= TAPS_NEEDED) {
+      // Запускаем замедление через SPIN_DURATION
+      tapZone.style.pointerEvents = "none";
+      var minLoops  = 3;
+      var base      = Math.ceil((pos + minLoops * setW) / setW) * setW;
+      target        = base + winCenter - screenCenter;
+      if (target < pos + setW) target += setW;
+      decelStart = performance.now();
+      decelFromPos = pos;
+      decelFromSpeed = speed;
+      phase = "decel";
+    }
+  }
+  tapZone.addEventListener("pointerdown", onTap);
+
+  var decelFromPos = 0, decelFromSpeed = 0;
+
+  function tick() {
+    if (phase === "wait") {
+      // Лёгкое покачивание/медленный ход в ожидании тапов
+      speed = 1.2;
+      pos += speed;
+      if (setW > 0 && pos >= setW) pos -= setW;
+      track.style.transform = "translateX(-" + pos + "px)";
+      spinAnimRAF = requestAnimationFrame(tick);
+      return;
+    }
+    if (phase === "spinning") {
+      pos += speed;
+      if (setW > 0 && pos >= setW) pos -= setW;
+      track.style.transform = "translateX(-" + pos + "px)";
+      spinAnimRAF = requestAnimationFrame(tick);
+      return;
+    }
+    if (phase === "decel") {
+      var elapsed  = performance.now() - decelStart;
+      var progress = Math.min(elapsed / SPIN_DURATION, 1);
+      var ease     = 1 - Math.pow(1 - progress, 3);
+      pos = decelFromPos + (target - decelFromPos) * ease;
+      track.style.transform = "translateX(-" + pos + "px)";
+      if (progress >= 1) {
+        pos = target;
+        track.style.transform = "translateX(-" + pos + "px)";
+        phase = "done";
+        haptic("heavy");
+        setTimeout(function() {
+          _teardownSpinOverlay(blurBg, overlay, tapZone, hint);
+          if (onDone) onDone(winIdx);
+        }, 450);
+        return;
+      }
+      spinAnimRAF = requestAnimationFrame(tick);
+      return;
+    }
+  }
   spinAnimRAF = requestAnimationFrame(tick);
+
   return winIdx;
+}
+
+function _teardownSpinOverlay(blurBg, overlay, tapZone, hint) {
+  [blurBg, overlay, tapZone, hint].forEach(function(el) {
+    if (!el) return;
+    el.style.transition = "opacity .25s";
+    el.style.opacity = "0";
+    setTimeout(function() { el.remove(); }, 260);
+  });
+  setTimeout(startCarousel, 280);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -702,13 +776,14 @@ function onDemoSpin() {
   if (btnWrap) btnWrap.style.opacity = "0";
   if (spinBtn) spinBtn.disabled = true;
 
+  // Демо-шансы: 30% звёзды, 70% НФТ — решаем заранее, чтобы знать,
+  // подсовывать ли звёздочку в линию подарков
+  var showNft = Math.random() < 0.70;
+
   startSpinAnimation(function() {
     demoCycleCount++;
     if (btnWrap) btnWrap.style.opacity = "";
     if (spinBtn) spinBtn.disabled = false;
-
-    // Демо-шансы: 30% звёзды, 70% НФТ
-    var showNft = Math.random() < 0.70;
 
     if (showNft) {
       // Показать рандомный НФТ из любого тира
@@ -719,11 +794,11 @@ function onDemoSpin() {
       haptic("heavy");
       showNftVideoOverlay(gift, true, null);
     } else {
-      // Показать звёзды (1–4)
+      // Показать звёзды (1–5)
       var starCount = 1 + Math.floor(Math.random() * 5);
       showStarsEffect(starCount, null);
     }
-  });
+  }, showNft);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -864,23 +939,22 @@ function showSpinAnimation() {
   var btnWrap = document.getElementById("spin-btn-wrap");
   if (btnWrap) btnWrap.style.opacity = "0";
 
-  startSpinAnimation(function() {
-    if (btnWrap) btnWrap.style.opacity = "";
-    doSpin();
-  });
-}
-
-function doSpin() {
   if (!currentBetId) {
     showError("Ошибка", "Нет активной ставки.", function() { switchTab("spin"); });
     return;
   }
+
   api("/spin", { tg_id: TG_ID, bet_id: currentBetId, init_data: INIT_DATA })
     .then(function(res) {
       currentBetId = null;
-      showResult(res);
+      var isWin = res.result === "win";
+      startSpinAnimation(function() {
+        if (btnWrap) btnWrap.style.opacity = "";
+        showResult(res);
+      }, isWin);
     })
     .catch(function(e) {
+      if (btnWrap) btnWrap.style.opacity = "";
       showError("Ошибка спина", (e && e.message) || "Обратись в поддержку.", function() { switchTab("spin"); });
     });
 }
