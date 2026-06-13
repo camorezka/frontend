@@ -70,23 +70,23 @@ function getRandomNftGift(stars) {
 
 // Все демо-подарки для карусели (декоративные)
 var DEMO_GIFTS = [
-  { name: "💍 Кольцо",    src: "photos/ring.mp4",     stars: 50  },
-  { name: "🐻 Медведь",   src: "photos/bear.mp4",     stars: 75  },
-  { name: "🍦 Мороженое", src: "photos/icecream.mp4", stars: 60  },
-  { name: "⚡ Молния",    src: "photos/lighting.mp4", stars: 120 },
-  { name: "🎉 Год",       src: "photos/year.mp4",     stars: 160 },
-  { name: "🚀 Ракета",    src: "photos/rocket.mp4",   stars: 200 },
-  { name: "🧦 Носки",     src: "photos/socks.mp4",    stars: 40  },
-  { name: "💀 Череп",     src: "photos/skull.mp4",    stars: 350 },
-  { name: "🔮 Колдун",    src: "photos/koldun.mp4",   stars: 180 },
-  { name: "🍭 Леденец",   src: "photos/lolipop.mp4",  stars: 65  },
-  { name: "❤️ Сердце",    src: "photos/heart.mp4",    stars: 90  },
-  { name: "👁 Глаз",      src: "photos/eye.mp4",      stars: 150 },
-  { name: "🐱 Кот",       src: "photos/cat.mp4",      stars: 110 },
-  { name: "🎮 Кнопка",    src: "photos/button.mp4",   stars: 80  },
-  { name: "🐍 Змея",      src: "photos/snake.mp4",    stars: 220 },
-  { name: "💎 Кристалл",  src: "photos/crystal.mp4",  stars: 300 },
-  { name: "🚬 Сигарета",  src: "photos/sigareta.mp4", stars: 130 }
+  { name: "Diamond Ring",    tgs: "photos2/ring.tgs",     stars: 50  },
+  { name: "Toy Bear",        tgs: "photos2/bear.tgs",     stars: 75  },
+  { name: "Vice Cream",      tgs: "photos2/icecream.tgs", stars: 60  },
+  { name: "Party Sparkler",  tgs: "photos2/lighting.tgs", stars: 120 },
+  { name: "Big Year",        tgs: "photos2/year.tgs",     stars: 160 },
+  { name: "Stellar Rocket",  tgs: "photos2/rocket.tgs",   stars: 200 },
+  { name: "Fresh Socks",     tgs: "photos2/socks.tgs",    stars: 40  },
+  { name: "Electric Skull",  tgs: "photos2/skull.tgs",    stars: 350 },
+  { name: "Witch Hat",       tgs: "photos2/koldun.tgs",   stars: 180 },
+  { name: "Lol Pop",         tgs: "photos2/lolipop.tgs",  stars: 65  },
+  { name: "Trapped Heart",   tgs: "photos2/heart.tgs",    stars: 90  },
+  { name: "Evil Eye",        tgs: "photos2/eye.tgs",      stars: 150 },
+  { name: "Scared Cat",      tgs: "photos2/cat.tgs",      stars: 110 },
+  { name: "Input Key",       tgs: "photos2/button.tgs",   stars: 80  },
+  { name: "Lunar Snake",     tgs: "photos2/snake.tgs",    stars: 220 },
+  { name: "Astral Shard",    tgs: "photos2/crystal.tgs",  stars: 300 },
+  { name: "Vintage Cigar",   tgs: "photos2/sigareta.tgs", stars: 130 }
 ];
 
 // ══════════════════════════════════════════════════════════
@@ -426,7 +426,7 @@ function showStarsEffect(count, onDone) {
   container.appendChild(img);
 
   var label = document.createElement("div");
-  label.style.cssText = "font-family:Unbounded,sans-serif;font-size:28px;font-weight:900;color:#ffffff;text-shadow:0 0 20px rgba(255,255,255,0.5);animation:stars-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;";
+  label.style.cssText = "font-family:Unbounded,sans-serif;font-size:28px;font-weight:900;color:#ffffff;text-shadow:0 0 20px rgba(255,255,255,0.5);animation:stars-pop 0.5s cubic-bezier(0.34,1.56,0.64,1);";
   label.textContent = starCount + " ⭐";
   container.appendChild(label);
 
@@ -501,24 +501,25 @@ var TAPS_NEEDED   = 4;     // сколько кликов нужно чтобы 
 var SPIN_DURATION = 3000;  // итоговая длительность замедления, мс
 
 function _buildSpinItems(withStar) {
-  // Берём видео-источники из основной карусели и опционально вставляем stars.png
+  // Берём TGS-источники из основной карусели
   var srcs = [];
-  document.querySelectorAll("#gifts-track video").forEach(function(v) {
-    if (srcs.indexOf(v.getAttribute("src")) === -1) srcs.push(v.getAttribute("src"));
+  document.querySelectorAll("#gifts-track .tgs-container").forEach(function(tgs) {
+    var src = tgs.getAttribute("data-tgs");
+    if (src && srcs.indexOf(src) === -1) srcs.push(src);
   });
   if (!srcs.length) {
-    DEMO_GIFTS.forEach(function(g) { srcs.push(g.src); });
+    DEMO_GIFTS.forEach(function(g) { srcs.push(g.tgs); });
   }
 
   var items = [];
-  // Берём 12 случайных видео для одного "круга"
+  // Берём 12 случайных TGS для одного "круга"
   var pool = srcs.slice();
   for (var i = pool.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
     var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
   }
   var setLen = Math.min(12, pool.length);
-  for (var k = 0; k < setLen; k++) items.push({ type: "video", src: pool[k] });
+  for (var k = 0; k < setLen; k++) items.push({ type: "tgs", src: pool[k] });
 
   if (withStar) {
     var starPos = 1 + Math.floor(Math.random() * (items.length - 2));
@@ -534,7 +535,7 @@ function _renderSpinItem(item) {
            '</div>';
   }
   return '<div class="spin-overlay-item">' +
-           '<video src="' + item.src + '" autoplay loop muted playsinline webkit-playsinline></video>' +
+           '<div class="tgs-container" data-tgs="' + item.src + '" style="width:100%;height:100%;"></div>' +
          '</div>';
 }
 
@@ -602,7 +603,10 @@ function startSpinAnimation(onDone, withStarItem) {
     hint.style.opacity = "1";
   });
 
-  setTimeout(forcePlayAllVideos, 60);
+  setTimeout(function() {
+    loadTgsAnimations();
+    forcePlayAllVideos();
+  }, 60);
 
   // ── Геометрия ───────────────────────────────────────────
   function itemWidth() {
@@ -720,8 +724,8 @@ function showNftVideoOverlay(gift, isDemo, onClose) {
     "display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;";
 
   var badge = isDemo
-    ? '<div style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:Unbounded,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:5px 16px;border-radius:20px;">ДЕМО</div>'
-    : '<div style="background:linear-gradient(135deg,#ffffff,#cfcfcf);color:#000;font-family:Unbounded,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:5px 16px;border-radius:20px;">🎉 ВЫИГРЫШ!</div>';
+    ? '<div style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:Unbounded,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:5px 16px;border-radius:20px;text-transform:uppercase;">Демо</div>'
+    : '<div style="background:linear-gradient(135deg,#ffffff,#cfcfcf);color:#000;font-family:Unbounded,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:5px 16px;border-radius:20px;text-transform:uppercase;">Выигрыш</div>';
 
   ov.innerHTML = badge +
     '<video src="' + gift.src + '" autoplay loop muted playsinline ' +
@@ -1128,7 +1132,7 @@ function renderPodium(top3) {
     var sz = size || 44;
     if (p && p.photo_url) {
       return "<img src='" + p.photo_url + "' class='lb-avatar-img' style='width:" + sz + "px;height:" + sz + "px;border-radius:50%;object-fit:cover;display:block;' onerror=\"this.style.display='none';this.nextSibling.style.display='flex';\"/>" +
-             "<span class='lb-avatar-fallback' style='display:none;width:" + sz + "px;height:" + sz + "px;'>" + initials(p) + "</span>";
+              "<span class='lb-avatar-fallback' style='display:none;width:" + sz + "px;height:" + sz + "px;'>" + initials(p) + "</span>";
     }
     return "<span class='lb-avatar-fallback' style='width:" + sz + "px;height:" + sz + "px;'>" + initials(p) + "</span>";
   }
