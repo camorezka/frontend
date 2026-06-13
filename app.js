@@ -445,8 +445,8 @@ function _liftTrack(up) {
       aim.style.cssText =
         "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);" +
         "width:190px;height:190px;" +
-        "border:2.5px solid rgba(245,197,24,0.95);border-radius:20px;" +
-        "box-shadow:0 0 30px rgba(245,197,24,0.6),inset 0 0 20px rgba(245,197,24,0.1);" +
+        "border:2.5px solid rgba(255,255,255,0.85);border-radius:20px;" +
+        "box-shadow:0 0 30px rgba(255,255,255,0.35),inset 0 0 20px rgba(255,255,255,0.08);" +
         "z-index:202;pointer-events:none;animation:aim-pulse 0.6s ease-in-out infinite;";
       document.body.appendChild(aim);
     }
@@ -477,7 +477,7 @@ function showStarsEffect(count, onDone) {
   container.appendChild(img);
 
   var label = document.createElement("div");
-  label.style.cssText = "font-family:Unbounded,sans-serif;font-size:28px;font-weight:900;color:#F5C518;text-shadow:0 0 20px rgba(245,197,24,0.8);animation:stars-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;";
+  label.style.cssText = "font-family:Unbounded,sans-serif;font-size:28px;font-weight:900;color:#ffffff;text-shadow:0 0 20px rgba(255,255,255,0.5);animation:stars-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;";
   label.textContent = starCount + " ⭐";
   container.appendChild(label);
 
@@ -517,7 +517,7 @@ function showStarsEffect(count, onDone) {
 }
 
 function fireParticles() {
-  var colors = ["#F5C518","#FFD84D","#ffffff","#FFC0CB","#FFFACD"];
+  var colors = ["#ffffff","#cfcfcf","#A8FF78","#B388FF","#5dbcff"];
   for (var i = 0; i < 40; i++) {
     (function(idx) {
       setTimeout(function() {
@@ -647,13 +647,13 @@ function showNftVideoOverlay(gift, isDemo, onClose) {
 
   var badge = isDemo
     ? '<div style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:Unbounded,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:5px 16px;border-radius:20px;">ДЕМО</div>'
-    : '<div style="background:linear-gradient(135deg,#F5C518,#FF8C00);color:#000;font-family:Unbounded,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:5px 16px;border-radius:20px;">🎉 ВЫИГРЫШ!</div>';
+    : '<div style="background:linear-gradient(135deg,#ffffff,#cfcfcf);color:#000;font-family:Unbounded,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:5px 16px;border-radius:20px;">🎉 ВЫИГРЫШ!</div>';
 
   ov.innerHTML = badge +
     '<video src="' + gift.src + '" autoplay loop muted playsinline ' +
     'style="width:240px;height:240px;border-radius:28px;object-fit:cover;' +
-    'border:2px solid rgba(245,197,24,0.7);box-shadow:0 0 60px rgba(245,197,24,0.4);"></video>' +
-    '<div style="font-family:Unbounded,sans-serif;font-size:22px;font-weight:900;color:#F5C518;text-align:center;">' +
+    'border:2px solid rgba(255,255,255,0.5);box-shadow:0 0 60px rgba(255,255,255,0.3);"></video>' +
+    '<div style="font-family:Unbounded,sans-serif;font-size:22px;font-weight:900;color:#ffffff;text-align:center;">' +
       gift.name + '</div>' +
     (isDemo ? '<div style="font-size:12px;color:rgba(255,255,255,0.5);text-align:center;">Демо-режим · без реальной ставки</div>' : '') +
     '<button id="nft-ov-close" style="width:100%;max-width:320px;padding:16px;border-radius:18px;border:none;' +
@@ -707,8 +707,8 @@ function onDemoSpin() {
     if (btnWrap) btnWrap.style.opacity = "";
     if (spinBtn) spinBtn.disabled = false;
 
-    // Каждые 1-2 прокрутки показывает НФТ
-    var showNft = (demoCycleCount % 2 === 0) || (Math.random() < 0.45);
+    // Демо-шансы: 30% звёзды, 70% НФТ
+    var showNft = Math.random() < 0.70;
 
     if (showNft) {
       // Показать рандомный НФТ из любого тира
@@ -720,7 +720,7 @@ function onDemoSpin() {
       showNftVideoOverlay(gift, true, null);
     } else {
       // Показать звёзды (1–4)
-      var starCount = 1 + Math.floor(Math.random() * 4);
+      var starCount = 1 + Math.floor(Math.random() * 5);
       showStarsEffect(starCount, null);
     }
   });
@@ -737,7 +737,7 @@ function setPayStatus(msg, cls) {
 }
 
 function confetti() {
-  var colors = ["#F5C518","#FF5E5B","#ffffff","#A8FF78","#B388FF","#FFD84D"];
+  var colors = ["#ffffff","#A8FF78","#5dbcff","#FF5E5B","#B388FF","#cfcfcf"];
   for (var i = 0; i < 50; i++) {
     (function(idx) {
       setTimeout(function() {
@@ -905,7 +905,7 @@ function showResult(res) {
 
   } else {
     // Проигрыш — показать звёзды (1–4)
-    var starCount = 1 + Math.floor(Math.random() * 4);
+    var starCount = 1 + Math.floor(Math.random() * 5);
     showStarsEffect(starCount, function() {
       _showLoseResultScreen(res);
     });
@@ -939,7 +939,7 @@ function _showLoseResultScreen(res) {
   var nextWinText = res.next_win_in ? "До выигрыша: " + res.next_win_in + " ставки" : "";
   wrap.innerHTML =
     '<div class="result-icon">⭐</div>' +
-    '<div class="result-title" style="color:#F5C518">Звёздный день!</div>' +
+    '<div class="result-title" style="color:#ffffff">Звёздный день!</div>' +
     '<div class="result-sub">Попробуй ещё раз!<br>' + (nextWinText ? '<b>' + nextWinText + '</b>' : '') + '</div>' +
     '<button class="result-btn" onclick="switchTab(\'spin\')">Попробовать снова</button>';
   showScreen("screen-result");
