@@ -562,7 +562,7 @@ html, body {
 .pay-status { min-height: 18px; font-size: 13px; font-weight: 600; }
 .pay-status.ok   { color: var(--green); }
 .pay-status.err  { color: var(--red); }
-.pay-status.wait { color: var(--gold); }
+.pay-status.wait { color: #cfcfcf; }
 .pay-confirm-btn {
   width: 100%; padding: 18px;
   background: var(--btn-bg); border: none; border-radius: 18px;
@@ -603,11 +603,11 @@ html, body {
 .result-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; gap: 18px; text-align: center; padding: 32px 24px; }
 .result-icon  { font-size: 72px; }
 .result-title { font-family: 'Unbounded', sans-serif; font-size: 24px; font-weight: 900; }
-.result-title.win  { color: var(--gold); text-shadow: 0 0 30px rgba(245,197,24,0.5); }
+.result-title.win  { color: #ffffff; text-shadow: 0 0 30px rgba(255,255,255,0.4); }
 .result-title.lose { color: var(--sub); }
 .result-sub   { font-size: 14px; color: var(--sub); line-height: 1.7; }
-.result-nft { background: var(--white-dim); border: 1px solid rgba(245,197,24,0.3); border-radius: 18px; padding: 18px 22px; width: 100%; }
-.result-nft-name { font-weight: 700; font-size: 16px; color: var(--gold); margin-bottom: 4px; }
+.result-nft { background: var(--white-dim); border: 1px solid rgba(255,255,255,0.15); border-radius: 18px; padding: 18px 22px; width: 100%; }
+.result-nft-name { font-weight: 700; font-size: 16px; color: #ffffff; margin-bottom: 4px; }
 .result-nft-info { font-size: 13px; color: var(--sub); }
 .result-btn {
   width: 100%; padding: 18px;
@@ -751,7 +751,7 @@ html, body {
   padding: 14px;
   text-align: center;
 }
-.ref-stat-value { font-size: 24px; font-weight: 800; color: #F5C518; }
+.ref-stat-value { font-size: 24px; font-weight: 800; color: #ffffff; }
 .ref-stat-label { font-size: 12px; color: #aaa; margin-top: 4px; }
 
 .ref-link-block {
@@ -1023,8 +1023,8 @@ html, body {
 
 /* Прицел — анимация пульса */
 @keyframes aim-pulse {
-  0%,100% { box-shadow: 0 0 28px rgba(245,197,24,0.55), inset 0 0 18px rgba(245,197,24,0.08); border-color: rgba(245,197,24,0.95); }
-  50%     { box-shadow: 0 0 50px rgba(245,197,24,0.90), inset 0 0 28px rgba(245,197,24,0.18); border-color: rgba(245,197,24,1); }
+  0%,100% { box-shadow: 0 0 28px rgba(255,255,255,0.35), inset 0 0 18px rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.85); }
+  50%     { box-shadow: 0 0 50px rgba(255,255,255,0.65), inset 0 0 28px rgba(255,255,255,0.12); border-color: rgba(255,255,255,1); }
 }
 
 /* Демо-бейдж на экране результата */
