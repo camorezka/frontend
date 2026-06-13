@@ -390,6 +390,28 @@ html, body {
   border-radius: 20px; border: none; display: block;
 }
 
+/* ══════════════════════════════
+   ОВЕРЛЕЙ СПИНА (тап для разгона)
+══════════════════════════════ */
+#spin-overlay { box-shadow: 0 0 60px rgba(0,0,0,0.6); }
+.spin-overlay-item {
+  flex-shrink: 0; width: 42vw; height: 42vw;
+  max-width: 190px; max-height: 190px;
+  border-radius: 20px; overflow: hidden;
+  background: #000; display: flex; align-items: center; justify-content: center;
+}
+.spin-overlay-item video {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.spin-overlay-star {
+  background: radial-gradient(circle, rgba(255,255,255,0.10) 0%, rgba(0,0,0,0.4) 100%);
+  border: 1px solid rgba(255,255,255,0.18);
+}
+.spin-overlay-star img {
+  width: 60%; height: 60%; object-fit: contain;
+  filter: drop-shadow(0 0 18px rgba(255,255,255,0.5));
+}
+
 .spin-btn-wrap {
   width: 100%; padding: 0 20px 20px;
   display: flex; flex-direction: column; gap: 10px;
@@ -1021,11 +1043,7 @@ html, body {
   color: #a855f7;
 }
 
-/* Прицел — анимация пульса */
-@keyframes aim-pulse {
-  0%,100% { box-shadow: 0 0 28px rgba(255,255,255,0.35), inset 0 0 18px rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.85); }
-  50%     { box-shadow: 0 0 50px rgba(255,255,255,0.65), inset 0 0 28px rgba(255,255,255,0.12); border-color: rgba(255,255,255,1); }
-}
+/* Старая анимация прицела удалена */
 
 /* Демо-бейдж на экране результата */
 .result-demo-badge {
