@@ -93,32 +93,21 @@ var DEMO_GIFTS = [
 ];
 
 // ══════════════════════════════════════════════════════════
-// ВИДЕО — КАРУСЕЛЬ
+// КАРУСЕЛЬ — управление паузой во время спина
+// (движение теперь на CSS @keyframes, без JS RAF)
 // ══════════════════════════════════════════════════════════
-var carouselRAF    = null;
-var carouselPos    = 0;
-var carouselSpeed  = 3.2;
-var carouselHalf   = 0; // cached — never read in RAF loop
-
-function cacheCarouselWidth() {
+function pauseCarousel() {
   var track = document.getElementById("gifts-track");
-  if (track && track.scrollWidth > 0) carouselHalf = track.scrollWidth / 2;
+  if (track) track.classList.add("paused");
 }
-
-function tickCarousel() {
+function resumeCarousel() {
   var track = document.getElementById("gifts-track");
-  if (!track) { carouselRAF = requestAnimationFrame(tickCarousel); return; }
-  carouselPos += carouselSpeed;
-  if (carouselHalf > 0 && carouselPos >= carouselHalf) carouselPos -= carouselHalf;
-  track.style.transform = "translateX(-" + carouselPos + "px)";
-  carouselRAF = requestAnimationFrame(tickCarousel);
+  if (track) track.classList.remove("paused");
 }
-
-function startCarousel() {
-  cacheCarouselWidth();
-  if (carouselRAF) cancelAnimationFrame(carouselRAF);
-  carouselRAF = requestAnimationFrame(tickCarousel);
-}
+// startCarousel / stopCarousel — совместимость с остальным кодом
+function startCarousel()  { resumeCarousel(); }
+function stopCarousel()   { pauseCarousel();  }
+var carouselRAF = null; // совместимость — больше не используется
 
 function forcePlayAllVideos() {
   document.querySelectorAll("video").forEach(function(v) {
@@ -129,7 +118,7 @@ function forcePlayAllVideos() {
       if (p && p.catch) p.catch(function() {});
     }
   });
-  if (!carouselRAF) startCarousel();
+  // Карусель на CSS, RAF больше не нужен
 }
 
 document.addEventListener("touchstart", forcePlayAllVideos, { passive: true });
@@ -138,22 +127,19 @@ document.addEventListener("click",      forcePlayAllVideos, { passive: true });
 document.addEventListener("visibilitychange", function() {
   if (document.visibilityState === "visible") {
     setTimeout(forcePlayAllVideos, 120);
-  } else {
-    // pause RAF when hidden to save battery
-    if (carouselRAF) { cancelAnimationFrame(carouselRAF); carouselRAF = null; }
   }
+  // CSS анимация браузер сам паузит при скрытии
 });
 window.addEventListener("pageshow", function() { setTimeout(forcePlayAllVideos, 120); });
 window.addEventListener("focus",    function() { setTimeout(forcePlayAllVideos, 160); });
 
-// watchdog — lighter: only fix videos, don't call loadTgsAnimations every 3s
+// watchdog — только видео, карусель на CSS
 setInterval(function() {
   if (document.visibilityState !== "visible") return;
   if (currentTab !== "spin") return;
   var anyPaused = false;
   document.querySelectorAll("#screen-spin video").forEach(function(v) { if (v.paused) anyPaused = true; });
   if (anyPaused) forcePlayAllVideos();
-  if (!carouselRAF) startCarousel();
 }, 4000);
 
 // ══════════════════════════════════════════════════════════
@@ -547,6 +533,7 @@ function _renderSpinItem(item) {
 // withStarItem — если true, в линию подсовывается одна звёздочка (stars.png)
 function startSpinAnimation(onDone, withStarItem) {
   if (carouselRAF) { cancelAnimationFrame(carouselRAF); carouselRAF = null; }
+  pauseCarousel(); // CSS анимация — пауза
   if (spinAnimRAF) { cancelAnimationFrame(spinAnimRAF); spinAnimRAF = null; }
 
   // ── Оверлей с блюром фона ──────────────────────────────
@@ -1441,7 +1428,7 @@ window.addEventListener("load", function() {
 var _tgsCache = {};
 var _tgsQueue   = [];
 var _tgsRunning = 0;
-var _TGS_CONCURRENCY = 3; // можно 3 на canvas
+var _TGS_CONCURRENCY = 4; // 4 параллельно — баланс скорости и плавности
 
 function _tgsProcessQueue() {
   while (_tgsRunning < _TGS_CONCURRENCY && _tgsQueue.length > 0) {
@@ -1455,7 +1442,7 @@ function _tgsInitContainer(container, src, json) {
   container.innerHTML = '';
   var anim = lottie.loadAnimation({
     container: container,
-    renderer: 'canvas',  // canvas намного быстрее SVG на мобиле
+    renderer: 'canvas',
     loop: true,
     autoplay: true,
     animationData: json,
@@ -1463,7 +1450,9 @@ function _tgsInitContainer(container, src, json) {
       clearCanvas: true,
       progressiveLoad: true,
       hideOnTransparent: true,
-      preserveAspectRatio: 'xMidYMid meet'
+      preserveAspectRatio: 'xMidYMid meet',
+      // Ограничиваем DPR до 1.5 — экономия GPU на Retina
+      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.5)
     }
   });
   anim.addEventListener('enterFrame', function onFirst() {
@@ -1471,22 +1460,32 @@ function _tgsInitContainer(container, src, json) {
     _tgsRunning--;
     _tgsProcessQueue();
   });
-  // fallback если enterFrame не сработал (редкий случай)
+  // fallback если enterFrame не сработал
   setTimeout(function() {
     if (_tgsRunning > 0) { _tgsRunning = Math.max(0, _tgsRunning - 1); _tgsProcessQueue(); }
-  }, 3000);
+  }, 2000);
 }
 
 function loadTgsAnimations() {
   var containers = document.querySelectorAll('.tgs-container[data-tgs]');
+  // Группируем по src — чтобы не грузить одинаковые файлы несколько раз
+  var srcToContainers = {};
   containers.forEach(function(container) {
     var src = container.getAttribute('data-tgs');
     if (!src || container._tgsLoaded) return;
-    container._tgsLoaded = true;
+    if (!srcToContainers[src]) srcToContainers[src] = [];
+    srcToContainers[src].push(container);
+  });
+
+  Object.keys(srcToContainers).forEach(function(src) {
+    var ctList = srcToContainers[src];
+    ctList.forEach(function(container) { container._tgsLoaded = true; });
 
     if (_tgsCache[src]) {
-      // Already parsed — queue immediately
-      _tgsQueue.push({ container: container, src: src, json: _tgsCache[src] });
+      // Уже есть — всех в очередь
+      ctList.forEach(function(container) {
+        _tgsQueue.push({ container: container, src: src, json: _tgsCache[src] });
+      });
       _tgsProcessQueue();
       return;
     }
@@ -1506,16 +1505,18 @@ function loadTgsAnimations() {
           try {
             json = JSON.parse(new TextDecoder('utf-8').decode(uint8));
           } catch(e2) {
-            container._tgsLoaded = false;
+            ctList.forEach(function(c) { c._tgsLoaded = false; });
             return;
           }
         }
-        _tgsCache[src] = json; // cache parsed result
-        _tgsQueue.push({ container: container, src: src, json: json });
+        _tgsCache[src] = json;
+        ctList.forEach(function(container) {
+          _tgsQueue.push({ container: container, src: src, json: json });
+        });
         _tgsProcessQueue();
       })
       .catch(function() {
-        container._tgsLoaded = false;
+        ctList.forEach(function(c) { c._tgsLoaded = false; });
       });
   });
 }
