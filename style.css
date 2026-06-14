@@ -8,7 +8,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:           #010205;
+  --bg:           #030812;
   --glass-bg:     rgba(20,55,110,0.06);
   --glass-border: rgba(80,160,240,0.10);
   --gold:         #F5C518;
@@ -387,14 +387,18 @@ html, body {
   z-index: 1;
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
           mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-  /* contain repaints */
   contain: layout style paint;
 }
 .gifts-track {
   display: flex; gap: 12px; flex-shrink: 0;
+  /* CSS-анимация вместо JS RAF — compositor-only, нет лага */
+  animation: carousel-scroll 28s linear infinite;
   will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
+}
+.gifts-track.paused { animation-play-state: paused; }
+@keyframes carousel-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 .gifts-track video,
 .gifts-track .tgs-container {
@@ -402,7 +406,6 @@ html, body {
   max-width: 190px; max-height: 190px;
   background: transparent;
   border-radius: 20px; border: none; display: block;
-  /* own compositing layer — no overdraw from sibling repaints */
   will-change: transform;
   transform: translateZ(0);
 }
@@ -833,3 +836,58 @@ html, body {
   contain: layout style paint;
 }
 * { -webkit-tap-highlight-color: transparent; }
+/* ── HOME NFT КАРУСЕЛЬ ────────────────────────── */
+.home-nft-carousel-wrap {
+  width: 100%;
+  padding: 4px 0 0;
+}
+.home-nft-carousel-label {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px; font-weight: 700;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0 4px 8px;
+}
+.home-nft-track-outer {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  contain: layout style paint;
+}
+.home-nft-track {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  animation: home-nft-scroll 24s linear infinite;
+  will-change: transform;
+}
+@keyframes home-nft-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.home-nft-item {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.home-nft-item .tgs-container {
+  width: 72px; height: 72px;
+  border-radius: 16px;
+  border: 1px solid rgba(93,188,255,0.15);
+  background: rgba(20,55,110,0.12) !important;
+  flex-shrink: 0;
+  transform: translateZ(0);
+  contain: layout style paint;
+}
+.home-nft-item span {
+  font-size: 9px;
+  color: rgba(255,255,255,0.45);
+  white-space: nowrap;
+  text-align: center;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
