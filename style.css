@@ -272,17 +272,9 @@ html, body {
   height: 220px; overflow: hidden;
   display: flex; align-items: center;
   z-index: 1;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
-          mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
 }
 .gifts-track {
   display: flex; gap: 12px; flex-shrink: 0;
-  animation: carousel-scroll 26s linear infinite;
-}
-.gifts-track.paused { animation-play-state: paused; }
-@keyframes carousel-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
 }
 .gifts-track .tgs-container {
   flex-shrink: 0;
