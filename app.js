@@ -93,21 +93,38 @@ var DEMO_GIFTS = [
 ];
 
 // ══════════════════════════════════════════════════════════
-// КАРУСЕЛЬ — управление паузой во время спина
-// (движение теперь на CSS @keyframes, без JS RAF)
+// КАРУСЕЛЬ NFT ПОДАРКОВ (JS RAF — плавно, без CSS animation)
 // ══════════════════════════════════════════════════════════
+var carouselRAF  = null;
+var carouselPos  = 0;
+var carouselHalf = 0;
+
+function cacheCarouselHalf() {
+  var track = document.getElementById("gifts-track");
+  if (track) carouselHalf = track.scrollWidth / 2;
+}
+
+function tickCarousel() {
+  var track = document.getElementById("gifts-track");
+  if (!track) { carouselRAF = requestAnimationFrame(tickCarousel); return; }
+  carouselPos += 1.5;
+  if (carouselHalf > 0 && carouselPos >= carouselHalf) carouselPos -= carouselHalf;
+  track.style.transform = "translateX(-" + carouselPos + "px)";
+  carouselRAF = requestAnimationFrame(tickCarousel);
+}
+
+function startCarousel() {
+  if (carouselRAF) cancelAnimationFrame(carouselRAF);
+  cacheCarouselHalf();
+  carouselRAF = requestAnimationFrame(tickCarousel);
+}
+
 function pauseCarousel() {
-  var track = document.getElementById("gifts-track");
-  if (track) track.classList.add("paused");
+  if (carouselRAF) { cancelAnimationFrame(carouselRAF); carouselRAF = null; }
 }
-function resumeCarousel() {
-  var track = document.getElementById("gifts-track");
-  if (track) track.classList.remove("paused");
-}
-// startCarousel / stopCarousel — совместимость с остальным кодом
-function startCarousel()  { resumeCarousel(); }
-function stopCarousel()   { pauseCarousel();  }
-var carouselRAF = null; // совместимость — больше не используется
+
+function resumeCarousel() { startCarousel(); }
+function stopCarousel()    { pauseCarousel(); }
 
 function forcePlayAllVideos() {
   document.querySelectorAll("video").forEach(function(v) {
@@ -173,10 +190,13 @@ function switchTab(tab) {
   haptic("light");
 
   if (tab === "spin" || tab === "home") {
-    // Single deferred call — enough for one frame after display:flex
     requestAnimationFrame(function() {
       loadTgsAnimations();
-      if (tab === "spin") forcePlayAllVideos();
+      if (tab === "spin") {
+        forcePlayAllVideos();
+        // Задержка чтобы TGS загрузились и track получил ширину
+        setTimeout(startCarousel, 400);
+      }
     });
   }
   if (tab === "spin") {
@@ -207,7 +227,7 @@ function showScreen(id) {
   });
   var el = document.getElementById(id);
   if (el) { el.style.display = "flex"; el.classList.add("active"); }
-  if (id === "screen-spin") { setTimeout(forcePlayAllVideos, 100); setTimeout(loadTgsAnimations, 100); }
+  if (id === "screen-spin") { setTimeout(forcePlayAllVideos, 100); setTimeout(loadTgsAnimations, 100); setTimeout(startCarousel, 500); }
 }
 
 function showError(title, sub, onRetry) {
@@ -1415,8 +1435,8 @@ function startApp() {
 // ══════════════════════════════════════════════════════════
 window.addEventListener("load", function() {
   startApp();
-  // Single deferred play attempt after DOM settles
   setTimeout(forcePlayAllVideos, 200);
+  // Карусель запустится когда пользователь перейдёт на spin
 });
 
 // ══════════════════════════════════════════════════════════
