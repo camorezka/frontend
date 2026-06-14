@@ -7,8 +7,8 @@ var API_URL = "https://backend-9iys.onrender.com";
 
 // Telegram
 var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-if (tg) { tg.ready(); tg.expand(); }
-tg.expand();
+if (tg) { tg.ready(); tg.expand(); tg.requestFullscreen();}
+
 
 var tgUser    = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : {};
 var TG_ID     = tgUser.id         || 0;
