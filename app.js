@@ -487,8 +487,8 @@ function fireParticles() {
 // ══════════════════════════════════════════════════════════
 // ГЛАВНАЯ АНИМАЦИЯ СПИНА — тап для разгона
 // ══════════════════════════════════════════════════════════
-var TAPS_NEEDED   = 4;     // сколько кликов нужно чтобы разогнать
-var SPIN_DURATION = 3000;  // итоговая длительность замедления, мс
+var TAPS_NEEDED   = 3;     // 3 тапа достаточно
+var SPIN_DURATION = 2000;  // 2 секунды замедления — быстрее
 
 function _buildSpinItems(withStar) {
   // Берём TGS-источники из основной карусели
@@ -541,9 +541,7 @@ function startSpinAnimation(onDone, withStarItem) {
   blurBg.id = "spin-blur-bg";
   blurBg.style.cssText =
     "position:fixed;inset:0;z-index:198;" +
-    "backdrop-filter:blur(18px) brightness(0.45);" +
-    "-webkit-backdrop-filter:blur(18px) brightness(0.45);" +
-    "background:rgba(0,0,0,0.35);opacity:0;transition:opacity .25s;";
+    "background:rgba(0,0,0,0.6);opacity:0;transition:opacity .2s;";
   document.body.appendChild(blurBg);
 
   var overlay = document.createElement("div");
@@ -556,7 +554,7 @@ function startSpinAnimation(onDone, withStarItem) {
 
   var track = document.createElement("div");
   track.id = "spin-overlay-track";
-  track.style.cssText = "display:flex;gap:12px;flex-shrink:0;will-change:transform;padding-left:50vw;";
+  track.style.cssText = "display:flex;gap:12px;flex-shrink:0;padding-left:50vw;";
 
   var items = _buildSpinItems(!!withStarItem);
   // Если withStarItem=true (NFT не выпал, звёзды) — winIdx должен указывать на звёздочку
@@ -634,8 +632,8 @@ function startSpinAnimation(onDone, withStarItem) {
   var taps       = 0;
   var phase      = "wait"; // wait -> spinning -> decel -> done
   var speed      = 0;
-  var BASE_SPEED = 6;
-  var SPEED_STEP = 9;
+  var BASE_SPEED = 4;
+  var SPEED_STEP = 12;
   var MAX_SPEED  = BASE_SPEED + SPEED_STEP * TAPS_NEEDED;
   var decelStart = null;
   var target     = 0;
@@ -670,8 +668,8 @@ function startSpinAnimation(onDone, withStarItem) {
 
   function tick() {
     if (phase === "wait") {
-      // Лёгкое покачивание/медленный ход в ожидании тапов
-      speed = 1.2;
+      // Медленный ход в ожидании тапов
+      speed = 1.8;
       pos += speed;
       if (setW > 0 && pos >= setW) pos -= setW;
       track.style.transform = "translateX(-" + pos + "px)";
@@ -1450,9 +1448,7 @@ function _tgsInitContainer(container, src, json) {
       clearCanvas: true,
       progressiveLoad: true,
       hideOnTransparent: true,
-      preserveAspectRatio: 'xMidYMid meet',
-      // Ограничиваем DPR до 1.5 — экономия GPU на Retina
-      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.5)
+      preserveAspectRatio: 'xMidYMid meet'
     }
   });
   anim.addEventListener('enterFrame', function onFirst() {
@@ -1460,7 +1456,6 @@ function _tgsInitContainer(container, src, json) {
     _tgsRunning--;
     _tgsProcessQueue();
   });
-  // fallback если enterFrame не сработал
   setTimeout(function() {
     if (_tgsRunning > 0) { _tgsRunning = Math.max(0, _tgsRunning - 1); _tgsProcessQueue(); }
   }, 2000);
