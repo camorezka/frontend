@@ -28,31 +28,33 @@ var PAY_MAX_ATTEMPTS = 24;
 // ══════════════════════════════════════════════════════════
 var NFT_TIERS = [
   {
-    minStars: 100, maxStars: 449,
+    minStars: 150, maxStars: 450,
     gifts: [
-      { name: "Vice Cream",   src: "photos/icecream.tgs" },
-      { name: "Lunar Snake",  src: "photos/snake.tgs"    },
-      { name: "Big Year",     src: "photos/year.tgs"     }
+      { name: "Vice Cream",    src: "photos/icecream.tgs" },
+      { name: "Instant Ramen", src: "photos/sushi.tgs"    },
+      { name: "Whip Cupcake",  src: "photos/cupcake.tgs"  },
+      { name: "Lunar Snake",   src: "photos/snake.tgs"    },
+      { name: "Tama Gadget",   src: "photos/tama.tgs"     },
+      { name: "Snake Box",     src: "photos/box.tgs"      }
     ]
   },
   {
-    minStars: 450, maxStars: 549,
+    minStars: 450, maxStars: 550,
     gifts: [
-      { name: "Vice Cream",      src: "photos/icecream.tgs" },
-      { name: "Whip Cupcake",    src: "photos/cupcake.tgs"  },
-      { name: "Snake Box",       src: "photos/box.tgs"      },
-      { name: "Lol Pop",         src: "photos/lolipop.tgs"  },
-      { name: "Toy Bear",        src: "photos/bear.tgs"     }
+      { name: "Fresh Socks",    src: "photos/socks.tgs"    },
+      { name: "Party Sparkler", src: "photos/lighting.tgs" },
+      { name: "Hypno Lolipop",  src: "photos/lolipop.tgs"  },
+      { name: "Easter Egg",     src: "photos/egg.tgs"      },
+      { name: "Big Year",       src: "photos/year.tgs"     },
+      { name: "Tama Gadget",    src: "photos/tama.tgs"     }
     ]
   },
   {
-    minStars: 500, maxStars: 700,
+    minStars: 550, maxStars: 700,
     gifts: [
-      { name: "Astral Shard",   src: "photos/crystal.tgs" },
-      { name: "Tama Gadget",    src: "photos/tama.tgs"    },
-      { name: "Eternal Rose",   src: "photos/rose.tgs"    },
-      { name: "Diamond Ring",   src: "photos/ring.tgs"    },
-      { name: "Witch Hat",      src: "photos/koldun.tgs"  }
+      { name: "Witch Hat",      src: "photos/koldun.tgs" },
+      { name: "Stellar Rocket", src: "photos/rocket.tgs" },
+      { name: "Input Key",      src: "photos/button.tgs" }
     ]
   }
 ];
