@@ -1403,3 +1403,68 @@ function loadTgsAnimations() {
       });
   });
 }
+
+// ══════════════════════════════════════════════════════════
+// АМБИЕНТНЫЕ ЧАСТИЦЫ НА ЭКРАНЕ РУЛЕТКИ
+// ══════════════════════════════════════════════════════════
+(function() {
+  var PARTICLE_COUNT_DESKTOP = 22;
+  var PARTICLE_COUNT_MOBILE  = 12;
+
+  function rand(min, max) { return min + Math.random() * (max - min); }
+
+  // Точка стартует у одного из краёв экрана и дрейфует к другому краю/углу
+  function edgePoint() {
+    var side = Math.floor(rand(0, 4)); // 0:top 1:right 2:bottom 3:left
+    var pos = rand(0, 100);
+    switch (side) {
+      case 0: return { x: pos, y: rand(-2, 6) };
+      case 1: return { x: rand(94, 102), y: pos };
+      case 2: return { x: pos, y: rand(94, 102) };
+      default: return { x: rand(-2, 6), y: pos };
+    }
+  }
+
+  function buildParticles() {
+    var container = document.getElementById('spin-particles');
+    if (!container || container._built) return;
+    container._built = true;
+
+    var isSmall = window.matchMedia('(max-width: 600px)').matches;
+    var count = isSmall ? PARTICLE_COUNT_MOBILE : PARTICLE_COUNT_DESKTOP;
+    var frag = document.createDocumentFragment();
+
+    for (var i = 0; i < count; i++) {
+      var el = document.createElement('div');
+      el.className = 'spin-particle';
+
+      var p1 = edgePoint();
+      var p2 = edgePoint();
+
+      el.style.setProperty('--px', p1.x + '%');
+      el.style.setProperty('--py', p1.y + '%');
+      el.style.setProperty('--pdx', (p2.x - p1.x) + 'vw');
+      el.style.setProperty('--pdy', (p2.y - p1.y) + 'vh');
+
+      var p3 = edgePoint();
+      el.style.setProperty('--pdx2', (p3.x - p1.x) + 'vw');
+      el.style.setProperty('--pdy2', (p3.y - p1.y) + 'vh');
+
+      el.style.setProperty('--ps', rand(1.5, 3) + 'px');
+      el.style.setProperty('--pop', rand(0.25, 0.55).toFixed(2));
+      el.style.setProperty('--pdur', rand(10, 22).toFixed(1) + 's');
+      el.style.setProperty('--pdelay', (-rand(0, 20)).toFixed(1) + 's');
+
+      frag.appendChild(el);
+    }
+    container.appendChild(frag);
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    buildParticles();
+  } else {
+    document.addEventListener('DOMContentLoaded', buildParticles);
+  }
+  // Подстраховка, если контейнер появляется позже
+  window.addEventListener('load', buildParticles);
+})();
