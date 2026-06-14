@@ -436,6 +436,12 @@ html, body {
   object-fit: cover; background: #000;
   border-radius: 20px; border: none; display: block;
 }
+.gifts-track .tgs-container {
+  flex-shrink: 0; width: 42vw; height: 42vw;
+  max-width: 190px; max-height: 190px;
+  background: #000;
+  border-radius: 20px; border: none; display: block;
+}
 
 /* ══════════════════════════════
    ОВЕРЛЕЙ СПИНА (тап для разгона)
@@ -766,7 +772,8 @@ html, body {
 
   .spin-btn { font-size: 17px; }
 
-  .gifts-track video {
+  .gifts-track video,
+  .gifts-track .tgs-container {
     width: 180px; height: 180px;
     max-width: 180px; max-height: 180px;
   }
@@ -1062,6 +1069,7 @@ html, body {
 .screen,
 .gifts-track,
 .gifts-track video,
+.gifts-track .tgs-container,
 .spin-particle,
 .load-orb {
   -webkit-transform: translateZ(0);
