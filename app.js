@@ -30,29 +30,29 @@ var NFT_TIERS = [
   {
     minStars: 100, maxStars: 449,
     gifts: [
-      { name: "Vice Cream",   src: "photos/icecream.mp4" },
-      { name: "Lunar Snake",  src: "photos/snake.mp4"    },
-      { name: "Big Year",     src: "photos/year.mp4"     }
+      { name: "Vice Cream",   src: "photos/icecream.tgs" },
+      { name: "Lunar Snake",  src: "photos/snake.tgs"    },
+      { name: "Big Year",     src: "photos/year.tgs"     }
     ]
   },
   {
     minStars: 450, maxStars: 549,
     gifts: [
-      { name: "Ice Cream",       src: "photos/icecream.mp4" },
-      { name: "Whip Cupcake",    src: "photos/cupcake.mp4"  },
-      { name: "Snake Box",       src: "photos/box.mp4"      },
-      { name: "Lol Pop",         src: "photos/lolipop.mp4"  },
-      { name: "Hypno Lolipop",   src: "photos/hypno.mp4"    }
+      { name: "Vice Cream",      src: "photos/icecream.tgs" },
+      { name: "Whip Cupcake",    src: "photos/cupcake.tgs"  },
+      { name: "Snake Box",       src: "photos/box.tgs"      },
+      { name: "Lol Pop",         src: "photos/lolipop.tgs"  },
+      { name: "Toy Bear",        src: "photos/bear.tgs"     }
     ]
   },
   {
     minStars: 500, maxStars: 700,
     gifts: [
-      { name: "Ginger Cookie", src: "photos/crystal.mp4" },
-      { name: "Tama Gadget",   src: "photos/tama.mp4"    },
-      { name: "Desk Calendar", src: "photos/desk.mp4"    },
-      { name: "Star Notepad",  src: "photos/note.mp4"    },
-      { name: "Witch Hat",     src: "photos/koldun.mp4"  }
+      { name: "Astral Shard",   src: "photos/crystal.tgs" },
+      { name: "Tama Gadget",    src: "photos/tama.tgs"    },
+      { name: "Eternal Rose",   src: "photos/rose.tgs"    },
+      { name: "Diamond Ring",   src: "photos/ring.tgs"    },
+      { name: "Witch Hat",      src: "photos/koldun.tgs"  }
     ]
   }
 ];
@@ -71,23 +71,23 @@ function getRandomNftGift(stars) {
 
 // Все демо-подарки для карусели (декоративные)
 var DEMO_GIFTS = [
-  { name: "Diamond Ring",    tgs: "photos2/ring.tgs",     stars: 50  },
-  { name: "Toy Bear",        tgs: "photos2/bear.tgs",     stars: 75  },
-  { name: "Vice Cream",      tgs: "photos2/icecream.tgs", stars: 60  },
-  { name: "Party Sparkler",  tgs: "photos2/lighting.tgs", stars: 120 },
-  { name: "Big Year",        tgs: "photos2/year.tgs",     stars: 160 },
-  { name: "Stellar Rocket",  tgs: "photos2/rocket.tgs",   stars: 200 },
-  { name: "Fresh Socks",     tgs: "photos2/socks.tgs",    stars: 40  },
-  { name: "Electric Skull",  tgs: "photos2/skull.tgs",    stars: 350 },
-  { name: "Witch Hat",       tgs: "photos2/koldun.tgs",   stars: 180 },
-  { name: "Lol Pop",         tgs: "photos2/lolipop.tgs",  stars: 65  },
-  { name: "Trapped Heart",   tgs: "photos2/heart.tgs",    stars: 90  },
-  { name: "Evil Eye",        tgs: "photos2/eye.tgs",      stars: 150 },
-  { name: "Scared Cat",      tgs: "photos2/cat.tgs",      stars: 110 },
-  { name: "Input Key",       tgs: "photos2/button.tgs",   stars: 80  },
-  { name: "Lunar Snake",     tgs: "photos2/snake.tgs",    stars: 220 },
-  { name: "Astral Shard",    tgs: "photos2/crystal.tgs",  stars: 300 },
-  { name: "Vintage Cigar",   tgs: "photos2/sigareta.tgs", stars: 130 }
+  { name: "Diamond Ring",    tgs: "photos/ring.tgs",     stars: 50  },
+  { name: "Toy Bear",        tgs: "photos/bear.tgs",     stars: 75  },
+  { name: "Vice Cream",      tgs: "photos/icecream.tgs", stars: 60  },
+  { name: "Party Sparkler",  tgs: "photos/lighting.tgs", stars: 120 },
+  { name: "Big Year",        tgs: "photos/year.tgs",     stars: 160 },
+  { name: "Stellar Rocket",  tgs: "photos/rocket.tgs",   stars: 200 },
+  { name: "Fresh Socks",     tgs: "photos/socks.tgs",    stars: 40  },
+  { name: "Electric Skull",  tgs: "photos/skull.tgs",    stars: 350 },
+  { name: "Witch Hat",       tgs: "photos/koldun.tgs",   stars: 180 },
+  { name: "Lol Pop",         tgs: "photos/lolipop.tgs",  stars: 65  },
+  { name: "Trapped Heart",   tgs: "photos/heart.tgs",    stars: 90  },
+  { name: "Evil Eye",        tgs: "photos/eye.tgs",      stars: 150 },
+  { name: "Scared Cat",      tgs: "photos/cat.tgs",      stars: 110 },
+  { name: "Input Key",       tgs: "photos/button.tgs",   stars: 80  },
+  { name: "Lunar Snake",     tgs: "photos/snake.tgs",    stars: 220 },
+  { name: "Astral Shard",    tgs: "photos/crystal.tgs",  stars: 300 },
+  { name: "Vintage Cigar",   tgs: "photos/sigara.tgs",   stars: 130 }
 ];
 
 // ══════════════════════════════════════════════════════════
@@ -150,6 +150,7 @@ setInterval(function() {
   document.querySelectorAll("#screen-spin video").forEach(function(v) { if (v.paused) anyPaused = true; });
   if (anyPaused) forcePlayAllVideos();
   if (!carouselRAF) startCarousel();
+  loadTgsAnimations();
 }, 3000);
 
 // ══════════════════════════════════════════════════════════
@@ -185,6 +186,8 @@ function switchTab(tab) {
   if (tab === "spin" || tab === "home") {
     setTimeout(forcePlayAllVideos, 100);
     setTimeout(forcePlayAllVideos, 400);
+    setTimeout(loadTgsAnimations, 80);
+    setTimeout(loadTgsAnimations, 400);
   }
   if (tab === "spin") {
     var spinWrap = document.getElementById("spin-btn-wrap");
@@ -219,7 +222,7 @@ function showScreen(id) {
   });
   var el = document.getElementById(id);
   if (el) { el.style.display = "flex"; el.classList.add("active"); }
-  if (id === "screen-spin") setTimeout(forcePlayAllVideos, 100);
+  if (id === "screen-spin") { setTimeout(forcePlayAllVideos, 100); setTimeout(loadTgsAnimations, 100); }
 }
 
 function showError(title, sub, onRetry) {
