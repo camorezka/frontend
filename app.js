@@ -573,14 +573,21 @@ function _buildSpinItems(withStar) {
   return items;
 }
 
-function _renderSpinItem(item) {
+function _renderSpinItem(item, revealTgs) {
   if (item.type === "star") {
     return '<div class="spin-overlay-item spin-overlay-star">' +
              '<img src="photos/stars.png" alt="star"/>' +
            '</div>';
   }
-  return '<div class="spin-overlay-item">' +
-           '<div class="tgs-container" data-tgs="' + item.src + '" style="width:100%;height:100%;"></div>' +
+  if (revealTgs) {
+    // Показываем настоящий TGS (только при остановке)
+    return '<div class="spin-overlay-item">' +
+             '<div class="tgs-container" data-tgs="' + item.src + '" style="width:100%;height:100%;"></div>' +
+           '</div>';
+  }
+  // Во время кручения — красивый blur-placeholder (не грузим TGS)
+  return '<div class="spin-overlay-item spin-spin-placeholder">' +
+           '<div class="spin-placeholder-inner"></div>' +
          '</div>';
 }
 
@@ -638,7 +645,7 @@ function startSpinAnimation(onDone, withStarItem) {
   var REPEATS = 6;
   var html = "";
   for (var r = 0; r < REPEATS; r++) {
-    for (var i = 0; i < items.length; i++) html += _renderSpinItem(items[i]);
+    for (var i = 0; i < items.length; i++) html += _renderSpinItem(items[i], false);
   }
   track.innerHTML = html;
   overlay.appendChild(track);
@@ -667,8 +674,8 @@ function startSpinAnimation(onDone, withStarItem) {
     hint.style.opacity = "1";
   });
 
+  // TGS не грузим пока крутится — только видео в основной карусели
   setTimeout(function() {
-    loadTgsAnimations();
     forcePlayAllVideos();
   }, 60);
 
@@ -708,10 +715,13 @@ function startSpinAnimation(onDone, withStarItem) {
       // Запускаем замедление через SPIN_DURATION
       tapZone.style.pointerEvents = "none";
       // Ставим winIdx в определённом повторе чтобы гарантировать остановку в центре
-      var minLoops  = 4;
-      var base      = Math.ceil((pos + minLoops * setW) / setW) * setW;
-      target        = base + winCenter - screenCenter;
-      if (target < pos + setW) target += setW;
+      // Целимся строго в последний повтор (REPEATS-1 = 5)
+      // чтобы winElemIdx при раскрытии TGS совпал с реальной позицией
+      var targetRepeat = REPEATS - 1;
+      var targetBase   = targetRepeat * setW;
+      target = targetBase + winCenter - screenCenter;
+      // Гарантируем что target впереди текущей позиции минимум на 3 оборота
+      while (target < pos + 3 * setW) target += setW;
       decelStart = performance.now();
       decelFromPos = pos;
       decelFromSpeed = speed;
@@ -751,10 +761,19 @@ function startSpinAnimation(onDone, withStarItem) {
         track.style.transform = "translate3d(-" + pos + "px,0,0)";
         phase = "done";
         haptic("heavy");
+        // Раскрываем победный элемент: заменяем placeholder на настоящий TGS
+        var winRepeat = REPEATS - 1; // последний повтор — туда целим target
+        var winElemIdx = winRepeat * items.length + winIdx;
+        var winElem = track.children[winElemIdx];
+        if (winElem && items[winIdx].type === "tgs") {
+          winElem.outerHTML = _renderSpinItem(items[winIdx], true);
+          // После замены DOM грузим TGS
+          setTimeout(function() { loadTgsAnimations(); }, 30);
+        }
         setTimeout(function() {
           _teardownSpinOverlay(blurBg, overlay, tapZone, hint);
           if (onDone) onDone(winIdx, items[winIdx]);
-        }, 450);
+        }, 600);
         return;
       }
       spinAnimRAF = requestAnimationFrame(tick);
@@ -907,8 +926,8 @@ function onDemoSpin() {
   if (btnWrap) btnWrap.style.opacity = "0";
   if (spinBtn) spinBtn.disabled = true;
 
-  // Демо-шансы: 60% NFT-подарок, 40% звёзды
-  var showNft = Math.random() < 0.60;
+  // Демо-шансы: 80% NFT-подарок, 20% звёзды
+  var showNft = Math.random() < 0.80;
 
   startSpinAnimation(function(wIdx, winItem) {
     demoCycleCount++;
@@ -916,18 +935,23 @@ function onDemoSpin() {
     if (spinBtn) { spinBtn.disabled = false; spinBtn.textContent = demoMode ? "🎭 Демо-прокрутка" : "Крутить рулетку"; }
 
     if (showNft && winItem && winItem.type === "tgs") {
-      // Найти подарок по TGS-src того, на чём остановилась рулетка
+      // Найти подарок точно по TGS-src остановившегося элемента
       var gift = null;
+      var winSrc = winItem.src || "";
       for (var di = 0; di < DEMO_GIFTS.length; di++) {
-        if (DEMO_GIFTS[di].tgs === winItem.src) { gift = DEMO_GIFTS[di]; break; }
+        if (DEMO_GIFTS[di].tgs === winSrc) { gift = DEMO_GIFTS[di]; break; }
+      }
+      // Fallback: если карусель содержит src которого нет в DEMO_GIFTS
+      if (!gift && winSrc) {
+        gift = { name: winSrc.split('/').pop().replace('.tgs',''), tgs: winSrc, stars: 0 };
       }
       if (!gift) gift = DEMO_GIFTS[Math.floor(Math.random() * DEMO_GIFTS.length)];
       confetti();
       haptic("heavy");
       showNftTgsResultOverlay(gift, true, null);
     } else {
-      // Показать звёзды (1–5)
-      var starCount = 1 + Math.floor(Math.random() * 5);
+      // Показать звёзды (1–8)
+      var starCount = 1 + Math.floor(Math.random() * 8);
       showStarsEffect(starCount, null);
     }
   }, showNft);
