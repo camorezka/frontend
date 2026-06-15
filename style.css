@@ -198,9 +198,9 @@ html, body {
 .hb-gold {
   background:
     linear-gradient(135deg,
-      rgba(255,200,40, 0.50) 0%,   
-      rgba(255,170,20, 0.35) 50%,  
-      rgba(255,140,0,  0.42) 100%),
+      rgba(80,55,0, 0.72) 0%,
+      rgba(60,40,0, 0.60) 50%,
+      rgba(70,48,0, 0.68) 100%),
     url('main/yellow.png') center/cover no-repeat;
   border-color: rgba(255,210,80,0.55);
   border-top-color: rgba(255,230,100,0.75);
@@ -209,9 +209,9 @@ html, body {
 .hb-blue {
   background:
     linear-gradient(135deg,
-      rgba(255,200,40, 0.50) 0%,   
-      rgba(255,170,20, 0.35) 50%,  
-      rgba(255,140,0,  0.42) 100%),
+      rgba(0,40,80, 0.72) 0%,
+      rgba(0,30,65, 0.60) 50%,
+      rgba(0,35,75, 0.68) 100%),
     url('main/blue.png') center/cover no-repeat;
   border-color: rgba(80,170,255,0.55);
   border-top-color: rgba(100,200,255,0.75);
@@ -220,9 +220,9 @@ html, body {
 .hb-purple {
   background:
     linear-gradient(135deg,
-      rgba(255,200,40, 0.50) 0%,   
-      rgba(255,170,20, 0.35) 50%,  
-      rgba(255,140,0,  0.42) 100%),
+      rgba(50,0,80, 0.72) 0%,
+      rgba(40,0,65, 0.60) 50%,
+      rgba(45,0,75, 0.68) 100%),
     url('main/purple.png') center/cover no-repeat;
   border-color: rgba(190,80,255,0.55);
   border-top-color: rgba(210,120,255,0.75);
@@ -231,9 +231,9 @@ html, body {
 .hb-green {
   background:
     linear-gradient(135deg,
-      rgba(255,200,40, 0.50) 0%,   
-      rgba(255,170,20, 0.35) 50%,  
-      rgba(255,140,0,  0.42) 100%)
+      rgba(20,80,30, 0.72) 0%,
+      rgba(10,60,20, 0.60) 50%,
+      rgba(15,70,25, 0.68) 100%),
     url('main/lime.png') center/cover no-repeat;
   border-color: rgba(50,220,120,0.55);
   border-top-color: rgba(80,255,160,0.75);
@@ -559,7 +559,7 @@ html, body {
   z-index: 10;
 }
 .spin-btn {
-  width: 100%; padding: 26px 20px;
+  width: 100%; padding: 16px 20px;
   background: linear-gradient(135deg,
     rgba(93,188,255,0.28) 0%,
     rgba(70,160,255,0.18) 40%,
