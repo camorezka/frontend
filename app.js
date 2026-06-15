@@ -575,6 +575,13 @@ function _buildSpinItems(withStar) {
 
 function _renderSpinItem(item, revealTgs) {
   if (item.type === "star") {
+    if (!revealTgs) {
+      // Во время кручения — прячем звёздочку, показываем placeholder
+      return '<div class="spin-overlay-item spin-spin-placeholder">' +
+               '<div class="spin-placeholder-inner" style="background:radial-gradient(circle,rgba(255,215,0,0.3),transparent);"></div>' +
+             '</div>';
+    }
+    // Только при остановке — показываем звёздочку
     return '<div class="spin-overlay-item spin-overlay-star">' +
              '<img src="photos/stars.png" alt="star"/>' +
            '</div>';
@@ -761,12 +768,18 @@ function startSpinAnimation(onDone, withStarItem) {
         track.style.transform = "translate3d(-" + pos + "px,0,0)";
         phase = "done";
         haptic("heavy");
-        // Раскрываем победный элемент: заменяем placeholder на настоящий TGS
+        // Раскрываем победный элемент: заменяем placeholder на настоящий TGS или звёздочку
         var winRepeat = REPEATS - 1; // последний повтор — туда целим target
         var winElemIdx = winRepeat * items.length + winIdx;
         var winElem = track.children[winElemIdx];
-        if (winElem && items[winIdx].type === "tgs") {
-          winElem.outerHTML = _renderSpinItem(items[winIdx], true);
+        if (winElem) {
+          var revealedHtml = _renderSpinItem(items[winIdx], true);
+          var newEl = document.createElement("div");
+          newEl.innerHTML = revealedHtml;
+          var newChild = newEl.firstChild;
+          if (newChild) {
+            winElem.parentNode.replaceChild(newChild, winElem);
+          }
           // После замены DOM грузим TGS
           setTimeout(function() { loadTgsAnimations(); }, 30);
         }
@@ -1104,10 +1117,13 @@ function showSpinAnimation() {
     .then(function(res) {
       currentBetId = null;
       var isWin = res.result === "win";
+      // withStarItem = true → в барабане остановится звёздочка (приз звёзды)
+      // withStarItem = false → в барабане остановится TGS (NFT или проигрыш)
+      var withStarItem = isWin && res.prize_type === "stars";
       startSpinAnimation(function() {
         if (btnWrap) btnWrap.style.opacity = "";
         showResult(res);
-      }, isWin);
+      }, withStarItem);
     })
     .catch(function(e) {
       if (btnWrap) btnWrap.style.opacity = "";
@@ -1121,7 +1137,7 @@ function showSpinAnimation() {
 // Если lose → показываем звёзды (1–4)
 // ══════════════════════════════════════════════════════════
 function showResult(res) {
-  if (res.result === "win") {
+  if (res.result === "win" && res.prize_type === "nft") {
     haptic("heavy");
     confetti();
     // Определяем видео по nft_stars
@@ -1131,6 +1147,14 @@ function showResult(res) {
     // Показываем видео NFT на 3 сек, затем экран результата
     showNftVideoOverlay({ name: res.nft_name || nftGift.name, src: nftGift.src }, false, function() {
       _showWinResultScreen(res);
+    });
+
+  } else if (res.result === "win" && res.prize_type === "stars") {
+    haptic("heavy");
+    confetti();
+    var starCount = res.stars_prize_amount || 50;
+    showStarsEffect(starCount, function() {
+      _showStarsWinResultScreen(res);
     });
 
   } else {
@@ -1172,6 +1196,23 @@ function _showLoseResultScreen(res) {
     '<div class="result-title" style="color:#ffffff">Звёздный день!</div>' +
     '<div class="result-sub">Попробуй ещё раз!<br>' + (nextWinText ? '<b>' + nextWinText + '</b>' : '') + '</div>' +
     '<button class="result-btn" onclick="switchTab(\'spin\')">Попробовать снова</button>';
+  showScreen("screen-result");
+}
+
+function _showStarsWinResultScreen(res) {
+  var wrap = document.getElementById("result-wrap");
+  if (!wrap) { switchTab("spin"); return; }
+
+  var amount = res.stars_prize_amount || 50;
+  wrap.innerHTML =
+    '<div class="result-icon">⭐</div>' +
+    '<div class="result-title win">Ты выиграл звёзды!</div>' +
+    '<div class="result-nft">' +
+      '<div class="result-nft-name">' + amount + ' ⭐</div>' +
+      '<div class="result-nft-info">Начислено на твой баланс</div>' +
+    '</div>' +
+    '<div class="result-sub">🌟 Звёзды уже у тебя на балансе.<br>Крути ещё — впереди NFT!</div>' +
+    '<button class="result-btn" onclick="switchTab(\'spin\')">Крутить ещё</button>';
   showScreen("screen-result");
 }
 
