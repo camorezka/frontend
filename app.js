@@ -446,6 +446,8 @@ function toggleDemoMode() {
   var hint    = document.querySelector(".spin-hint");
   if (toggle) toggle.classList.toggle("demo-toggle-on", demoMode);
   if (spinBtn) spinBtn.textContent = demoMode ? "🎭 Демо-прокрутка" : "Крутить рулетку";
+  // Запоминаем состояние демо в data-атрибуте кнопки для безопасного восстановления
+  if (spinBtn) spinBtn.setAttribute("data-demo", demoMode ? "1" : "0");
   if (hint)   hint.textContent    = demoMode ? "Бесплатная демо-прокрутка — без ставки" : "Прокрути рулетку чтобы сорвать куш!";
 }
 
@@ -541,7 +543,7 @@ function fireParticles() {
 // ГЛАВНАЯ АНИМАЦИЯ СПИНА — тап для разгона
 // ══════════════════════════════════════════════════════════
 var TAPS_NEEDED   = 4;     // сколько кликов нужно чтобы разогнать
-var SPIN_DURATION = 3000;  // итоговая длительность замедления, мс
+var SPIN_DURATION = 5500;  // итоговая длительность замедления, мс
 
 function _buildSpinItems(withStar) {
   // Берём TGS-источники из основной карусели
@@ -686,8 +688,8 @@ function startSpinAnimation(onDone, withStarItem) {
   var taps       = 0;
   var phase      = "wait"; // wait -> spinning -> decel -> done
   var speed      = 0;
-  var BASE_SPEED = 6;
-  var SPEED_STEP = 9;
+  var BASE_SPEED = 8;
+  var SPEED_STEP = 11;
   var MAX_SPEED  = BASE_SPEED + SPEED_STEP * TAPS_NEEDED;
   var decelStart = null;
   var target     = 0;
@@ -723,29 +725,30 @@ function startSpinAnimation(onDone, withStarItem) {
   function tick() {
     if (phase === "wait") {
       // Лёгкое покачивание/медленный ход в ожидании тапов
-      speed = 1.2;
+      speed = 0.8;
       pos += speed;
       if (setW > 0 && pos >= setW) pos -= setW;
-      track.style.transform = "translateX(-" + pos + "px)";
+      track.style.transform = "translate3d(-" + pos + "px,0,0)";
       spinAnimRAF = requestAnimationFrame(tick);
       return;
     }
     if (phase === "spinning") {
       pos += speed;
       if (setW > 0 && pos >= setW) pos -= setW;
-      track.style.transform = "translateX(-" + pos + "px)";
+      track.style.transform = "translate3d(-" + pos + "px,0,0)";
       spinAnimRAF = requestAnimationFrame(tick);
       return;
     }
     if (phase === "decel") {
       var elapsed  = performance.now() - decelStart;
       var progress = Math.min(elapsed / SPIN_DURATION, 1);
-      var ease     = 1 - Math.pow(1 - progress, 3);
+      // quintic ease-out — плавное замедление без рывков
+      var ease     = 1 - Math.pow(1 - progress, 5);
       pos = decelFromPos + (target - decelFromPos) * ease;
-      track.style.transform = "translateX(-" + pos + "px)";
+      track.style.transform = "translate3d(-" + pos + "px,0,0)";
       if (progress >= 1) {
         pos = target;
-        track.style.transform = "translateX(-" + pos + "px)";
+        track.style.transform = "translate3d(-" + pos + "px,0,0)";
         phase = "done";
         haptic("heavy");
         setTimeout(function() {
@@ -910,7 +913,7 @@ function onDemoSpin() {
   startSpinAnimation(function(wIdx, winItem) {
     demoCycleCount++;
     if (btnWrap) btnWrap.style.opacity = "";
-    if (spinBtn) spinBtn.disabled = false;
+    if (spinBtn) { spinBtn.disabled = false; spinBtn.textContent = demoMode ? "🎭 Демо-прокрутка" : "Крутить рулетку"; }
 
     if (showNft && winItem && winItem.type === "tgs") {
       // Найти подарок по TGS-src того, на чём остановилась рулетка
