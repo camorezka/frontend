@@ -323,7 +323,6 @@ html, body {
 }
 .home-block:hover .hb-media video {
   transform: scale(1.10) translateZ(0);
-  filter: brightness(1.12) drop-shadow(0 0 10px rgba(93,188,255,0.45));
 }
 
 .tgs-container svg,
