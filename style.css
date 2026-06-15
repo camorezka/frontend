@@ -144,31 +144,6 @@ html, body {
 .stars-balance-small .stars-label { font-size: 11px; color: var(--sub); margin-left: 2px; }
 
 /* ── SCREEN BACKGROUNDS ──────────────────────────── */
-#screen-spin {
-  background-image:
-    radial-gradient(ellipse at 50% 40%, rgba(3,8,22,0.85) 40%, rgba(1,2,8,0.95) 100%),
-    url('main/yellow.png');
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: multiply;
-}
-#screen-referral {
-  background-image:
-    radial-gradient(ellipse at 50% 40%, rgba(3,8,22,0.88) 40%, rgba(1,2,8,0.96) 100%),
-    url('main/blue.png');
-  background-size: cover;
-  background-position: center top;
-  background-blend-mode: multiply;
-}
-#screen-leaderboard {
-  background-image:
-    radial-gradient(ellipse at 50% 40%, rgba(3,8,22,0.88) 40%, rgba(1,2,8,0.96) 100%),
-    url('main/lime.png');
-  background-size: cover;
-  background-position: center top;
-  background-blend-mode: multiply;
-}
-
 /* ── HOME ─────────────────────────────────────── */
 /* Home page is static — no horizontal scroll */
 #screen-home {
@@ -474,6 +449,9 @@ html, body {
 #screen-spin {
   justify-content: flex-start;
   overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(3,8,22,0.80) 0%, rgba(1,2,8,0.96) 70%),
+    url('main/yellow.png') center/cover no-repeat !important;
 }
 
 /* Ambient particles */
@@ -839,6 +817,12 @@ html, body {
 }
 
 /* ── REFERRAL ────────────────────────────── */
+#screen-referral {
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(3,8,22,0.82) 0%, rgba(1,2,8,0.96) 70%),
+    url('main/blue.png') center top/cover no-repeat !important;
+}
+
 #screen-referral .page-content {
   overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none;
   padding-bottom:calc(var(--nav-h)+28px);
@@ -894,6 +878,12 @@ html, body {
 }
 
 /* ── LEADERBOARD ─────────────────────────── */
+#screen-leaderboard {
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(3,8,22,0.82) 0%, rgba(1,2,8,0.96) 70%),
+    url('main/lime.png') center top/cover no-repeat !important;
+}
+
 #screen-leaderboard .page-content {
   overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none;
   padding-bottom:calc(var(--nav-h)+28px);
