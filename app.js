@@ -470,10 +470,7 @@ function showStarsEffect(count, onDone) {
   img.style.cssText = "width:120px;height:120px;object-fit:contain;animation:stars-pop 0.5s cubic-bezier(0.34,1.56,0.64,1);";
   container.appendChild(img);
 
-  var label = document.createElement("div");
-  label.style.cssText = "font-family:Unbounded,sans-serif;font-size:28px;font-weight:900;color:#ffffff;text-shadow:0 0 20px rgba(255,255,255,0.5);animation:stars-pop 0.5s cubic-bezier(0.34,1.56,0.64,1);";
-  label.textContent = starCount + " ⭐";
-  container.appendChild(label);
+  
 
   // Добавляем стили анимации если ещё нет
   if (!document.getElementById("stars-anim-style")) {
@@ -839,7 +836,7 @@ function showNftVideoOverlay(gift, isDemo, onClose) {
     'border:2px solid rgba(255,255,255,0.5);box-shadow:0 0 60px rgba(255,255,255,0.3);"></video>' +
     '<div style="font-family:Unbounded,sans-serif;font-size:22px;font-weight:900;color:#ffffff;text-align:center;">' +
       gift.name + '</div>' +
-    (isDemo ? '<div style="font-size:12px;color:rgba(255,255,255,0.5);text-align:center;">Демо-режим · без реальной ставки</div>' : '') +
+    (isDemo ? '<div style="font-size:12px;color:rgba(255,255,255,0.5);text-align:center;">Демо-режим</div>' : '') +
     '<button id="nft-ov-close" style="width:100%;max-width:320px;padding:16px;border-radius:18px;border:none;' +
     'background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,.85) 100%);' +
     'font-family:Unbounded,sans-serif;font-size:14px;font-weight:700;color:#000;cursor:pointer;' +
@@ -888,8 +885,7 @@ function showNftTgsResultOverlay(gift, isDemo, onClose) {
     ? '<div style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:Unbounded,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:5px 16px;border-radius:20px;text-transform:uppercase;">Демо</div>'
     : '<div style="background:linear-gradient(135deg,#ffffff,#cfcfcf);color:#000;font-family:Unbounded,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:5px 16px;border-radius:20px;text-transform:uppercase;">Выигрыш</div>';
 
-  var tgsSrc = gift.tgs || gift.src || "";
-  var starsVal = gift.stars ? gift.stars + " ⭐" : "";
+  
 
   ov.innerHTML =
     badge +
