@@ -287,6 +287,9 @@ html, body {
   border-radius: 20px; display: block;
 }
 
+.hb-media:hover {
+   width: 130px; height: 130px;
+}
 
 .tgs-container svg,
 .tgs-container canvas {
