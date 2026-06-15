@@ -197,9 +197,9 @@ html, body {
 .hb-gold {
   background:
     linear-gradient(135deg,
-      rgba(255,200,40,0.50) 0%,
-      rgba(255,170,20,0.35) 50%,
-      rgba(255,140,0,0.42) 100%),
+      rgba(255,200,40, 0.50) 0%,   
+      rgba(255,170,20, 0.35) 50%,  
+      rgba(255,140,0,  0.42) 100%),
     url('main/yellow.png') center/cover no-repeat;
   border-color: rgba(255,210,80,0.55);
   border-top-color: rgba(255,230,100,0.75);
@@ -208,9 +208,9 @@ html, body {
 .hb-blue {
   background:
     linear-gradient(135deg,
-      rgba(30,160,255,0.50) 0%,
-      rgba(60,140,255,0.35) 50%,
-      rgba(80,180,255,0.42) 100%),
+      rgba(255,200,40, 0.50) 0%,   
+      rgba(255,170,20, 0.35) 50%,  
+      rgba(255,140,0,  0.42) 100%),
     url('main/blue.png') center/cover no-repeat;
   border-color: rgba(80,170,255,0.55);
   border-top-color: rgba(100,200,255,0.75);
@@ -219,9 +219,9 @@ html, body {
 .hb-purple {
   background:
     linear-gradient(135deg,
-      rgba(190,80,255,0.50) 0%,
-      rgba(160,60,255,0.35) 50%,
-      rgba(200,100,255,0.42) 100%),
+      rgba(255,200,40, 0.50) 0%,   
+      rgba(255,170,20, 0.35) 50%,  
+      rgba(255,140,0,  0.42) 100%),
     url('main/purple.png') center/cover no-repeat;
   border-color: rgba(190,80,255,0.55);
   border-top-color: rgba(210,120,255,0.75);
@@ -230,9 +230,9 @@ html, body {
 .hb-green {
   background:
     linear-gradient(135deg,
-      rgba(40,220,120,0.50) 0%,
-      rgba(30,200,100,0.35) 50%,
-      rgba(60,240,140,0.42) 100%),
+      rgba(255,200,40, 0.50) 0%,   
+      rgba(255,170,20, 0.35) 50%,  
+      rgba(255,140,0,  0.42) 100%)
     url('main/lime.png') center/cover no-repeat;
   border-color: rgba(50,220,120,0.55);
   border-top-color: rgba(80,255,160,0.75);
@@ -276,7 +276,7 @@ html, body {
 .hb-media {
   flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  width: 100px; height: 100px;
+  width: 110px; height: 110px;
   border-radius: 20px; overflow: hidden;
   position: relative; z-index: 2;
   transform: translateZ(0);
