@@ -612,24 +612,20 @@ function _buildSpinItems(withStar) {
 function _renderSpinItem(item, revealTgs) {
   if (item.type === "star") {
     if (!revealTgs) {
-      // Во время кручения — прячем звёздочку, показываем placeholder
-      return '<div class="spin-overlay-item spin-spin-placeholder">' +
-               '<div class="spin-placeholder-inner" style="background:radial-gradient(circle,rgba(255,215,0,0.3),transparent);"></div>' +
+      return '<div class="spin-overlay-item spin-spin-placeholder" style="background:#0d2a45;border:1.5px solid rgba(93,188,255,0.22);">' +
+               '<div class="spin-placeholder-inner"></div>' +
              '</div>';
     }
-    // Только при остановке — показываем звёздочку
     return '<div class="spin-overlay-item spin-overlay-star">' +
              '<img src="photos/stars.png" alt="star"/>' +
            '</div>';
   }
   if (revealTgs) {
-    // Показываем настоящий TGS (только при остановке)
     return '<div class="spin-overlay-item">' +
              '<div class="tgs-container" data-tgs="' + item.src + '" style="width:100%;height:100%;"></div>' +
            '</div>';
   }
-  // Во время кручения — красивый blur-placeholder (не грузим TGS)
-  return '<div class="spin-overlay-item spin-spin-placeholder">' +
+  return '<div class="spin-overlay-item spin-spin-placeholder" style="background:#0d2a45;border:1.5px solid rgba(93,188,255,0.22);">' +
            '<div class="spin-placeholder-inner"></div>' +
          '</div>';
 }
@@ -783,31 +779,27 @@ function startSpinAnimation(onDone, withStarItem) {
     if (revealed) return;
     revealed = true;
 
-    // Собираем все плейсхолдеры
-    var allPlaceholders = [];
+    var overlayRect = overlay.getBoundingClientRect();
+    var centerX = overlayRect.left + overlayRect.width / 2;
+    var REVEAL_HALF_WIDTH = overlayRect.width * 0.9;
+
+    // Собираем плейсхолдеры в зоне видимости — и слева, и справа
+    var allItems = [];
     for (var idx = 0; idx < track.children.length; idx++) {
       var el = track.children[idx];
       if (!el.classList.contains("spin-spin-placeholder")) continue;
-      allPlaceholders.push({ el: el, item: items[idx % items.length] });
+      var rect = el.getBoundingClientRect();
+      var elCx = rect.left + rect.width / 2;
+      var dist = Math.abs(elCx - centerX);
+      if (dist <= REVEAL_HALF_WIDTH) {
+        allItems.push({ el: el, item: items[idx % items.length], dist: dist });
+      }
     }
 
-    // Сортируем по близости к центру экрана — показываем только видимые
-    var overlayRect = overlay.getBoundingClientRect();
-    var centerX = overlayRect.left + overlayRect.width / 2;
-    allPlaceholders.sort(function(a, b) {
-      var ra = a.el.getBoundingClientRect();
-      var rb = b.el.getBoundingClientRect();
-      var da = Math.abs((ra.left + ra.width / 2) - centerX);
-      var db = Math.abs((rb.left + rb.width / 2) - centerX);
-      return da - db;
-    });
+    // От центра к краям — центральные появляются первыми
+    allItems.sort(function(a, b) { return a.dist - b.dist; });
 
-    // Максимум 9 элементов — остальные не видны, не грузим
-    var MAX_REVEAL = 9;
-    var toReveal = allPlaceholders.slice(0, MAX_REVEAL);
-
-    // Последовательно заменяем с задержкой 60мс между элементами
-    toReveal.forEach(function(entry, i) {
+    allItems.forEach(function(entry, i) {
       setTimeout(function() {
         var el = entry.el;
         if (!el.parentNode) return;
@@ -818,21 +810,27 @@ function startSpinAnimation(onDone, withStarItem) {
         var newChild = tmp.firstChild;
         if (!newChild) return;
 
-        // Стартуем невидимым — плавно покажем после инициализации lottie
+        // Плавное появление: opacity + лёгкий scale с пружинным ease
         newChild.style.opacity = "0";
-        newChild.style.transition = "opacity 0.35s ease";
+        newChild.style.transform = "scale(0.88)";
+        newChild.style.transition = "opacity 0.28s ease, transform 0.28s cubic-bezier(0.34,1.3,0.64,1)";
         el.parentNode.replaceChild(newChild, el);
 
         var tgsContainer = newChild.querySelector ? newChild.querySelector(".tgs-container") : null;
         if (tgsContainer) {
           _revealOneTgs(tgsContainer, function() {
-            requestAnimationFrame(function() { newChild.style.opacity = "1"; });
+            requestAnimationFrame(function() {
+              newChild.style.opacity = "1";
+              newChild.style.transform = "scale(1)";
+            });
           });
         } else {
-          // Звёздочка или другой не-tgs элемент
-          requestAnimationFrame(function() { newChild.style.opacity = "1"; });
+          requestAnimationFrame(function() {
+            newChild.style.opacity = "1";
+            newChild.style.transform = "scale(1)";
+          });
         }
-      }, i * 60);
+      }, i * 45);
     });
   }
 
