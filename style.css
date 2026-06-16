@@ -460,7 +460,7 @@ html, body {
 .main-title-block {
   text-align: center; padding: 12px 24px 0;
   z-index: 10;
-  position: fixed; top: 40px; left: 0; right: 0;
+  position: fixed; top: 58px; left: 0; right: 0;
 }
 .main-title {
   font-family: 'Unbounded', sans-serif;
@@ -494,9 +494,7 @@ html, body {
   max-width: 190px; max-height: 190px;
   background: transparent;
   border-radius: 20px; border: none; display: block;
-  /* Убираем will-change с каждого айтема — он уже есть на родителе .gifts-track */
   transform: translateZ(0);
-  contain: strict;
 }
 .gifts-track video { object-fit: cover; }
 
@@ -506,11 +504,9 @@ html, body {
   flex-shrink: 0; width: 42vw; height: 42vw;
   max-width: 190px; max-height: 190px;
   border-radius: 20px; overflow: hidden;
-   
   background: #0d2a45;
   border: 1.5px solid rgba(93,188,255,0.28);
   box-shadow: 0 0 18px rgba(37,120,200,0.18);
-   
   display: flex; align-items: center; justify-content: center;
   contain: layout style paint;
 }
