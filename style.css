@@ -506,7 +506,11 @@ html, body {
   flex-shrink: 0; width: 42vw; height: 42vw;
   max-width: 190px; max-height: 190px;
   border-radius: 20px; overflow: hidden;
-  background: transparent;
+   
+  background: #0d2a45;
+  border: 1.5px solid rgba(93,188,255,0.28);
+  box-shadow: 0 0 18px rgba(37,120,200,0.18);
+   
   display: flex; align-items: center; justify-content: center;
   contain: layout style paint;
 }
