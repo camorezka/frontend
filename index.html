@@ -51,7 +51,7 @@
         </div>
         <div class="hb-body">
           <div class="home-block-title">РУЛЕТКА</div>
-          <div class="home-block-sub">Крути и выигрывай NFT-подарки каждый день</div>
+          <div class="home-block-sub">Крути и выигрывай NFT-подарки каждый день!</div>
         </div>
       </div>
       <!-- ИНВЕНТАРЬ -->
@@ -71,14 +71,14 @@
         </div>
         <div class="hb-body">
           <div class="home-block-title">РЕФ. СИСТЕМА</div>
-          <div class="home-block-sub">Приглашай друзей и получай бонусы</div>
+          <div class="home-block-sub">Приглашай друзей и получай призы</div>
         </div>
       </div>
       <!-- ТОПЫ ИГРОКОВ -->
       <div class="home-block hb-green hb-right" onclick="switchTab('leaderboard')">
         <div class="hb-body hb-body-right">
           <div class="home-block-title">ТОПЫ ИГРОКОВ</div>
-          <div class="home-block-sub">Соревнуйся с другими — попади в топ</div>
+          <div class="home-block-sub">Соревнуйся с другими — попади в топы</div>
         </div>
         <div class="hb-media">
           <div class="tgs-container" data-tgs="photos2/top.tgs"></div>
@@ -87,12 +87,12 @@
       <!-- СКОРО -->
       <div class="home-block hb-soon hb-left">
         <div class="hb-media">
-          <div class="hb-soon-icon">🔮</div>
+          <div class="hb-soon-icon">⏳</div>
         </div>
         <div class="hb-body">
           <div class="home-block-title">СКОРО</div>
           <div class="home-block-sub">Новые функции уже в разработке — следи за обновлениями</div>
-          <div class="hb-soon-badge">⏳ Coming soon</div>
+          <div class="hb-soon-badge">Скоро будет...</div>
         </div>
       </div>
     </div>
@@ -350,14 +350,14 @@
       Отправьте 2 кольца на аккаунт <b id="ring-account">@kinub</b>
     </div>
     <div class="pay-steps">
-      <div class="pay-step">1. Откройте профиль <b id="ring-account-link">@kinub</b> в Telegram</div>
+      <div class="pay-step">1. Откройте профиль <a id="ring-account-link" href="#" onclick="openRingAccount(event)" style="color:#5dbcff;font-weight:700;text-decoration:underline;">@LeonardoRelayer</a> в Telegram</div>
       <div class="pay-step">2. Нажмите «Подарить» → выберите «Кольцо»</div>
-      <div class="pay-step">3. Отправьте 2 кольца (по одному или сразу 2)</div>
-      <div class="pay-step">4. Ждите — рулетка запустится автоматически ✨</div>
+      <div class="pay-step">3. Отправьте 2 кольца</div>
+      <div class="pay-step">4. Рулетка запустится автоматически, наблюдайте!</div>
     </div>
     <div class="pay-bet-id">ID ставки: <b id="pay-bet-id">—</b></div>
     <div class="pay-status" id="pay-status"></div>
-    <button class="pay-confirm-btn" id="pay-confirm-btn">✅ Я отправил — проверить</button>
+    <button class="pay-confirm-btn" id="pay-confirm-btn">Проверить</button>
     <button class="pay-back-btn" id="pay-back-btn">← Назад</button>
   </div>
 </div>
@@ -414,14 +414,14 @@
     <div class="ref-link-block">
       <div class="ref-link-label">Твоя реферальная ссылка</div>
       <div class="ref-link-box" id="ref-link-box">Загрузка...</div>
-      <button class="ref-copy-btn" id="ref-copy-btn" onclick="copyRefLink()">📋 Копировать ссылку</button>
-      <button class="ref-share-btn" onclick="shareRefLink()">🚀 Поделиться</button>
+      <button class="ref-copy-btn" id="ref-copy-btn" onclick="copyRefLink()">Копировать ссылку</button>
+      <button class="ref-share-btn" onclick="shareRefLink()">Поделиться</button>
     </div>
     <div class="ref-how-block">
       <div class="ref-how-title">Как это работает</div>
       <div class="ref-how-step"><span class="ref-step-num">1</span> Скопируй свою реферальную ссылку</div>
       <div class="ref-how-step"><span class="ref-step-num">2</span> Отправь другу в Telegram</div>
-      <div class="ref-how-step"><span class="ref-step-num">3</span> Когда друг откроет приложение — ты получишь 1 ⭐</div>
+      <div class="ref-how-step"><span class="ref-step-num">3</span> Когда друг откроет приложение — ты получишь вознаграждение</div>
     </div>
   </div>
   <nav class="bottom-nav">
