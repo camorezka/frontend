@@ -228,9 +228,9 @@ setInterval(function() {
 // ══════════════════════════════════════════════════════════
 // НАВИГАЦИЯ
 // ══════════════════════════════════════════════════════════
-// OWNER IDs — доступ к адмнин-панели
-var ADMIN_IDS = [1693493298]; // fallback до первого ответа /stats
-var isAdminUser = (TG_ID && ADMIN_IDS.indexOf(TG_ID) !== -1);
+// Кнопка Админ скрыта по умолчанию для всех.
+// Показывается только после подтверждения is_admin=true от /stats.
+var isAdminUser = false;
 
 var tabScreens = {
   home:        "screen-home",
@@ -1692,8 +1692,22 @@ function startApp() {
       clearTimeout(loadTimeout);
       finishInit(res.already_registered);
     })
-    .catch(function() {
+    .catch(function(e) {
       clearTimeout(loadTimeout);
+      var msg = (e && e.message) || "";
+      if (msg.indexOf("заблокирован") !== -1 || msg.indexOf("403") !== -1) {
+        // Показываем экран бана
+        var loadEl = document.getElementById("screen-loading");
+        if (loadEl) {
+          loadEl.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;padding:32px;text-align:center;">' +
+            '<div style="font-size:48px;">🚫</div>' +
+            '<div style="font-family:Unbounded,sans-serif;font-size:18px;font-weight:900;color:#fff;">Аккаунт заблокирован</div>' +
+            '<div style="font-size:14px;color:rgba(255,255,255,0.55);">' + msg.replace("HTTP 403: ", "").replace("403: ", "") + '</div>' +
+            '<div style="font-size:12px;color:rgba(255,255,255,0.35);">Обратись в поддержку</div>' +
+          '</div>';
+        }
+        return;
+      }
       finishInit(false);
     });
 }
