@@ -480,10 +480,10 @@ function toggleDemoMode() {
   var spinBtn = document.getElementById("spin-btn");
   var hint    = document.querySelector(".spin-hint");
   if (toggle) toggle.classList.toggle("demo-toggle-on", demoMode);
-  if (spinBtn) spinBtn.textContent = demoMode ? "Демо-прокрутка" : "Крутить рулетку";
+  if (spinBtn) spinBtn.textContent = demoMode ? "Крутить рулетку" : "Крутить рулетку";
   // Запоминаем состояние демо в data-атрибуте кнопки для безопасного восстановления
   if (spinBtn) spinBtn.setAttribute("data-demo", demoMode ? "1" : "0");
-  if (hint)   hint.textContent    = demoMode ? "Бесплатная демо-прокрутка — без ставки" : "Прокрути рулетку чтобы сорвать куш!";
+  if (hint)   hint.textContent    = demoMode ? "Прокрути рулетку чтобы сорвать куш!" : "Прокрути рулетку чтобы сорвать куш!";
 }
 
 // ══════════════════════════════════════════════════════════
@@ -578,8 +578,8 @@ function fireParticles() {
 // ГЛАВНАЯ АНИМАЦИЯ СПИНА — тап для разгона
 // ══════════════════════════════════════════════════════════
 var TAPS_NEEDED   = 4;     // сколько кликов нужно чтобы разогнать
-var SPIN_DURATION = 5500;  // итоговая длительность замедления, мс
-var REVEAL_BEFORE_END = 3000; // за сколько мс до остановки раскрывать все крутящиеся подарки
+var SPIN_DURATION = 6500;  // итоговая длительность замедления, мс
+var REVEAL_BEFORE_END = 4000; // за сколько мс до остановки раскрывать все крутящиеся подарки
 
 function _buildSpinItems(withStar) {
   // Берём TGS-источники из основной карусели
@@ -707,7 +707,7 @@ function startSpinAnimation(onDone, withStarItem) {
     "font-family:Unbounded,sans-serif;font-size:14px;font-weight:700;color:#fff;" +
     "text-shadow:0 2px 12px rgba(0,0,0,0.6);opacity:0;transition:opacity .3s;" +
     "pointer-events:none;";
-  hint.textContent = "Жми, чтобы разогнать!";
+  hint.textContent = "Кликай, чтобы разогнать!";
   document.body.appendChild(hint);
 
   requestAnimationFrame(function() {
@@ -1037,12 +1037,12 @@ function showNftTgsResultOverlay(gift, isDemo, onClose) {
     '<div style="font-family:Unbounded,sans-serif;font-size:22px;font-weight:900;color:#fff;text-align:center;letter-spacing:0.3px;">' +
       gift.name +
     '</div>' +
-    (isDemo ? '<div style="font-size:12px;color:rgba(255,255,255,0.4);text-align:center;">Демо-режим · без реальной ставки</div>' : '') +
+    (isDemo ? '<div style="font-size:12px;color:rgba(255,255,255,0.4);text-align:center;">Демо-режим</div>' : '') +
     '<button id="nft-tgs-ov-close" style="width:100%;max-width:320px;padding:16px;border-radius:18px;border:none;' +
     'background:linear-gradient(135deg,rgba(93,188,255,1) 0%,rgba(60,160,255,1) 100%);' +
     'font-family:Unbounded,sans-serif;font-size:14px;font-weight:700;color:#001a2e;cursor:pointer;' +
     'box-shadow:0 4px 24px rgba(93,188,255,0.35);">' +
-    (isDemo ? "Крутить по-настоящему" : "Забрать!") + "</button>" +
+    (isDemo ? "Крутить рулетку" : "Забрать!") + "</button>" +
     (isDemo ? '<button id="nft-tgs-ov-again" style="width:100%;max-width:320px;padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.18);' +
     'background:rgba(255,255,255,0.05);font-family:Unbounded,sans-serif;font-size:13px;' +
     'font-weight:600;color:rgba(255,255,255,0.50);cursor:pointer;">Ещё раз (демо)</button>' : '');
