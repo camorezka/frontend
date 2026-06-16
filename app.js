@@ -325,6 +325,20 @@ function haptic(type) {
   }
 }
 
+function openRingAccount(e) {
+  if (e) e.preventDefault();
+  // Берём актуальный username из элемента (он обновляется в onSpinClick)
+  var linkEl = document.getElementById("ring-account-link");
+  var username = (linkEl ? linkEl.textContent : "@LeonardoRelayer").replace("@", "");
+  var url = "https://t.me/" + username;
+  if (tg && tg.openTelegramLink) {
+    tg.openTelegramLink(url);
+  } else {
+    window.open(url, "_blank");
+  }
+  haptic("light");
+}
+
 // ══════════════════════════════════════════════════════════
 // API HELPER
 // ══════════════════════════════════════════════════════════
@@ -1159,8 +1173,8 @@ function onSpinClick() {
       var acEl  = document.getElementById("ring-account");
       var alEl  = document.getElementById("ring-account-link");
       var bidEl = document.getElementById("pay-bet-id");
-      if (acEl)  acEl.textContent  = res.ring_account || "@kinub";
-      if (alEl)  alEl.textContent  = res.ring_account || "@kinub";
+      if (acEl)  acEl.textContent  = res.ring_account || "@LeonardoRelayer";
+      if (alEl)  alEl.textContent  = res.ring_account || "@LeonardoRelayer";
       if (bidEl) bidEl.textContent = res.bet_id;
       setPayStatus("", "");
       payCheckAttempts = 0;
